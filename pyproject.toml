@@ -20,6 +20,7 @@ classifiers = [
 dependencies = [
     "fenics-dolfinx>=0.6.0",
     "fenics-ufl",
+    "gmsh",
     "h5py",
     "matplotlib",
     "mpi4py",
@@ -168,6 +169,7 @@ python =
 conda_deps =
     fenics-dolfinx>=0.6.0
     fenics-ufl
+    gmsh
     h5py
     matplotlib
     mpi4py
