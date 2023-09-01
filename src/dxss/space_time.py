@@ -5,7 +5,7 @@ from ufl import ds, dx, grad, inner, dS,jump,div
 from dolfinx import fem, io, mesh, plot,geometry
 from mpi4py import MPI
 from petsc4py import PETSc
-from precomp_time_int import get_elmat_time, quad_rule, basis_in_time,theta_ref,d_theta_ref 
+from dxss.precomp_time_int import get_elmat_time, quad_rule, basis_in_time,theta_ref,d_theta_ref 
 import scipy.sparse as sp
 from dolfinx.fem.petsc import assemble_matrix
 from numpy.typing import ArrayLike, NDArray

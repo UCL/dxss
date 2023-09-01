@@ -9,9 +9,9 @@ from dolfinx.mesh import create_unit_interval
 from dolfinx.io import XDMFFile
 import sys
 sys.setrecursionlimit(10**6)
-from GMREs import GMRes
-from space_time import * 
-from precomp_time_int import theta_ref, d_theta_ref 
+from dxss.gmres import GMRes
+from dxss.space_time import * 
+from dxss.precomp_time_int import theta_ref, d_theta_ref 
 import pypardiso
 import time
 import cProfile

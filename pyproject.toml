@@ -20,7 +20,14 @@ classifiers = [
 dependencies = [
     "fenics-dolfinx>=0.6.0",
     "fenics-ufl",
+    "h5py",
+    "matplotlib",
+    "mpi4py",
     "numpy",
+    "petsc4py",
+    "pypardiso",
+    "scipy",
+    "sympy",
 ]
 description = "DOLFINx solvers on space-time finite element spaces"
 dynamic = [
@@ -159,9 +166,16 @@ python =
 
 [testenv]
 conda_deps =
-    fenics-dolfinx
+    fenics-dolfinx>=0.6.0
     fenics-ufl
+    h5py
+    matplotlib
+    mpi4py
     numpy
+    petsc4py
+    pypardiso
+    scipy
+    sympy
 conda_channels =
     conda-forge
 
