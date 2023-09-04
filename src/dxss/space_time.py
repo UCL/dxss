@@ -13,56 +13,13 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from matplotlib.ticker import MaxNLocator
 #import sparse_dot_mkl
+from dxh import evaluate_function_at_points
 
 
 def GetSpMat(mat):
     ai, aj, av = mat.getValuesCSR()
     Asp = sp.csr_matrix((av, aj, ai))
     return Asp
-
-# copied this here from https://github.com/UCL/dxh for experimental purposes 
-def evaluate_function_at_points(
-    function: fem.Function,
-    points: NDArray[np.float64],) -> ArrayLike:
-    """
-    Evaluate a finite element function at one or more points.
-
-    Args:
-        function: Finite element function to evaluate.
-        points: One or more points in domain of function to evaluate at. Should be
-            either a one-dimensional array corresponding to a single point (with size
-            equal to the geometric dimension or 3) or a two-dimensional array
-            corresponding to one point per row (with size of last axis equal to the
-            geometric dimension or 3).
-
-    Returns:
-        Value(s) of function evaluated at point(s).
-    """
-    mesh = function.function_space.mesh
-    if points.ndim not in (1, 2):
-        msg = "points argument should be one or two-dimensional array"
-        raise ValueError(msg)
-    if points.shape[-1] not in (3, mesh.geometry.dim):
-        msg = "Last axis of points argument should be of size 3 or spatial dimension"
-        raise ValueError(msg)
-    if points.ndim == 1:
-        points = points[None]
-    if points.shape[-1] != 3:
-        padded_points = np.zeros(points.shape[:-1] + (3,))
-        padded_points[..., : points.shape[-1]] = points
-        points = padded_points
-    tree = geometry.bb_tree(mesh, mesh.geometry.dim)
-    cell_candidates = geometry.compute_collisions_points(tree, points)
-    if not np.all(cell_candidates.offsets[1:] > 0):
-        msg = "One or more points not within domain"
-        raise ValueError(msg)
-    cell_adjacency_list = geometry.compute_colliding_cells(
-        mesh,
-        cell_candidates,
-        points,
-    )
-    first_cell_indices = cell_adjacency_list.array[cell_adjacency_list.offsets[:-1]]
-    return np.squeeze(function.eval(points, first_cell_indices))
 
 
 class space_time:
