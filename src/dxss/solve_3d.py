@@ -192,10 +192,12 @@ def SolveProblem(measure_errors = False):
         st.PlotParaview(u_sol,name="abserr-cube-GCC-order{0}".format(order)) 
         st.MeasureErrors(u_sol)
 
-#cProfile.run('SolveProblem()')
-SolveProblem(measure_errors = True) 
+if __name__ == "__main__":
+
+    #cProfile.run('SolveProblem()')
+    SolveProblem(measure_errors = True) 
 
 
-print("Memory usage in (Gb) = ", resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6 )
+    print("Memory usage in (Gb) = ", resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6 )
 
 
