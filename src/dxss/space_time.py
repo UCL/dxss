@@ -13,13 +13,57 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from matplotlib.ticker import MaxNLocator
 #import sparse_dot_mkl
-from dxh import evaluate_function_at_points
-
+#from dxh import evaluate_function_at_points # DirichletBCMetaClass has been removed ...
 
 def GetSpMat(mat):
     ai, aj, av = mat.getValuesCSR()
     Asp = sp.csr_matrix((av, aj, ai))
     return Asp
+
+# copied this here from https://github.com/UCL/dxh for experimental purposes 
+# to be replaced with import once https://github.com/UCL/dxh/issues/10 is resolved.
+def evaluate_function_at_points(
+    function: fem.Function,
+    points: NDArray[np.float64],) -> ArrayLike:
+    """
+    Evaluate a finite element function at one or more points.
+
+    Args:
+        function: Finite element function to evaluate.
+        points: One or more points in domain of function to evaluate at. Should be
+            either a one-dimensional array corresponding to a single point (with size
+            equal to the geometric dimension or 3) or a two-dimensional array
+            corresponding to one point per row (with size of last axis equal to the
+            geometric dimension or 3).
+
+    Returns:
+        Value(s) of function evaluated at point(s).
+    """
+    mesh = function.function_space.mesh
+    if points.ndim not in (1, 2):
+        msg = "points argument should be one or two-dimensional array"
+        raise ValueError(msg)
+    if points.shape[-1] not in (3, mesh.geometry.dim):
+        msg = "Last axis of points argument should be of size 3 or spatial dimension"
+        raise ValueError(msg)
+    if points.ndim == 1:
+        points = points[None]
+    if points.shape[-1] != 3:
+        padded_points = np.zeros(points.shape[:-1] + (3,))
+        padded_points[..., : points.shape[-1]] = points
+        points = padded_points
+    tree = geometry.bb_tree(mesh, mesh.geometry.dim)
+    cell_candidates = geometry.compute_collisions_points(tree, points)
+    if not np.all(cell_candidates.offsets[1:] > 0):
+        msg = "One or more points not within domain"
+        raise ValueError(msg)
+    cell_adjacency_list = geometry.compute_colliding_cells(
+        mesh,
+        cell_candidates,
+        points,
+    )
+    first_cell_indices = cell_adjacency_list.array[cell_adjacency_list.offsets[:-1]]
+    return np.squeeze(function.eval(points, first_cell_indices))
 
 
 class space_time:
@@ -45,6 +89,7 @@ class space_time:
         self.lam_Nitsche = 5*self.k**2  
         self.jumps_in_fw_problem = jumps_in_fw_problem
         self.well_posed = well_posed
+        self.data_dom_fitted = data_dom_fitted
         #self.mkl_matrix_mult = mkl_matrix_mult
 
         # mesh-related 
@@ -167,6 +212,10 @@ class space_time:
         self.dofmap_node_fine = None 
         self.u_node_fine = None 
         self.u_node_coarse = None 
+        self.interp_data_restriction = None  
+        self.interp_data_prolongation = None 
+        self.omega_Ind_coarse= None 
+        self.coarse_mesh_fits_data_dom = None
 
     def SetupSpaceTimeFEs(self):
 
@@ -232,7 +281,7 @@ class space_time:
         self.u2_0_pre = fem.Function(self.fes_u2_0_pre)
 
 
-    def SetupSpaceTimeMatrix(self,afes,precond=False):
+    def SetupSpaceTimeMatrix(self,afes,precond=False, coarse_mesh_fits_data_dom = True):
         
         u1,u2,z1,z2 = ufl.TrialFunctions(afes)
         w1,w2,y1,y2 = ufl.TestFunctions(afes)
@@ -245,11 +294,14 @@ class space_time:
         elmat_time = self.elmat_time
        
         if afes == self.fes:
-            omega_ind = self.omega_ind 
-        else:
-            Q_ind = fem.FunctionSpace(afes.mesh, ("DG", 0)) 
-            omega_ind = fem.Function(Q_ind)
-            omega_ind.interpolate(self.Omega_Ind)
+            omega_ind = self.omega_ind
+        else: # coarse-grid correction
+            if self.coarse_mesh_fits_data_dom:
+                Q_ind = fem.FunctionSpace(afes.mesh, ("DG", 0)) 
+                omega_ind = fem.Function(Q_ind)
+                omega_ind.interpolate(self.omega_Ind_coarse)
+            else:
+                omega_ind = self.omega_Ind_coarse 
 
         # retrieve stabilization parameter 
         gamma_data = self.stabs["data"]
@@ -831,8 +883,10 @@ class space_time:
         #if self.mkl_matrix_mult:
         #    self.SlabMatNoDGJumps_sp = GetSpMat(self.SlabMatNoDGJumps)
 
-    def PrepareCoarseGridCorrection(self,msh_coarse):
+    def PrepareCoarseGridCorrection(self,msh_coarse,omega_Ind_coarse,coarse_mesh_fits_data_dom=True):
         self.msh_coarse = msh_coarse 
+        self.omega_Ind_coarse = omega_Ind_coarse 
+        self.coarse_mesh_fits_data_dom = coarse_mesh_fits_data_dom
         vel_coarse_q  = ufl.VectorElement('CG', self.msh_coarse.ufl_cell(), self.k, int((self.q+1)*self.N)) 
         vel_coarse_qstar  = ufl.VectorElement('CG', self.msh_coarse.ufl_cell(), self.kstar, int((self.qstar+1)*self.N))
         mel_coarse = ufl.MixedElement([vel_coarse_q,vel_coarse_q,vel_coarse_qstar,vel_coarse_qstar])
@@ -868,7 +922,20 @@ class space_time:
         self.tmp4_sol = fem.petsc.create_vector(self.SpaceTimeLfi)
         self.tmp5_sol = fem.petsc.create_vector(self.SpaceTimeLfi)
         self.tmp6_sol = fem.petsc.create_vector(self.SpaceTimeLfi)
-        self.tmp1_coarse, self.tmp2_coarse = self.SpaceTimeMatCoarse.createVecs() 
+        self.tmp1_coarse, self.tmp2_coarse = self.SpaceTimeMatCoarse.createVecs()
+         
+        self.interp_data_restriction = fem.create_nonmatching_meshes_interpolation_data(  
+                                                                       self.u_node_coarse.function_space.mesh._cpp_object,
+                                                                       self.u_node_coarse.function_space.element,
+                                                                       self.u_node_fine.function_space.mesh._cpp_object
+                                                                       )
+
+        self.interp_data_prolongation = fem.create_nonmatching_meshes_interpolation_data(  
+                                                                       self.u_node_fine.function_space.mesh._cpp_object,
+                                                                       self.u_node_fine.function_space.element,
+                                                                       self.u_node_coarse.function_space.mesh._cpp_object
+                                                                       ) 
+
  
     def GetSpaceTimeMatCoarse(self):
         return self.SpaceTimeMatCoarse
@@ -887,7 +954,8 @@ class space_time:
                     shift_idx = int_idx_qstar 
                 for l in range(self.subspace_time_order[j]+1):
                     self.u_node_coarse.x.array[:] = x_coarse.array[ self.dofmaps_full_coarse[j][shift_idx+l]  ]
-                    self.u_node_fine.interpolate( self.u_node_coarse )
+                    #self.u_node_fine.interpolate( self.u_node_coarse )
+                    self.u_node_fine.interpolate( self.u_node_coarse, nmm_interpolation_data = self.interp_data_prolongation )
                     x_fine.array[ self.dofmaps_full[j][shift_idx+l] ] = self.u_node_fine.x.array[:]
             int_idx_q += (self.q+1)
             int_idx_qstar += (self.qstar+1)
@@ -903,10 +971,19 @@ class space_time:
                     shift_idx = int_idx_qstar 
                 for l in range(self.subspace_time_order[j]+1):
                     self.u_node_fine.x.array[:] = x_fine.array[ self.dofmaps_full[j][shift_idx+l] ]
-                    self.u_node_coarse.interpolate( self.u_node_fine )
+                    #self.u_node_coarse.interpolate( self.u_node_fine )
+                    self.u_node_coarse.interpolate( self.u_node_fine, nmm_interpolation_data = self.interp_data_restriction )
                     x_coarse.array[ self.dofmaps_full_coarse[j][shift_idx+l] ] = self.u_node_coarse.x.array[:]
             int_idx_qstar += (self.qstar+1)
             int_idx_q += (self.q+1)
+
+        #u1.function_space.mesh._cpp_object,
+        #u1.function_space.element,
+        #u0.function_space.mesh._cpp_object))
+        #u1.interpolate(u0, nmm_interpolation_data=create_nonmatching_meshes_interpolation_data(
+        #u1.function_space.mesh._cpp_object,
+        #u1.function_space.element,
+        #u0.function_space.mesh._cpp_object))
 
     def Q_op(self,x_in,x_out):
         self.restriction(self.tmp1_coarse,x_in)

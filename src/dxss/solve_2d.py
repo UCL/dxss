@@ -15,7 +15,7 @@ sys.setrecursionlimit(10**6)
 from dxss.gmres import GMRes
 from dxss.space_time import * 
 from dxss.precomp_time_int import theta_ref, d_theta_ref 
-from dxss.meshes import get_mesh_hierarchy, get_mesh_data_all_around
+from dxss.meshes import get_2Dmesh_data_all_around
 import pypardiso
 import scipy.sparse as sp
 import time
@@ -80,7 +80,7 @@ stabs = {"data": 1e4,
        } 
 
 # define quantities depending on space
-ls_mesh = get_mesh_data_all_around(5,init_h_scale=5.0)
+ls_mesh = get_2Dmesh_data_all_around(5,init_h_scale=5.0)
 #for j in range(len(ls_mesh)):
 #    with io.XDMFFile(ls_mesh[j].comm, "mesh-reflvl{0}.xdmf".format(j), "w") as xdmf:
 #        xdmf.write_mesh(ls_mesh[j])
@@ -115,7 +115,7 @@ b_rhs = st.GetSpaceTimeRhs()
 #st.SetSolverFirstSlab(GetLuSolver(st.msh,st.GetSlabMatFirstSlab())) # first slab is special
 
 
-def SolveProblem(measure_errors = False):
+def SolveProblem2d(measure_errors = True):
 
     start=time.time()
     if solver_type == "pypardiso":
@@ -152,10 +152,8 @@ def SolveProblem(measure_errors = False):
         st.MeasureErrors(u_sol)
 
 if __name__ == "__main__":
+    cProfile.run('SolveProblem2d()')
 
-    #cProfile.run('SolveProblem()')
-    SolveProblem(measure_errors = True) 
-
-    print("Memory usage in (Gb) = ", resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6 )
+print("Memory usage in (Gb) = ", resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6 )
 
 

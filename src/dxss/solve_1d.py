@@ -21,6 +21,8 @@ import resource
 solver_type = "pypardiso" # 
 #solver_type = "direct" # 
 
+GCC = True
+
 def GetLuSolver(msh,mat):
     solver = PETSc.KSP().create(msh.comm) 
     solver.setOperators(mat)
@@ -40,9 +42,16 @@ class PySolver:
 
 t0 = 0
 #T = 1.0
-T = 1
-N = 32
-N_x = int(5*N)
+T = 1/2
+
+data_size = 0.25
+ref_lvl_to_N = [1,2,4,8,16,32]
+ref_lvl = 4
+N = ref_lvl_to_N[ref_lvl]
+#N = 32
+Nxs = [2,4,8,16,32,64]
+Nx = Nxs[ref_lvl]
+#N_x = int(5*N)
 #N_x = int(2*int(N/2))
 #N_x = int(2*N)
 order = 1
@@ -69,34 +78,62 @@ stabs = {"data": 1e4,
 #       } 
 
 # define quantities depending on space
-msh = create_unit_interval(MPI.COMM_WORLD, N_x)
+msh = create_unit_interval(MPI.COMM_WORLD, Nx)
 
-def omega_Ind_convex(x):    
-    values = np.zeros(x.shape[1],dtype=PETSc.ScalarType)
-    omega_coords = np.logical_or( ( x[0] <= 0.2 ), (x[0] >= 0.8 ))  
-    rest_coords = np.invert(omega_coords)
-    values[omega_coords] = np.full(sum(omega_coords), 1.0)
-    values[rest_coords] = np.full(sum(rest_coords), 0)
-    #print("values = ", values)
-    return values
+def get_indicator_function(msh,Nx,GCC=True):
 
-def omega_Ind_noGCC(x):    
-    values = np.zeros(x.shape[1],dtype=PETSc.ScalarType)
-    omega_coords =  ( x[0] <= 0.2 )  
-    #omega_coords =  ( x[0] <= 0.45 )  
-    #omega_coords =  ( x[0] <= 0.25 )  
-    rest_coords = np.invert(omega_coords)
-    values[omega_coords] = np.full(sum(omega_coords), 1.0)
-    values[rest_coords] = np.full(sum(rest_coords), 0)
-    #print("values = ", values)
-    return values
+    if GCC:
+        if Nx > 2:
+            def omega_Ind(x): 
+                values = np.zeros(x.shape[1],dtype=PETSc.ScalarType)
+                #omega_coords = np.logical_or( ( x[0] <= 0.2 ), (x[0] >= 0.8 ))  
+                omega_coords = np.logical_or( ( x[0] <= data_size ), (x[0] >= 1-data_size ))  
+                rest_coords = np.invert(omega_coords)
+                values[omega_coords] = np.full(sum(omega_coords), 1.0)
+                values[rest_coords] = np.full(sum(rest_coords), 0)
+                #print("values = ", values)
+                return values
 
+        else:
+            x = ufl.SpatialCoordinate(msh)
+            omega_indicator = ufl.Not(
+                                ufl.And(x[0] >= data_size, x[0] <= 1.0-data_size) 
+                                     )
+            omega_Ind = ufl.conditional(omega_indicator, 1, 0)
+
+    else:
+        if Nx > 2:
+            def omega_Ind(x): 
+                values = np.zeros(x.shape[1],dtype=PETSc.ScalarType)
+                #omega_coords =  ( x[0] <= 0.2 )  
+                omega_coords =  ( x[0] <= data_size )  
+                #omega_coords =  ( x[0] <= 0.45 )  
+                #omega_coords =  ( x[0] <= 0.25 )  
+                rest_coords = np.invert(omega_coords)
+                values[omega_coords] = np.full(sum(omega_coords), 1.0)
+                values[rest_coords] = np.full(sum(rest_coords), 0)
+                #print("values = ", values)
+                return values
+        else:
+            x = ufl.SpatialCoordinate(msh)
+            omega_indicator = ufl.And(x[0] <= data_size, x[0] >= 0.0) 
+            omega_Ind = ufl.conditional(omega_indicator, 1, 0)
+    
+    return omega_Ind 
+
+omega_Ind = get_indicator_function(msh=msh,Nx=Nx,GCC=GCC)
 
 def sample_sol(t,xu):
-    return ufl.cos(2*pi*(t))*ufl.sin(2*pi*xu[0])
+    return ufl.cos(pi*(t))*ufl.sin(pi*xu[0])
 
 def dt_sample_sol(t,xu):
-    return -2*pi*ufl.sin(2*pi*(t))*ufl.sin(2*pi*xu[0])
+    return -pi*ufl.sin(pi*(t))*ufl.sin(pi*xu[0])
+
+#def sample_sol(t,xu):
+#    return ufl.cos(2*pi*(t))*ufl.sin(2*pi*xu[0])
+
+#def dt_sample_sol(t,xu):
+#    return -2*pi*ufl.sin(2*pi*(t))*ufl.sin(2*pi*xu[0])
 
 #def sample_sol(t,xu):
 #    return ufl.sin(pi*(t))*ufl.cos( 0.5*pi + xu[0]*pi )
@@ -108,7 +145,8 @@ def dt_sample_sol(t,xu):
 #print(sample_sol(0.5,[0.25]))
 #input("")
 
-st = space_time(q=q,qstar=qstar,k=k,kstar=kstar,N=N,T=T,t=t0,msh=msh,Omega_Ind=omega_Ind_noGCC,stabs=stabs,sol=sample_sol,dt_sol=dt_sample_sol )
+#st = space_time(q=q,qstar=qstar,k=k,kstar=kstar,N=N,T=T,t=t0,msh=msh,Omega_Ind=omega_Ind_noGCC,stabs=stabs,sol=sample_sol,dt_sol=dt_sample_sol )
+st = space_time(q=q,qstar=qstar,k=k,kstar=kstar,N=N,T=T,t=t0,msh=msh,Omega_Ind=omega_Ind,stabs=stabs,sol=sample_sol,dt_sol=dt_sample_sol, data_dom_fitted= Nx > 2)
 #st = space_time(q=q,qstar=qstar,k=k,kstar=kstar,N=N,T=T,t=t0,msh=msh,Omega_Ind=omega_Ind_convex,stabs=stabs,sol=sample_sol,dt_sol=dt_sample_sol )
 st.SetupSpaceTimeFEs()
 st.PreparePrecondGMRes()
@@ -122,6 +160,8 @@ b_rhs = st.GetSpaceTimeRhs()
 #st.MeasureErrors(u_GMRES)
 
 
+
+
 # Prepare coarse grid correction 
 #N_coarse = int(N_x/3)
 #msh_coarse = create_unit_interval(MPI.COMM_WORLD, N_coarse)
@@ -130,7 +170,7 @@ b_rhs = st.GetSpaceTimeRhs()
 #u_GMRES,res = GMRes(A_space_time_linop,b_rhs,pre=st.pre_twolvl,x=None,maxsteps = 100000, tol = 1e-7, innerproduct = None, callback = None, restart = None, startiteration = 0, printrates = True, reltol = None)
 #st.MeasureErrors(u_GMRES)
 
-def SolveProblem(measure_errors = False):
+def SolveProblem1d(measure_errors = True):
 
     start=time.time()
     if solver_type == "pypardiso":
@@ -152,8 +192,19 @@ def SolveProblem(measure_errors = False):
         #st.pre_time_marching_improved(b_rhs, x_sweep_once)
         #st.Plot( x_sweep_once ,N_space=500,N_time_subdiv=20)
         #u_sol,res = GMRes(A_space_time_linop,b_rhs,pre=st.pre_time_marching_improved,maxsteps = 100000, tol = 1e-7, startiteration = 0, printrates = True)
-        u_sol,res = GMRes(A_space_time_linop,b_rhs,pre=st.pre_time_marching_improved,maxsteps = 100000, tol = 1e-7, startiteration = 0, printrates = True)
         
+        #u_sol,res = GMRes(A_space_time_linop,b_rhs,pre=st.pre_time_marching_improved,maxsteps = 100000, tol = 1e-7, startiteration = 0, printrates = True)
+
+        
+        N_coarse = int(Nx/2)
+        print("N_coarse = ", N_coarse)
+        msh_coarse = create_unit_interval(MPI.COMM_WORLD, N_coarse)
+        omega_Ind_coarse = get_indicator_function(msh=msh_coarse,Nx=N_coarse,GCC=GCC)
+        st.PrepareCoarseGridCorrection(msh_coarse,omega_Ind_coarse=omega_Ind_coarse,coarse_mesh_fits_data_dom = N_coarse > 2)
+        st.SetSolverCoarse(GetLuSolver(msh_coarse,st.GetSpaceTimeMatCoarse())) 
+        u_sol,res = GMRes(A_space_time_linop,b_rhs,pre=st.pre_twolvl,x=None,maxsteps = 100000, tol = 1e-7, innerproduct = None, callback = None, restart = None, startiteration = 0, printrates = True, reltol = None)
+        
+
         #diff.array[:] = np.abs( x_sweep_once.array[:] -  u_sol.array[:]  ) 
         
         #st.ApplySpaceTimeMatrix(x_sweep_once,residual)
@@ -166,7 +217,7 @@ def SolveProblem(measure_errors = False):
         #st.Plot(diff,N_space=500,N_time_subdiv=20,abs_val=True)
         #st.Plot(u_sol,N_space=500,N_time_subdiv=20)
 
-        st.PlotError(u_sol,N_space=500,N_time_subdiv=20)
+        #st.PlotError(u_sol,N_space=500,N_time_subdiv=20)
     elif solver_type == "petsc-LU":
         st.SetSolverSlab(GetLuSolver(st.msh,st.GetSlabMat())) # general slab
         st.SetSolverFirstSlab(GetLuSolver(st.msh,st.GetSlabMatFirstSlab())) # first slab is special
@@ -184,10 +235,9 @@ def SolveProblem(measure_errors = False):
         st.MeasureErrors(u_sol)
 
 if __name__ == "__main__":
+    cProfile.run('SolveProblem1d()')
+#SolveProblem(measure_errors = True) 
 
-    #cProfile.run('SolveProblem()')
-    SolveProblem(measure_errors = True) 
+print("Memory usage in (Gb) = ", resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6 )
 
-    print("Memory usage in (Gb) = ", resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6 )
-
-    #st.Plot(N_space=500,N_time_subdiv=20)
+#st.Plot(N_space=500,N_time_subdiv=20)

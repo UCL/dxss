@@ -15,7 +15,7 @@ sys.setrecursionlimit(10**6)
 from dxss.gmres import GMRes
 from dxss.space_time import * 
 from dxss.precomp_time_int import theta_ref, d_theta_ref 
-from dxss.meshes import get_mesh_hierarchy, get_mesh_data_all_around, get_3Dmesh_data_all_around
+from dxss.meshes import get_3Dmesh_data_all_around
 import pypardiso
 import scipy.sparse as sp
 import time
@@ -51,7 +51,7 @@ class PySolver:
 
 
 ref_lvl_to_N = [1,2,4,8,16,32]
-ref_lvl = 3
+ref_lvl = 1
 
 data_size = 0.25
 
@@ -151,7 +151,7 @@ b_rhs = st.GetSpaceTimeRhs()
 #st.SetSolverFirstSlab(GetLuSolver(st.msh,st.GetSlabMatFirstSlab())) # first slab is special
 
 
-def SolveProblem(measure_errors = False):
+def SolveProblem3d(measure_errors = False):
 
     start=time.time()
     if solver_type == "pypardiso":
@@ -194,10 +194,10 @@ def SolveProblem(measure_errors = False):
 
 if __name__ == "__main__":
 
-    #cProfile.run('SolveProblem()')
-    SolveProblem(measure_errors = True) 
+    cProfile.run('SolveProblem3d()')
+#SolveProblem(measure_errors = True) 
 
 
-    print("Memory usage in (Gb) = ", resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6 )
+print("Memory usage in (Gb) = ", resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6 )
 
 
