@@ -14,11 +14,11 @@ from dxss.space_time import *
 from dxss.precomp_time_int import theta_ref, d_theta_ref 
 from dxss.meshes import get_mesh_hierarchy, get_mesh_data_all_around
 import time
-import pypardiso
+#import pypardiso
 import scipy.sparse as sp
 
-#solver_type = "petsc-LU"  
-solver_type = "pypardiso" # 
+solver_type = "petsc-LU"  
+#solver_type = "pypardiso" # 
 
 def GetLuSolver(msh,mat):
     solver = PETSc.KSP().create(msh.comm) 
@@ -42,12 +42,12 @@ class PySolver:
 
 ref_lvl_to_N = [1,2,4,8,16,32]
 #ref_lvl = 4 # would like to solve this, but gave up after ~5 min
-ref_lvl = 4 # one level less-demanding
+ref_lvl = 2 # one level less-demanding
 
 t0 = 0
 T = 1.0
 N = ref_lvl_to_N[ref_lvl]
-order = 3
+order = 2
 k = order
 q = order
 kstar = order

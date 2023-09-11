@@ -186,7 +186,7 @@ conda_channels =
 
 [testenv:test-py{39,310}]
 commands =
-    pytest --cov
+    pytest --cov --cov-report=xml
 deps =
     pytest
     pytest-cov

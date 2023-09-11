@@ -7,6 +7,7 @@ on:
   pull_request:
     paths-ignore:
       - "**.md"
+  workflow_dispatch:
 
 jobs:
   tests:
@@ -19,19 +20,23 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
+
       - name: Cache tox
         uses: actions/cache@v3
         with:
           path: .tox
           key: tox-${{hashFiles('pyproject.toml')}}
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
           cache-dependency-path: "pyproject.toml"
+
       - name: Install dependencies
         run: python -m pip install tox
+
       - name: Convert Python version to tox env
         # Workaround to map x.y Python version to form test-xy
         # https://stackoverflow.com/a/67248310
@@ -39,5 +44,11 @@ jobs:
           RAW_TOX_ENV="test-py${{ matrix.python-version }}"
           TOX_ENV=$(echo $RAW_TOX_ENV | sed 's/\.//')
           echo "tox_env=$TOX_ENV" >> "$GITHUB_ENV"
+
       - name: Test with tox
         run: tox -e ${{ env.tox_env }}
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
