@@ -1,0 +1,551 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dxss.solve_1d &#8212; dxss 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dxss/solve_1d';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">dxss 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../dxss.html">
+                        dxss package
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../dxss.html">
+                        dxss package
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">dxss.solve_1d</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for dxss.solve_1d</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span><span class="p">,</span><span class="n">sqrt</span>  
+<span class="kn">import</span> <span class="nn">ufl</span>
+<span class="kn">from</span> <span class="nn">dolfinx</span> <span class="kn">import</span> <span class="n">fem</span><span class="p">,</span> <span class="n">io</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">plot</span>
+<span class="kn">from</span> <span class="nn">ufl</span> <span class="kn">import</span> <span class="n">ds</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">inner</span><span class="p">,</span> <span class="n">dS</span><span class="p">,</span><span class="n">jump</span><span class="p">,</span><span class="n">div</span>
+<span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>
+<span class="kn">from</span> <span class="nn">petsc4py</span> <span class="kn">import</span> <span class="n">PETSc</span>
+<span class="kn">from</span> <span class="nn">dolfinx.mesh</span> <span class="kn">import</span> <span class="n">create_unit_interval</span>
+<span class="kn">from</span> <span class="nn">dolfinx.io</span> <span class="kn">import</span> <span class="n">XDMFFile</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">setrecursionlimit</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dxss.gmres</span> <span class="kn">import</span> <span class="n">GMRes</span>
+<span class="kn">from</span> <span class="nn">dxss.space_time</span> <span class="kn">import</span> <span class="o">*</span> 
+<span class="kn">from</span> <span class="nn">dxss.precomp_time_int</span> <span class="kn">import</span> <span class="n">theta_ref</span><span class="p">,</span> <span class="n">d_theta_ref</span> 
+<span class="kn">import</span> <span class="nn">pypardiso</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">cProfile</span>
+<span class="kn">import</span> <span class="nn">resource</span>
+
+<span class="c1">#solver_type = &quot;petsc-LU&quot;  </span>
+<span class="n">solver_type</span> <span class="o">=</span> <span class="s2">&quot;pypardiso&quot;</span> <span class="c1"># </span>
+<span class="c1">#solver_type = &quot;direct&quot; # </span>
+
+<div class="viewcode-block" id="GetLuSolver"><a class="viewcode-back" href="../../dxss.html#dxss.solve_1d.GetLuSolver">[docs]</a><span class="k">def</span> <span class="nf">GetLuSolver</span><span class="p">(</span><span class="n">msh</span><span class="p">,</span><span class="n">mat</span><span class="p">):</span>
+    <span class="n">solver</span> <span class="o">=</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">KSP</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">msh</span><span class="o">.</span><span class="n">comm</span><span class="p">)</span> 
+    <span class="n">solver</span><span class="o">.</span><span class="n">setOperators</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">setType</span><span class="p">(</span><span class="n">PETSc</span><span class="o">.</span><span class="n">KSP</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">PREONLY</span><span class="p">)</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">getPC</span><span class="p">()</span><span class="o">.</span><span class="n">setType</span><span class="p">(</span><span class="n">PETSc</span><span class="o">.</span><span class="n">PC</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">LU</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">solver</span></div>
+
+<div class="viewcode-block" id="PySolver"><a class="viewcode-back" href="../../dxss.html#dxss.solve_1d.PySolver">[docs]</a><span class="k">class</span> <span class="nc">PySolver</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Asp</span><span class="p">,</span><span class="n">psolver</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Asp</span> <span class="o">=</span> <span class="n">Asp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">psolver</span>
+<div class="viewcode-block" id="PySolver.solve"><a class="viewcode-back" href="../../dxss.html#dxss.solve_1d.PySolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">b_inp</span><span class="p">,</span><span class="n">x_out</span><span class="p">):</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">_check_A</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Asp</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">_check_b</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Asp</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">set_phase</span><span class="p">(</span><span class="mi">33</span><span class="p">)</span>
+        <span class="n">x_out</span><span class="o">.</span><span class="n">array</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">_call_pardiso</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Asp</span> <span class="p">,</span> <span class="n">b</span> <span class="p">)[:]</span></div></div>
+
+<span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1">#T = 1.0</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">N_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">N</span><span class="p">)</span>
+<span class="c1">#N_x = int(2*int(N/2))</span>
+<span class="c1">#N_x = int(2*N)</span>
+<span class="n">order</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">k</span> <span class="o">=</span> <span class="n">order</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">order</span>
+<span class="c1">#kstar = order</span>
+<span class="c1">#qstar = order</span>
+<span class="n">kstar</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">qstar</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">qstar</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">stabs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="mf">1e4</span><span class="p">,</span> 
+        <span class="s2">&quot;dual&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">&quot;primal&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">,</span>
+        <span class="s2">&quot;primal-jump&quot;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">,</span>
+       <span class="p">}</span> 
+
+<span class="c1">#stabs = {&quot;data&quot;: 1e0, </span>
+<span class="c1">#        &quot;dual&quot;: 1.0,</span>
+<span class="c1">#        &quot;primal&quot;: 1e-3,</span>
+<span class="c1">#        &quot;primal-jump&quot;:1.0,</span>
+<span class="c1">#       } </span>
+
+<span class="c1"># define quantities depending on space</span>
+<span class="n">msh</span> <span class="o">=</span> <span class="n">create_unit_interval</span><span class="p">(</span><span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="p">,</span> <span class="n">N_x</span><span class="p">)</span>
+
+<div class="viewcode-block" id="omega_Ind_convex"><a class="viewcode-back" href="../../dxss.html#dxss.solve_1d.omega_Ind_convex">[docs]</a><span class="k">def</span> <span class="nf">omega_Ind_convex</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>    
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">PETSc</span><span class="o">.</span><span class="n">ScalarType</span><span class="p">)</span>
+    <span class="n">omega_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span> <span class="p">(</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.2</span> <span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.8</span> <span class="p">))</span>  
+    <span class="n">rest_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">omega_coords</span><span class="p">)</span>
+    <span class="n">values</span><span class="p">[</span><span class="n">omega_coords</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">omega_coords</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">values</span><span class="p">[</span><span class="n">rest_coords</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">rest_coords</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1">#print(&quot;values = &quot;, values)</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+<div class="viewcode-block" id="omega_Ind_noGCC"><a class="viewcode-back" href="../../dxss.html#dxss.solve_1d.omega_Ind_noGCC">[docs]</a><span class="k">def</span> <span class="nf">omega_Ind_noGCC</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>    
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">PETSc</span><span class="o">.</span><span class="n">ScalarType</span><span class="p">)</span>
+    <span class="n">omega_coords</span> <span class="o">=</span>  <span class="p">(</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.2</span> <span class="p">)</span>  
+    <span class="c1">#omega_coords =  ( x[0] &lt;= 0.45 )  </span>
+    <span class="c1">#omega_coords =  ( x[0] &lt;= 0.25 )  </span>
+    <span class="n">rest_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">omega_coords</span><span class="p">)</span>
+    <span class="n">values</span><span class="p">[</span><span class="n">omega_coords</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">omega_coords</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">values</span><span class="p">[</span><span class="n">rest_coords</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">rest_coords</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1">#print(&quot;values = &quot;, values)</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="sample_sol"><a class="viewcode-back" href="../../dxss.html#dxss.solve_1d.sample_sol">[docs]</a><span class="k">def</span> <span class="nf">sample_sol</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">xu</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ufl</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="o">*</span><span class="n">ufl</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">xu</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="dt_sample_sol"><a class="viewcode-back" href="../../dxss.html#dxss.solve_1d.dt_sample_sol">[docs]</a><span class="k">def</span> <span class="nf">dt_sample_sol</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">xu</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">ufl</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="o">*</span><span class="n">ufl</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">xu</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<span class="c1">#def sample_sol(t,xu):</span>
+<span class="c1">#    return ufl.sin(pi*(t))*ufl.cos( 0.5*pi + xu[0]*pi )</span>
+
+<span class="c1">#def dt_sample_sol(t,xu):</span>
+<span class="c1">#    return pi*ufl.cos(pi*(t))*ufl.cos( 0.5*pi + xu[0]*pi )</span>
+
+
+<span class="c1">#print(sample_sol(0.5,[0.25]))</span>
+<span class="c1">#input(&quot;&quot;)</span>
+
+<span class="n">st</span> <span class="o">=</span> <span class="n">space_time</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span><span class="n">qstar</span><span class="o">=</span><span class="n">qstar</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span><span class="n">kstar</span><span class="o">=</span><span class="n">kstar</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="n">t</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span><span class="n">msh</span><span class="o">=</span><span class="n">msh</span><span class="p">,</span><span class="n">Omega_Ind</span><span class="o">=</span><span class="n">omega_Ind_noGCC</span><span class="p">,</span><span class="n">stabs</span><span class="o">=</span><span class="n">stabs</span><span class="p">,</span><span class="n">sol</span><span class="o">=</span><span class="n">sample_sol</span><span class="p">,</span><span class="n">dt_sol</span><span class="o">=</span><span class="n">dt_sample_sol</span> <span class="p">)</span>
+<span class="c1">#st = space_time(q=q,qstar=qstar,k=k,kstar=kstar,N=N,T=T,t=t0,msh=msh,Omega_Ind=omega_Ind_convex,stabs=stabs,sol=sample_sol,dt_sol=dt_sample_sol )</span>
+<span class="n">st</span><span class="o">.</span><span class="n">SetupSpaceTimeFEs</span><span class="p">()</span>
+<span class="n">st</span><span class="o">.</span><span class="n">PreparePrecondGMRes</span><span class="p">()</span>
+<span class="n">A_space_time_linop</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">GetSpaceTimeMatrixAsLinearOperator</span><span class="p">()</span>
+<span class="n">b_rhs</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">GetSpaceTimeRhs</span><span class="p">()</span>
+<span class="c1"># Prepare the solvers for problems on the slabs </span>
+<span class="c1">#st.SetSolverSlab(GetLuSolver(st.msh,st.GetSlabMat())) # general slab</span>
+<span class="c1">#st.SetSolverFirstSlab(GetLuSolver(st.msh,st.GetSlabMatFirstSlab())) # first slab is special</span>
+<span class="c1"># GMRes iteration</span>
+<span class="c1">#u_GMRES,res = GMRes(A_space_time_linop,b_rhs,pre=st.pre_time_marching,maxsteps = 100000, tol = 1e-7, startiteration = 0, printrates = True)</span>
+<span class="c1">#st.MeasureErrors(u_GMRES)</span>
+
+
+<span class="c1"># Prepare coarse grid correction </span>
+<span class="c1">#N_coarse = int(N_x/3)</span>
+<span class="c1">#msh_coarse = create_unit_interval(MPI.COMM_WORLD, N_coarse)</span>
+<span class="c1">#st.PrepareCoarseGridCorrection(msh_coarse)</span>
+<span class="c1">#st.SetSolverCoarse(GetLuSolver(msh_coarse,st.GetSpaceTimeMatCoarse())) </span>
+<span class="c1">#u_GMRES,res = GMRes(A_space_time_linop,b_rhs,pre=st.pre_twolvl,x=None,maxsteps = 100000, tol = 1e-7, innerproduct = None, callback = None, restart = None, startiteration = 0, printrates = True, reltol = None)</span>
+<span class="c1">#st.MeasureErrors(u_GMRES)</span>
+
+<div class="viewcode-block" id="SolveProblem"><a class="viewcode-back" href="../../dxss.html#dxss.solve_1d.SolveProblem">[docs]</a><span class="k">def</span> <span class="nf">SolveProblem</span><span class="p">(</span><span class="n">measure_errors</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+    <span class="n">start</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s2">&quot;pypardiso&quot;</span><span class="p">:</span>
+         
+        <span class="n">genreal_slab_solver</span> <span class="o">=</span> <span class="n">pypardiso</span><span class="o">.</span><span class="n">PyPardisoSolver</span><span class="p">()</span>
+        <span class="n">SlabMatSp</span> <span class="o">=</span> <span class="n">GetSpMat</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">GetSlabMat</span><span class="p">())</span>
+        
+        <span class="n">genreal_slab_solver</span><span class="o">.</span><span class="n">factorize</span><span class="p">(</span> <span class="n">SlabMatSp</span><span class="p">)</span>   
+        <span class="n">st</span><span class="o">.</span><span class="n">SetSolverSlab</span><span class="p">(</span><span class="n">PySolver</span><span class="p">(</span><span class="n">SlabMatSp</span><span class="p">,</span> <span class="n">genreal_slab_solver</span><span class="p">))</span>
+        
+        <span class="n">initial_slab_solver</span> <span class="o">=</span> <span class="n">pypardiso</span><span class="o">.</span><span class="n">PyPardisoSolver</span><span class="p">()</span>
+        <span class="n">SlabMatFirstSlabSp</span> <span class="o">=</span> <span class="n">GetSpMat</span><span class="p">(</span> <span class="n">st</span><span class="o">.</span><span class="n">GetSlabMatFirstSlab</span><span class="p">())</span>   
+        <span class="n">initial_slab_solver</span><span class="o">.</span><span class="n">factorize</span><span class="p">(</span> <span class="n">SlabMatFirstSlabSp</span>  <span class="p">)</span>   
+        <span class="n">st</span><span class="o">.</span><span class="n">SetSolverFirstSlab</span><span class="p">(</span><span class="n">PySolver</span><span class="p">(</span> <span class="n">SlabMatFirstSlabSp</span><span class="p">,</span>  <span class="n">initial_slab_solver</span> <span class="p">))</span>
+        
+        <span class="c1">#x_sweep_once  = fem.petsc.create_vector(st.SpaceTimeLfi)</span>
+        <span class="c1">#residual  = fem.petsc.create_vector(st.SpaceTimeLfi)</span>
+        <span class="c1">#diff = fem.petsc.create_vector(st.SpaceTimeLfi)</span>
+        <span class="c1">#st.pre_time_marching_improved(b_rhs, x_sweep_once)</span>
+        <span class="c1">#st.Plot( x_sweep_once ,N_space=500,N_time_subdiv=20)</span>
+        <span class="c1">#u_sol,res = GMRes(A_space_time_linop,b_rhs,pre=st.pre_time_marching_improved,maxsteps = 100000, tol = 1e-7, startiteration = 0, printrates = True)</span>
+        <span class="n">u_sol</span><span class="p">,</span><span class="n">res</span> <span class="o">=</span> <span class="n">GMRes</span><span class="p">(</span><span class="n">A_space_time_linop</span><span class="p">,</span><span class="n">b_rhs</span><span class="p">,</span><span class="n">pre</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">,</span><span class="n">maxsteps</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span> <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span> <span class="n">startiteration</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">printrates</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+        
+        <span class="c1">#diff.array[:] = np.abs( x_sweep_once.array[:] -  u_sol.array[:]  ) </span>
+        
+        <span class="c1">#st.ApplySpaceTimeMatrix(x_sweep_once,residual)</span>
+        <span class="c1">#residual.array[:] -= b_rhs.array[:] </span>
+        <span class="c1">#residual.array[:] = np.abs( residual.array[:] )</span>
+        <span class="c1">#print(&quot;plotting residual&quot;)</span>
+        <span class="c1">#st.Plot(residual,N_space=500,N_time_subdiv=20,abs_val=True)</span>
+        <span class="c1">#print(&quot;plotting diff&quot;)</span>
+        <span class="c1">#u_sol,res = GMRes(A_space_time_linop,b_rhs,pre=st.pre_Schwarz,maxsteps = 100000, tol = 1e-7, startiteration = 0, printrates = True)</span>
+        <span class="c1">#st.Plot(diff,N_space=500,N_time_subdiv=20,abs_val=True)</span>
+        <span class="c1">#st.Plot(u_sol,N_space=500,N_time_subdiv=20)</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">PlotError</span><span class="p">(</span><span class="n">u_sol</span><span class="p">,</span><span class="n">N_space</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span><span class="n">N_time_subdiv</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s2">&quot;petsc-LU&quot;</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">SetSolverSlab</span><span class="p">(</span><span class="n">GetLuSolver</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span><span class="n">st</span><span class="o">.</span><span class="n">GetSlabMat</span><span class="p">()))</span> <span class="c1"># general slab</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">SetSolverFirstSlab</span><span class="p">(</span><span class="n">GetLuSolver</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span><span class="n">st</span><span class="o">.</span><span class="n">GetSlabMatFirstSlab</span><span class="p">()))</span> <span class="c1"># first slab is special</span>
+        <span class="n">u_sol</span><span class="p">,</span><span class="n">res</span> <span class="o">=</span> <span class="n">GMRes</span><span class="p">(</span><span class="n">A_space_time_linop</span><span class="p">,</span><span class="n">b_rhs</span><span class="p">,</span><span class="n">pre</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">,</span><span class="n">maxsteps</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span> <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span> <span class="n">startiteration</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">printrates</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="n">A_space_time</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">GetSpaceTimeMatrix</span><span class="p">()</span> 
+        <span class="n">u_sol</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">A_space_time</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span> 
+        <span class="n">solver_space_time</span> <span class="o">=</span> <span class="n">GetLuSolver</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span><span class="n">A_space_time</span><span class="p">)</span>
+        <span class="n">solver_space_time</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">u_sol</span> <span class="p">,</span><span class="n">b_rhs</span><span class="p">)</span>
+   
+    <span class="n">end</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;elapsed time  &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">)</span><span class="o">+</span> <span class="s2">&quot; seconds&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">measure_errors</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">MeasureErrors</span><span class="p">(</span><span class="n">u_sol</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1">#cProfile.run(&#39;SolveProblem()&#39;)</span>
+    <span class="n">SolveProblem</span><span class="p">(</span><span class="n">measure_errors</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> 
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Memory usage in (Gb) = &quot;</span><span class="p">,</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span><span class="o">/</span><span class="mf">1e6</span> <span class="p">)</span>
+
+    <span class="c1">#st.Plot(N_space=500,N_time_subdiv=20)</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, University College London.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

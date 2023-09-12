@@ -287,6 +287,484 @@ document.write(`
                   
   <section id="dxss-package">
 <h1>dxss package<a class="headerlink" href="#dxss-package" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="module-dxss.gmres">
+<span id="dxss-gmres-module"></span><h2>dxss.gmres module<a class="headerlink" href="#module-dxss.gmres" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.gmres.GMRes">
+<span class="sig-prename descclassname"><span class="pre">dxss.gmres.</span></span><span class="sig-name descname"><span class="pre">GMRes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">innerproduct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startiteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printrates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reltol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/gmres.html#GMRes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.gmres.GMRes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dxss.gmres.GMResSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dxss.gmres.</span></span><span class="sig-name descname"><span class="pre">GMResSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">innerproduct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/gmres.html#GMResSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.gmres.GMResSolver" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dxss.gmres.LinearSolver" title="dxss.gmres.LinearSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinearSolver</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dxss.gmres.GMResSolver.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GMRes'</span></em><a class="headerlink" href="#dxss.gmres.GMResSolver.name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dxss.gmres.LinearSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dxss.gmres.</span></span><span class="sig-name descname"><span class="pre">LinearSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_sol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printrates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/gmres.html#LinearSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.gmres.LinearSolver" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.gmres.LinearSolver.CheckResiduals">
+<span class="sig-name descname"><span class="pre">CheckResiduals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residual</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/gmres.html#LinearSolver.CheckResiduals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.gmres.LinearSolver.CheckResiduals" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.gmres.LinearSolver.Solve">
+<span class="sig-name descname"><span class="pre">Solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rhs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initialize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/gmres.html#LinearSolver.Solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.gmres.LinearSolver.Solve" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Vec</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.gmres.MinRes">
+<span class="sig-prename descclassname"><span class="pre">dxss.gmres.</span></span><span class="sig-name descname"><span class="pre">MinRes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printrates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initialize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">innerproduct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/gmres.html#MinRes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.gmres.MinRes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dxss.gmres.MinResSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dxss.gmres.</span></span><span class="sig-name descname"><span class="pre">MinResSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">innerproduct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/gmres.html#MinResSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.gmres.MinResSolver" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dxss.gmres.LinearSolver" title="dxss.gmres.LinearSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinearSolver</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dxss.gmres.MinResSolver.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MinRes'</span></em><a class="headerlink" href="#dxss.gmres.MinResSolver.name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.gmres.pre">
+<span class="sig-prename descclassname"><span class="pre">dxss.gmres.</span></span><span class="sig-name descname"><span class="pre">pre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/gmres.html#pre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.gmres.pre" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-dxss.meshes">
+<span id="dxss-meshes-module"></span><h2>dxss.meshes module<a class="headerlink" href="#module-dxss.meshes" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.DrawMeshTikz">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">DrawMeshTikz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dummy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#DrawMeshTikz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.DrawMeshTikz" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.create_initial_mesh_convex">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">create_initial_mesh_convex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_h_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#create_initial_mesh_convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.create_initial_mesh_convex" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.get_3Dmesh_data_all_around">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">get_3Dmesh_data_all_around</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_h_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#get_3Dmesh_data_all_around"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.get_3Dmesh_data_all_around" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.get_mesh_bottom_data">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">get_mesh_bottom_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#get_mesh_bottom_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.get_mesh_bottom_data" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.get_mesh_convex">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">get_mesh_convex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_h_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#get_mesh_convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.get_mesh_convex" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.get_mesh_data_all_around">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">get_mesh_data_all_around</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_h_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#get_mesh_data_all_around"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.get_mesh_data_all_around" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.get_mesh_hierarchy">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">get_mesh_hierarchy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_h_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#get_mesh_hierarchy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.get_mesh_hierarchy" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.get_mesh_hierarchy_fitted_disc">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">get_mesh_hierarchy_fitted_disc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.25</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#get_mesh_hierarchy_fitted_disc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.get_mesh_hierarchy_fitted_disc" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.get_mesh_hierarchy_nonconvex">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">get_mesh_hierarchy_nonconvex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_h_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#get_mesh_hierarchy_nonconvex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.get_mesh_hierarchy_nonconvex" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.get_mesh_inclusion">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">get_mesh_inclusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#get_mesh_inclusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.get_mesh_inclusion" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.meshes.get_mesh_inclusion_square">
+<span class="sig-prename descclassname"><span class="pre">dxss.meshes.</span></span><span class="sig-name descname"><span class="pre">get_mesh_inclusion_square</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_L</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_L</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.25</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/meshes.html#get_mesh_inclusion_square"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.meshes.get_mesh_inclusion_square" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-dxss.precomp_time_int">
+<span id="dxss-precomp-time-int-module"></span><h2>dxss.precomp_time_int module<a class="headerlink" href="#module-dxss.precomp_time_int" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.precomp_time_int.d_theta_ref">
+<span class="sig-prename descclassname"><span class="pre">dxss.precomp_time_int.</span></span><span class="sig-name descname"><span class="pre">d_theta_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tau</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/precomp_time_int.html#d_theta_ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.precomp_time_int.d_theta_ref" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.precomp_time_int.get_elmat_time">
+<span class="sig-prename descclassname"><span class="pre">dxss.precomp_time_int.</span></span><span class="sig-name descname"><span class="pre">get_elmat_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qstar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/precomp_time_int.html#get_elmat_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.precomp_time_int.get_elmat_time" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dxss.precomp_time_int.quad_rule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dxss.precomp_time_int.</span></span><span class="sig-name descname"><span class="pre">quad_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npoints</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/precomp_time_int.html#quad_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.precomp_time_int.quad_rule" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.precomp_time_int.quad_rule.current_pts">
+<span class="sig-name descname"><span class="pre">current_pts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/precomp_time_int.html#quad_rule.current_pts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.precomp_time_int.quad_rule.current_pts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.precomp_time_int.quad_rule.t_weights">
+<span class="sig-name descname"><span class="pre">t_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta_t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/precomp_time_int.html#quad_rule.t_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.precomp_time_int.quad_rule.t_weights" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.precomp_time_int.theta_ref">
+<span class="sig-prename descclassname"><span class="pre">dxss.precomp_time_int.</span></span><span class="sig-name descname"><span class="pre">theta_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tau</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/precomp_time_int.html#theta_ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.precomp_time_int.theta_ref" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-dxss.solve_1d">
+<span id="dxss-solve-1d-module"></span><h2>dxss.solve_1d module<a class="headerlink" href="#module-dxss.solve_1d" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_1d.GetLuSolver">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_1d.</span></span><span class="sig-name descname"><span class="pre">GetLuSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_1d.html#GetLuSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_1d.GetLuSolver" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dxss.solve_1d.PySolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dxss.solve_1d.</span></span><span class="sig-name descname"><span class="pre">PySolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Asp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psolver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_1d.html#PySolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_1d.PySolver" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.solve_1d.PySolver.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_1d.html#PySolver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_1d.PySolver.solve" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_1d.SolveProblem">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_1d.</span></span><span class="sig-name descname"><span class="pre">SolveProblem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measure_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_1d.html#SolveProblem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_1d.SolveProblem" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_1d.dt_sample_sol">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_1d.</span></span><span class="sig-name descname"><span class="pre">dt_sample_sol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_1d.html#dt_sample_sol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_1d.dt_sample_sol" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_1d.omega_Ind_convex">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_1d.</span></span><span class="sig-name descname"><span class="pre">omega_Ind_convex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_1d.html#omega_Ind_convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_1d.omega_Ind_convex" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_1d.omega_Ind_noGCC">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_1d.</span></span><span class="sig-name descname"><span class="pre">omega_Ind_noGCC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_1d.html#omega_Ind_noGCC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_1d.omega_Ind_noGCC" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_1d.sample_sol">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_1d.</span></span><span class="sig-name descname"><span class="pre">sample_sol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_1d.html#sample_sol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_1d.sample_sol" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-dxss.solve_2d">
+<span id="dxss-solve-2d-module"></span><h2>dxss.solve_2d module<a class="headerlink" href="#module-dxss.solve_2d" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_2d.GetLuSolver">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_2d.</span></span><span class="sig-name descname"><span class="pre">GetLuSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_2d.html#GetLuSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_2d.GetLuSolver" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dxss.solve_2d.PySolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dxss.solve_2d.</span></span><span class="sig-name descname"><span class="pre">PySolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Asp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psolver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_2d.html#PySolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_2d.PySolver" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.solve_2d.PySolver.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_2d.html#PySolver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_2d.PySolver.solve" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_2d.SolveProblem">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_2d.</span></span><span class="sig-name descname"><span class="pre">SolveProblem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measure_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_2d.html#SolveProblem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_2d.SolveProblem" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_2d.dt_sample_sol">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_2d.</span></span><span class="sig-name descname"><span class="pre">dt_sample_sol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_2d.html#dt_sample_sol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_2d.dt_sample_sol" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_2d.omega_Ind_convex">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_2d.</span></span><span class="sig-name descname"><span class="pre">omega_Ind_convex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_2d.html#omega_Ind_convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_2d.omega_Ind_convex" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_2d.sample_sol">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_2d.</span></span><span class="sig-name descname"><span class="pre">sample_sol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_2d.html#sample_sol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_2d.sample_sol" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-dxss.solve_3d">
+<span id="dxss-solve-3d-module"></span><h2>dxss.solve_3d module<a class="headerlink" href="#module-dxss.solve_3d" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_3d.GetLuSolver">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_3d.</span></span><span class="sig-name descname"><span class="pre">GetLuSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_3d.html#GetLuSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_3d.GetLuSolver" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dxss.solve_3d.PySolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dxss.solve_3d.</span></span><span class="sig-name descname"><span class="pre">PySolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Asp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psolver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_3d.html#PySolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_3d.PySolver" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.solve_3d.PySolver.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_3d.html#PySolver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_3d.PySolver.solve" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_3d.SolveProblem">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_3d.</span></span><span class="sig-name descname"><span class="pre">SolveProblem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measure_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_3d.html#SolveProblem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_3d.SolveProblem" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_3d.dt_sample_sol">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_3d.</span></span><span class="sig-name descname"><span class="pre">dt_sample_sol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_3d.html#dt_sample_sol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_3d.dt_sample_sol" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_3d.omega_Ind">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_3d.</span></span><span class="sig-name descname"><span class="pre">omega_Ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_3d.html#omega_Ind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_3d.omega_Ind" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.solve_3d.sample_sol">
+<span class="sig-prename descclassname"><span class="pre">dxss.solve_3d.</span></span><span class="sig-name descname"><span class="pre">sample_sol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/solve_3d.html#sample_sol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.solve_3d.sample_sol" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-dxss.space_time">
+<span id="dxss-space-time-module"></span><h2>dxss.space_time module<a class="headerlink" href="#module-dxss.space_time" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dxss.space_time.GetSpMat">
+<span class="sig-prename descclassname"><span class="pre">dxss.space_time.</span></span><span class="sig-name descname"><span class="pre">GetSpMat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#GetSpMat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.GetSpMat" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dxss.space_time.space_time">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dxss.space_time.</span></span><span class="sig-name descname"><span class="pre">space_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qstar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kstar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Omega_Ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stabs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_sol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jumps_in_fw_problem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">well_posed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dom_fitted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.ApplySpaceTimeMatrix">
+<span class="sig-name descname"><span class="pre">ApplySpaceTimeMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.ApplySpaceTimeMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.ApplySpaceTimeMatrix" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.CouplingMatBetweenSlices_mult">
+<span class="sig-name descname"><span class="pre">CouplingMatBetweenSlices_mult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.CouplingMatBetweenSlices_mult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.CouplingMatBetweenSlices_mult" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.FMatrix">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">st_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.FMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.FMatrix" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.FMatrix.createVecs">
+<span class="sig-name descname"><span class="pre">createVecs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.FMatrix.createVecs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.FMatrix.createVecs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.FMatrix.mult">
+<span class="sig-name descname"><span class="pre">mult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.FMatrix.mult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.FMatrix.mult" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.GetSlabBfi">
+<span class="sig-name descname"><span class="pre">GetSlabBfi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.GetSlabBfi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.GetSlabBfi" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.GetSlabBfiFirstSlab">
+<span class="sig-name descname"><span class="pre">GetSlabBfiFirstSlab</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.GetSlabBfiFirstSlab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.GetSlabBfiFirstSlab" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.GetSlabMat">
+<span class="sig-name descname"><span class="pre">GetSlabMat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.GetSlabMat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.GetSlabMat" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.GetSlabMatFirstSlab">
+<span class="sig-name descname"><span class="pre">GetSlabMatFirstSlab</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.GetSlabMatFirstSlab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.GetSlabMatFirstSlab" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.GetSpaceTimeBfi">
+<span class="sig-name descname"><span class="pre">GetSpaceTimeBfi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.GetSpaceTimeBfi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.GetSpaceTimeBfi" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.GetSpaceTimeLfi">
+<span class="sig-name descname"><span class="pre">GetSpaceTimeLfi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.GetSpaceTimeLfi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.GetSpaceTimeLfi" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.GetSpaceTimeMatCoarse">
+<span class="sig-name descname"><span class="pre">GetSpaceTimeMatCoarse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.GetSpaceTimeMatCoarse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.GetSpaceTimeMatCoarse" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.GetSpaceTimeMatrix">
+<span class="sig-name descname"><span class="pre">GetSpaceTimeMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.GetSpaceTimeMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.GetSpaceTimeMatrix" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.GetSpaceTimeMatrixAsLinearOperator">
+<span class="sig-name descname"><span class="pre">GetSpaceTimeMatrixAsLinearOperator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.GetSpaceTimeMatrixAsLinearOperator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.GetSpaceTimeMatrixAsLinearOperator" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.GetSpaceTimeRhs">
+<span class="sig-name descname"><span class="pre">GetSpaceTimeRhs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.GetSpaceTimeRhs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.GetSpaceTimeRhs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.MeasureErrors">
+<span class="sig-name descname"><span class="pre">MeasureErrors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u_inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.MeasureErrors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.MeasureErrors" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.Plot">
+<span class="sig-name descname"><span class="pre">Plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uh_inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_time_subdiv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abs_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.Plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.Plot" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.PlotError">
+<span class="sig-name descname"><span class="pre">PlotError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uh_inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_time_subdiv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.PlotError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.PlotError" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.PlotParaview">
+<span class="sig-name descname"><span class="pre">PlotParaview</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uh_inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'abserr'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.PlotParaview"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.PlotParaview" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.PrepareCoarseGridCorrection">
+<span class="sig-name descname"><span class="pre">PrepareCoarseGridCorrection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msh_coarse</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.PrepareCoarseGridCorrection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.PrepareCoarseGridCorrection" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.PreparePrecondGMRes">
+<span class="sig-name descname"><span class="pre">PreparePrecondGMRes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.PreparePrecondGMRes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.PreparePrecondGMRes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.Q_op">
+<span class="sig-name descname"><span class="pre">Q_op</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.Q_op"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.Q_op" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.SetSolverCoarse">
+<span class="sig-name descname"><span class="pre">SetSolverCoarse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.SetSolverCoarse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.SetSolverCoarse" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.SetSolverFirstSlab">
+<span class="sig-name descname"><span class="pre">SetSolverFirstSlab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.SetSolverFirstSlab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.SetSolverFirstSlab" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.SetSolverSlab">
+<span class="sig-name descname"><span class="pre">SetSolverSlab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.SetSolverSlab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.SetSolverSlab" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.SetupCouplingMatrixBetweenSlices">
+<span class="sig-name descname"><span class="pre">SetupCouplingMatrixBetweenSlices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.SetupCouplingMatrixBetweenSlices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.SetupCouplingMatrixBetweenSlices" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.SetupRhs">
+<span class="sig-name descname"><span class="pre">SetupRhs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.SetupRhs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.SetupRhs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.SetupScaledMassMatrixBetweenSlices">
+<span class="sig-name descname"><span class="pre">SetupScaledMassMatrixBetweenSlices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.SetupScaledMassMatrixBetweenSlices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.SetupScaledMassMatrixBetweenSlices" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.SetupSlabMatrix">
+<span class="sig-name descname"><span class="pre">SetupSlabMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">with_jumps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.SetupSlabMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.SetupSlabMatrix" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.SetupSpaceTimeFEs">
+<span class="sig-name descname"><span class="pre">SetupSpaceTimeFEs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.SetupSpaceTimeFEs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.SetupSpaceTimeFEs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.SetupSpaceTimeMatrix">
+<span class="sig-name descname"><span class="pre">SetupSpaceTimeMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">afes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.SetupSpaceTimeMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.SetupSpaceTimeMatrix" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.SlabMatNoDGJumps_mult">
+<span class="sig-name descname"><span class="pre">SlabMatNoDGJumps_mult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.SlabMatNoDGJumps_mult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.SlabMatNoDGJumps_mult" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.pre_time_marching">
+<span class="sig-name descname"><span class="pre">pre_time_marching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_sol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.pre_time_marching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.pre_time_marching" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.pre_time_marching_improved">
+<span class="sig-name descname"><span class="pre">pre_time_marching_improved</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_sol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.pre_time_marching_improved"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.pre_time_marching_improved" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.pre_twolvl">
+<span class="sig-name descname"><span class="pre">pre_twolvl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_sol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.pre_twolvl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.pre_twolvl" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.prolongation">
+<span class="sig-name descname"><span class="pre">prolongation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_coarse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_fine</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.prolongation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.prolongation" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dxss.space_time.space_time.restriction">
+<span class="sig-name descname"><span class="pre">restriction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_coarse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_fine</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dxss/space_time.html#space_time.restriction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dxss.space_time.space_time.restriction" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-dxss">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dxss" title="Permalink to this heading">#</a></h2>
 <p>DOLFINx space-time finite element space time slab solvers.</p>
@@ -331,6 +809,134 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-dxss.gmres">dxss.gmres module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.gmres.GMRes"><code class="docutils literal notranslate"><span class="pre">GMRes()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.gmres.GMResSolver"><code class="docutils literal notranslate"><span class="pre">GMResSolver</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.gmres.GMResSolver.name"><code class="docutils literal notranslate"><span class="pre">GMResSolver.name</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.gmres.LinearSolver"><code class="docutils literal notranslate"><span class="pre">LinearSolver</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.gmres.LinearSolver.CheckResiduals"><code class="docutils literal notranslate"><span class="pre">LinearSolver.CheckResiduals()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.gmres.LinearSolver.Solve"><code class="docutils literal notranslate"><span class="pre">LinearSolver.Solve()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.gmres.MinRes"><code class="docutils literal notranslate"><span class="pre">MinRes()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.gmres.MinResSolver"><code class="docutils literal notranslate"><span class="pre">MinResSolver</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.gmres.MinResSolver.name"><code class="docutils literal notranslate"><span class="pre">MinResSolver.name</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.gmres.pre"><code class="docutils literal notranslate"><span class="pre">pre()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-dxss.meshes">dxss.meshes module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.DrawMeshTikz"><code class="docutils literal notranslate"><span class="pre">DrawMeshTikz()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.create_initial_mesh_convex"><code class="docutils literal notranslate"><span class="pre">create_initial_mesh_convex()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.get_3Dmesh_data_all_around"><code class="docutils literal notranslate"><span class="pre">get_3Dmesh_data_all_around()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.get_mesh_bottom_data"><code class="docutils literal notranslate"><span class="pre">get_mesh_bottom_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.get_mesh_convex"><code class="docutils literal notranslate"><span class="pre">get_mesh_convex()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.get_mesh_data_all_around"><code class="docutils literal notranslate"><span class="pre">get_mesh_data_all_around()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.get_mesh_hierarchy"><code class="docutils literal notranslate"><span class="pre">get_mesh_hierarchy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.get_mesh_hierarchy_fitted_disc"><code class="docutils literal notranslate"><span class="pre">get_mesh_hierarchy_fitted_disc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.get_mesh_hierarchy_nonconvex"><code class="docutils literal notranslate"><span class="pre">get_mesh_hierarchy_nonconvex()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.get_mesh_inclusion"><code class="docutils literal notranslate"><span class="pre">get_mesh_inclusion()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.meshes.get_mesh_inclusion_square"><code class="docutils literal notranslate"><span class="pre">get_mesh_inclusion_square()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-dxss.precomp_time_int">dxss.precomp_time_int module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.precomp_time_int.d_theta_ref"><code class="docutils literal notranslate"><span class="pre">d_theta_ref()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.precomp_time_int.get_elmat_time"><code class="docutils literal notranslate"><span class="pre">get_elmat_time()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.precomp_time_int.quad_rule"><code class="docutils literal notranslate"><span class="pre">quad_rule</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.precomp_time_int.quad_rule.current_pts"><code class="docutils literal notranslate"><span class="pre">quad_rule.current_pts()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.precomp_time_int.quad_rule.t_weights"><code class="docutils literal notranslate"><span class="pre">quad_rule.t_weights()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.precomp_time_int.theta_ref"><code class="docutils literal notranslate"><span class="pre">theta_ref()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-dxss.solve_1d">dxss.solve_1d module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_1d.GetLuSolver"><code class="docutils literal notranslate"><span class="pre">GetLuSolver()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_1d.PySolver"><code class="docutils literal notranslate"><span class="pre">PySolver</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_1d.PySolver.solve"><code class="docutils literal notranslate"><span class="pre">PySolver.solve()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_1d.SolveProblem"><code class="docutils literal notranslate"><span class="pre">SolveProblem()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_1d.dt_sample_sol"><code class="docutils literal notranslate"><span class="pre">dt_sample_sol()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_1d.omega_Ind_convex"><code class="docutils literal notranslate"><span class="pre">omega_Ind_convex()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_1d.omega_Ind_noGCC"><code class="docutils literal notranslate"><span class="pre">omega_Ind_noGCC()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_1d.sample_sol"><code class="docutils literal notranslate"><span class="pre">sample_sol()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-dxss.solve_2d">dxss.solve_2d module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_2d.GetLuSolver"><code class="docutils literal notranslate"><span class="pre">GetLuSolver()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_2d.PySolver"><code class="docutils literal notranslate"><span class="pre">PySolver</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_2d.PySolver.solve"><code class="docutils literal notranslate"><span class="pre">PySolver.solve()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_2d.SolveProblem"><code class="docutils literal notranslate"><span class="pre">SolveProblem()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_2d.dt_sample_sol"><code class="docutils literal notranslate"><span class="pre">dt_sample_sol()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_2d.omega_Ind_convex"><code class="docutils literal notranslate"><span class="pre">omega_Ind_convex()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_2d.sample_sol"><code class="docutils literal notranslate"><span class="pre">sample_sol()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-dxss.solve_3d">dxss.solve_3d module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_3d.GetLuSolver"><code class="docutils literal notranslate"><span class="pre">GetLuSolver()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_3d.PySolver"><code class="docutils literal notranslate"><span class="pre">PySolver</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_3d.PySolver.solve"><code class="docutils literal notranslate"><span class="pre">PySolver.solve()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_3d.SolveProblem"><code class="docutils literal notranslate"><span class="pre">SolveProblem()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_3d.dt_sample_sol"><code class="docutils literal notranslate"><span class="pre">dt_sample_sol()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_3d.omega_Ind"><code class="docutils literal notranslate"><span class="pre">omega_Ind()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.solve_3d.sample_sol"><code class="docutils literal notranslate"><span class="pre">sample_sol()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-dxss.space_time">dxss.space_time module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.GetSpMat"><code class="docutils literal notranslate"><span class="pre">GetSpMat()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time"><code class="docutils literal notranslate"><span class="pre">space_time</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.ApplySpaceTimeMatrix"><code class="docutils literal notranslate"><span class="pre">space_time.ApplySpaceTimeMatrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.CouplingMatBetweenSlices_mult"><code class="docutils literal notranslate"><span class="pre">space_time.CouplingMatBetweenSlices_mult()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.FMatrix"><code class="docutils literal notranslate"><span class="pre">space_time.FMatrix</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.FMatrix.createVecs"><code class="docutils literal notranslate"><span class="pre">space_time.FMatrix.createVecs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.FMatrix.mult"><code class="docutils literal notranslate"><span class="pre">space_time.FMatrix.mult()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.GetSlabBfi"><code class="docutils literal notranslate"><span class="pre">space_time.GetSlabBfi()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.GetSlabBfiFirstSlab"><code class="docutils literal notranslate"><span class="pre">space_time.GetSlabBfiFirstSlab()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.GetSlabMat"><code class="docutils literal notranslate"><span class="pre">space_time.GetSlabMat()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.GetSlabMatFirstSlab"><code class="docutils literal notranslate"><span class="pre">space_time.GetSlabMatFirstSlab()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.GetSpaceTimeBfi"><code class="docutils literal notranslate"><span class="pre">space_time.GetSpaceTimeBfi()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.GetSpaceTimeLfi"><code class="docutils literal notranslate"><span class="pre">space_time.GetSpaceTimeLfi()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.GetSpaceTimeMatCoarse"><code class="docutils literal notranslate"><span class="pre">space_time.GetSpaceTimeMatCoarse()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.GetSpaceTimeMatrix"><code class="docutils literal notranslate"><span class="pre">space_time.GetSpaceTimeMatrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.GetSpaceTimeMatrixAsLinearOperator"><code class="docutils literal notranslate"><span class="pre">space_time.GetSpaceTimeMatrixAsLinearOperator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.GetSpaceTimeRhs"><code class="docutils literal notranslate"><span class="pre">space_time.GetSpaceTimeRhs()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.MeasureErrors"><code class="docutils literal notranslate"><span class="pre">space_time.MeasureErrors()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.Plot"><code class="docutils literal notranslate"><span class="pre">space_time.Plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.PlotError"><code class="docutils literal notranslate"><span class="pre">space_time.PlotError()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.PlotParaview"><code class="docutils literal notranslate"><span class="pre">space_time.PlotParaview()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.PrepareCoarseGridCorrection"><code class="docutils literal notranslate"><span class="pre">space_time.PrepareCoarseGridCorrection()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.PreparePrecondGMRes"><code class="docutils literal notranslate"><span class="pre">space_time.PreparePrecondGMRes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.Q_op"><code class="docutils literal notranslate"><span class="pre">space_time.Q_op()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.SetSolverCoarse"><code class="docutils literal notranslate"><span class="pre">space_time.SetSolverCoarse()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.SetSolverFirstSlab"><code class="docutils literal notranslate"><span class="pre">space_time.SetSolverFirstSlab()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.SetSolverSlab"><code class="docutils literal notranslate"><span class="pre">space_time.SetSolverSlab()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.SetupCouplingMatrixBetweenSlices"><code class="docutils literal notranslate"><span class="pre">space_time.SetupCouplingMatrixBetweenSlices()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.SetupRhs"><code class="docutils literal notranslate"><span class="pre">space_time.SetupRhs()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.SetupScaledMassMatrixBetweenSlices"><code class="docutils literal notranslate"><span class="pre">space_time.SetupScaledMassMatrixBetweenSlices()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.SetupSlabMatrix"><code class="docutils literal notranslate"><span class="pre">space_time.SetupSlabMatrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.SetupSpaceTimeFEs"><code class="docutils literal notranslate"><span class="pre">space_time.SetupSpaceTimeFEs()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.SetupSpaceTimeMatrix"><code class="docutils literal notranslate"><span class="pre">space_time.SetupSpaceTimeMatrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.SlabMatNoDGJumps_mult"><code class="docutils literal notranslate"><span class="pre">space_time.SlabMatNoDGJumps_mult()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.pre_time_marching"><code class="docutils literal notranslate"><span class="pre">space_time.pre_time_marching()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.pre_time_marching_improved"><code class="docutils literal notranslate"><span class="pre">space_time.pre_time_marching_improved()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.pre_twolvl"><code class="docutils literal notranslate"><span class="pre">space_time.pre_twolvl()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.prolongation"><code class="docutils literal notranslate"><span class="pre">space_time.prolongation()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dxss.space_time.space_time.restriction"><code class="docutils literal notranslate"><span class="pre">space_time.restriction()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-dxss">Module contents</a></li>
 </ul>
   </nav></div>

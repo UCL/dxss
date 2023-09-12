@@ -1,6 +1,65 @@
 dxss package
 ============
 
+Submodules
+----------
+
+dxss.gmres module
+-----------------
+
+.. automodule:: dxss.gmres
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dxss.meshes module
+------------------
+
+.. automodule:: dxss.meshes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dxss.precomp\_time\_int module
+------------------------------
+
+.. automodule:: dxss.precomp_time_int
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dxss.solve\_1d module
+---------------------
+
+.. automodule:: dxss.solve_1d
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dxss.solve\_2d module
+---------------------
+
+.. automodule:: dxss.solve_2d
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dxss.solve\_3d module
+---------------------
+
+.. automodule:: dxss.solve_3d
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dxss.space\_time module
+-----------------------
+
+.. automodule:: dxss.space_time
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
