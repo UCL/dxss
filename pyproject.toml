@@ -24,6 +24,7 @@ dependencies = [
     "gmsh",
     "h5py",
     "matplotlib",
+    "meshio",
     "mpi4py",
     "numpy",
     "petsc4py",
@@ -173,6 +174,7 @@ conda_deps =
     gmsh
     h5py
     matplotlib
+    meshio
     mpi4py
     numpy
     petsc4py
