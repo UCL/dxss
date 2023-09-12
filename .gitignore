@@ -208,3 +208,8 @@ pyrightconfig.json
 src/**/_version.py
 .vscode/
 docs/dxss*.rst
+
+# All mesh output files and h(df)5
+mesh.msh
+*.h5
+*.xdmf
