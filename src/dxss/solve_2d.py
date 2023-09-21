@@ -16,7 +16,11 @@ from dxss.gmres import GMRes
 from dxss.space_time import * 
 from dxss.precomp_time_int import theta_ref, d_theta_ref 
 from dxss.meshes import get_mesh_hierarchy, get_mesh_data_all_around
-import pypardiso
+try:
+    import pypardiso
+    solver_type = "pypardiso"
+except ImportError:
+    solver_type = "petsc-LU"
 import scipy.sparse as sp
 import time
 import cProfile
@@ -25,7 +29,7 @@ import resource
 
 
 #solver_type = "petsc-LU"  
-solver_type = "pypardiso" # 
+# solver_type = "pypardiso"
 #solver_type = "direct" # 
 
 def GetLuSolver(msh,mat):
