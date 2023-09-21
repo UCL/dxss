@@ -29,7 +29,7 @@ import resource
 
 
 #solver_type = "petsc-LU"  
-#solver_type = "pypardiso" # 
+# solver_type = "pypardiso"
 #solver_type = "direct" # 
 
 def GetLuSolver(msh,mat):
