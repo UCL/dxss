@@ -9,23 +9,32 @@ from petsc4py import PETSc
 
 sys.setrecursionlimit(10**6)
 from dxss.gmres import GMRes
-from dxss.space_time import *
-
+from dxss.space_time import * 
+from dxss.precomp_time_int import theta_ref, d_theta_ref 
+from dxss.meshes import get_mesh_hierarchy, get_mesh_data_all_around, get_3Dmesh_data_all_around
 try:
     import pypardiso
-
-    solver_type = "pypardiso"  #
+    solver_type = "pypardiso" # 
 except ImportError:
-    solver_type = "petsc-LU"
+    solver_type = "petsc-LU"  
 
+import scipy.sparse as sp
+import time
+import cProfile
 import resource
 import time
 
 GCC = False
 
 
-def GetLuSolver(msh, mat):
-    solver = PETSc.KSP().create(msh.comm)
+
+#solver_type = "direct" # 
+
+GCC = False 
+
+
+def GetLuSolver(msh,mat):
+    solver = PETSc.KSP().create(msh.comm) 
     solver.setOperators(mat)
     solver.setType(PETSc.KSP.Type.PREONLY)
     solver.getPC().setType(PETSc.PC.Type.LU)

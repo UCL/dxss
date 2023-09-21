@@ -1,20 +1,26 @@
-import sys
-from math import pi, sqrt
-
 import numpy as np
+from math import pi, sqrt
 import ufl
-from dolfinx.mesh import CellType, GhostMode, create_box
+from dolfinx import fem, io, mesh, plot
+from ufl import ds, dx, grad, inner, dS, jump, div
 from mpi4py import MPI
 from petsc4py import PETSc
+from dolfinx.mesh import create_box, CellType, GhostMode
+from dolfinx.io import XDMFFile
+import sys
 
 sys.setrecursionlimit(10**6)
+from dxss.gmres import GMRes
+from dxss.space_time import *
+from dxss.precomp_time_int import theta_ref, d_theta_ref
+from dxss.meshes import get_mesh_hierarchy, get_mesh_data_all_around
 import time
 
+# import pypardiso
 import scipy.sparse as sp
 
-from dxss.space_time import *
-
 solver_type = "petsc-LU"
+# solver_type = "pypardiso" #
 
 
 def GetLuSolver(msh, mat):
@@ -28,7 +34,8 @@ def GetLuSolver(msh, mat):
 # define alternative solvers here
 def GetSpMat(mat):
     ai, aj, av = mat.getValuesCSR()
-    return sp.csr_matrix((av, aj, ai))
+    Asp = sp.csr_matrix((av, aj, ai))
+    return Asp
 
 
 class PySolver:
@@ -149,8 +156,7 @@ def test_slab_problem():
         solver_slab = GetLuSolver(st.msh, st.GetSlabMat())  # LU-decomposition
         solver_slab.solve(x_out, x_comp)
     else:
-        msg = "invalid solver_type"
-        raise ValueError(msg)
+        raise ValueError("invalid solver_type")
 
     end = time.time()
     error = np.linalg.norm(x_comp.array - x_in.array)
