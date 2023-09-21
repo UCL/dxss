@@ -9,15 +9,14 @@ from petsc4py import PETSc
 
 sys.setrecursionlimit(10**6)
 from dxss.gmres import GMRes
-from dxss.space_time import * 
-from dxss.precomp_time_int import theta_ref, d_theta_ref 
+from dxss.space_time import *
+
 try:
     import pypardiso
-    solver_type = "pypardiso" # 
+
+    solver_type = "pypardiso"  #
 except ImportError:
-    solver_type = "petsc-LU"  
-import time
-import cProfile
+    solver_type = "petsc-LU"
 import resource
 import time
 

@@ -1,26 +1,21 @@
-import pytest
-import numpy as np
-from math import pi, sqrt
-import ufl
-from dolfinx import fem, io, mesh, plot
-from ufl import ds, dx, grad, inner, dS, jump, div
-from mpi4py import MPI
-from petsc4py import PETSc
-from dolfinx.mesh import create_unit_interval
-from dolfinx.io import XDMFFile
 import sys
+from math import pi, sqrt
+
+import numpy as np
+import pytest
+import ufl
+from dolfinx import fem
+from petsc4py import PETSc
 
 sys.setrecursionlimit(10**6)
-from dxss.gmres import GMRes
-from dxss.space_time import *
-from dxss.precomp_time_int import theta_ref, d_theta_ref
-from dxss.meshes import get_mesh_hierarchy, get_mesh_data_all_around
 import time
 
 import scipy.sparse as sp
 
+from dxss.meshes import get_mesh_data_all_around
+from dxss.space_time import *
+
 solver_type = "petsc-LU"
-# solver_type = "pypardiso" #
 
 
 def GetLuSolver(msh, mat):
@@ -34,8 +29,7 @@ def GetLuSolver(msh, mat):
 # define alternative solvers here
 def GetSpMat(mat):
     ai, aj, av = mat.getValuesCSR()
-    Asp = sp.csr_matrix((av, aj, ai))
-    return Asp
+    return sp.csr_matrix((av, aj, ai))
 
 
 class PySolver:
@@ -125,9 +119,6 @@ def test_slab_problem():
     SlabMat.mult(x_in, x_out)
 
     # Solvers for problems on the slabs
-    # solver_slab = GetLuSolver(st.msh, st.GetSlabMat())  # LU-decomposition
-    # solver_slab.solve(x_out,x_comp)
-    # print("Error = ", np.linalg.norm(x_comp.array - x_in.array))
 
     start = time.time()
 
@@ -138,7 +129,8 @@ def test_slab_problem():
         solver_slab = GetLuSolver(st.msh, st.GetSlabMat())  # LU-decomposition
         solver_slab.solve(x_out, x_comp)
     else:
-        raise ValueError("invalid solver_type")
+        msg = "invalid solver_type"
+        raise ValueError(msg)
 
     end = time.time()
     error = np.linalg.norm(x_comp.array - x_in.array)
@@ -163,10 +155,11 @@ def test_spacetime_solve():
     elif solver_type == "petsc-LU":
         st.SetSolverSlab(GetLuSolver(st.msh, st.GetSlabMat()))  # general slab
         st.SetSolverFirstSlab(
-            GetLuSolver(st.msh, st.GetSlabMatFirstSlab())
+            GetLuSolver(st.msh, st.GetSlabMatFirstSlab()),
         )  # first slab is special
     else:
-        raise ValueError("invalid solver_type")
+        msg = "invalid solver_type"
+        raise ValueError(msg)
 
     st.pre_time_marching(x_out, x_comp)
     end = time.time()
