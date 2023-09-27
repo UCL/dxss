@@ -6,7 +6,7 @@ from dolfinx.fem import (Constant, dirichletbc, Function, FunctionSpace, assembl
 from dolfinx.fem.petsc import LinearProblem
 from dolfinx.io import XDMFFile
 from dolfinx.mesh import create_unit_square, locate_entities, refine, compute_incident_entities, GhostMode
-from dolfinx.plot import create_vtk_mesh
+from dolfinx.plot import vtk_mesh
 
 from ufl import (SpatialCoordinate, TestFunction, TrialFunction,
                  dx, grad, inner,And,Not,conditional)
