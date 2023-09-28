@@ -37,12 +37,13 @@ class LinearSolver:
         self.residuals: list[float] = []
         self.iterations: int = 0
 
-    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec) -> None:
+    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec) -> PETSc.Vec:
         """
         Method-specific solving function called by `LinearSolver.solve`.
 
         This is a no-op, and is intended for derived classes to override.
         """
+        raise NotImplementedError
 
     def solve(
         self,
