@@ -1,0 +1,6 @@
+# Configures some options for codecov
+# https://docs.codecov.com/docs/codecov-yaml
+
+coverage:
+  precision: 1 # one decimal place
+  round: up
