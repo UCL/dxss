@@ -71,7 +71,7 @@ class SpaceTime:
         self.t = t
         self.delta_t = self.T / self.N
         self.msh = msh
-        self.Omega_Ind = omega_ind
+        self.omega_ind = omega_ind
         self.stabs = stabs
         self.x = ufl.SpatialCoordinate(msh)
         self.sol = sol
@@ -98,9 +98,9 @@ class SpaceTime:
         if data_dom_fitted:
             q_ind = fem.FunctionSpace(self.msh, ("DG", 0))
             self.omega_ind = fem.Function(q_ind)
-            self.omega_ind.interpolate(self.Omega_Ind)
+            self.omega_ind.interpolate(self.omega_ind)
         else:
-            self.omega_ind = self.Omega_Ind
+            self.omega_ind = self.omega_ind
 
         # FESpaces
         self.fes = None
@@ -313,7 +313,7 @@ class SpaceTime:
         else:
             q_ind = fem.FunctionSpace(afes.mesh, ("DG", 0))
             omega_ind = fem.Function(q_ind)
-            omega_ind.interpolate(self.Omega_Ind)
+            omega_ind.interpolate(self.omega_ind)
 
         # retrieve stabilization parameter
         gamma_data = self.stabs["data"]
