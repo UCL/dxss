@@ -25,7 +25,7 @@
   > Capital letters for matrices (following conventional math notation).
   - The linter will flag up the use of i.e. `A` as a variable name. Silence this with `# noqa: N803`.
 - Aim to document all public-facing API code with [Google-style](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html#example-google) docstrings.
-- Use [type hints](https://peps.python.org/pep-0484/) throughout and check with `mypy` or `pre-commit`.
+- Aim for [PEP484 type annotations](https://peps.python.org/pep-0484/) throughout. Check with `mypy` or `pre-commit`.
   - No need to put type hints in docstrings.
 
 ### To run the linters locally
