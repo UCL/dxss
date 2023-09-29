@@ -123,21 +123,19 @@ class GMResSolver(LinearSolver):
             self.restart = restart
 
     def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: C901, PLR0915
-        """
-        The internal solving subfunction for the GMRes solver type.
+        """The internal solving subfunction for the GMRes solver type.
 
-        Called by the parent class' solve method.
+        Called by the parent class' solve method. Implements the GMRes solver
+        type, solving a linear system of equations Ax = b. Use the Arnoldi
+        iteration to iteratively solve the system. It also handles special cases
+        for callbacks and restarts.
 
-        Parameters
-        ----------
-        rhs: PETSc.Vec
-            The b vector in Ax = b
-        sol[out]: PETSc.Vec
-            The vector to contain solutions, x.
+        Args:
+            rhs: The b vector in Ax = b.
+            sol: The vector to contain solutions, x.
 
         Returns:
-        -------
-        PETSc.Vec a vector containing solutions, x.
+            A vector containing solutions, x.
         """
         # TODO: when refactoring this needs to be reduced in complexity and
         # split into smaller functions. We are suppressing flake8/ruff warnings
@@ -311,21 +309,16 @@ class MinResSolver(LinearSolver):
             self.norm = lambda x: x.norm()
 
     def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: PLR0915
-        """
-        The internal solving subfunction for the MinRes solver type.
+        """The internal solving subfunction for the MinRes solver type.
 
         Called by the parent class' solve method.
 
-        Parameters
-        ----------
-        rhs: PETSc.Vec
-            The b vector in Ax = b
-        sol[out]: PETSc.Vec
-            The vector to contain solutions, x.
+        Args:
+            rhs: The b vector in Ax = b.
+            sol: The vector to contain solutions, x.
 
         Returns:
-        -------
-        PETSc.Vec a vector containing solutions, x.
+            A vector containing solutions, x.
         """
         # TODO: when refactoring this needs to be reduced in complexity and
         # split into smaller functions. Also to ask Janosch: why we do line 333?
