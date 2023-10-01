@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+title: dxss - The DOLFINx Time Slab Solver
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Erik
+    family-names: Burman
+    affiliation: University College London
+    email: e.burman@ucl.ac.uk
+    orcid: "https://orcid.org/0000-0003-4287-7241"
+  - given-names: Sam
+    family-names: Cunliffe
+    affiliation: University College London
+    email: s.cunliffe@ucl.ac.uk
+    orcid: "https://orcid.org/0000-0003-0167-8641"
+  - given-names: Deepika
+    family-names: Garg
+    affiliation: University College London
+    email: d.garg@ucl.ac.uk
+    orcid: "https://orcid.org/0000-0001-8938-1767"
+  - given-names: Matt
+    family-names: Graham
+    affiliation: University College London
+    email: m.graham@ucl.ac.uk
+    orcid: "https://orcid.org/0000-0001-9104-7960"
+  - given-names: Krishnakumar
+    family-names: Gopalakrishnan
+    affiliation: University College London
+    email: krishna.kumar@ucl.ac.uk
+    orcid: "https://orcid.org/0000-0003-4246-8579"
+  - given-names: Janosch
+    family-names: Preuss
+    affiliation: University College London
+    email: j.preuss@ucl.ac.uk
+    orcid: "https://orcid.org/0000-0002-7384-535X"
+repository-code: "https://github.com/UCL/dxss"
+url: "http://github-pages.ucl.ac.uk/dxss/"
+keywords:
+  - finite-element
+  - fenicsx
+  - spacetime
+  - slab-solver
+license: MIT
