@@ -1,8 +1,10 @@
 import numpy as np
-from sympy import *
+from sympy import diff, integrate, sqrt, symbols
 
 
 def get_elmat_time(q, qstar):
+    # TODO: this function has too many branches. Try to reduce the complexity
+    # on refactoring and remove the suppression of PLR0912.
     elmat_time = {}
 
     x, y = symbols("x y")
@@ -22,49 +24,49 @@ def get_elmat_time(q, qstar):
     phis = basis_in_time[q]
     chis = basis_in_time[qstar]
 
-    M_time_q_qstar = np.zeros((qstar + 1, q + 1))
+    m_time_q_qstar = np.zeros((qstar + 1, q + 1))
     for i in range(qstar + 1):
         for j in range(q + 1):
-            M_time_q_qstar[i, j] = integrate(phis[j] * chis[i], (x, 0, 1))
-    elmat_time["M_time_q_qstar"] = M_time_q_qstar
+            m_time_q_qstar[i, j] = integrate(phis[j] * chis[i], (x, 0, 1))
+    elmat_time["M_time_q_qstar"] = m_time_q_qstar
 
-    M_time_q_q = np.zeros((q + 1, q + 1))
+    m_time_q_q = np.zeros((q + 1, q + 1))
     for i in range(q + 1):
         for j in range(q + 1):
-            M_time_q_q[i, j] = integrate(phis[j] * phis[i], (x, 0, 1))
-    elmat_time["M_time_q_q"] = M_time_q_q
+            m_time_q_q[i, j] = integrate(phis[j] * phis[i], (x, 0, 1))
+    elmat_time["M_time_q_q"] = m_time_q_q
 
-    M_time_qstar_qstar = np.zeros((qstar + 1, qstar + 1))
+    m_time_qstar_qstar = np.zeros((qstar + 1, qstar + 1))
     for i in range(qstar + 1):
         for j in range(qstar + 1):
-            M_time_qstar_qstar[i, j] = integrate(chis[j] * chis[i], (x, 0, 1))
-    elmat_time["M_time_qstar_qstar"] = M_time_qstar_qstar
+            m_time_qstar_qstar[i, j] = integrate(chis[j] * chis[i], (x, 0, 1))
+    elmat_time["M_time_qstar_qstar"] = m_time_qstar_qstar
 
-    DM_time_q_qstar = np.zeros((qstar + 1, q + 1))
+    dm_time_q_qstar = np.zeros((qstar + 1, q + 1))
     for i in range(qstar + 1):
         for j in range(q + 1):
-            DM_time_q_qstar[i, j] = integrate(diff(phis[j], x) * chis[i], (x, 0, 1))
-    elmat_time["DM_time_q_qstar"] = DM_time_q_qstar
+            dm_time_q_qstar[i, j] = integrate(diff(phis[j], x) * chis[i], (x, 0, 1))
+    elmat_time["DM_time_q_qstar"] = dm_time_q_qstar
 
-    DM_time_q_q = np.zeros((q + 1, q + 1))
+    dm_time_q_q = np.zeros((q + 1, q + 1))
     for i in range(q + 1):
         for j in range(q + 1):
-            DM_time_q_q[i, j] = integrate(diff(phis[j], x) * phis[i], (x, 0, 1))
-    elmat_time["DM_time_q_q"] = DM_time_q_q
+            dm_time_q_q[i, j] = integrate(diff(phis[j], x) * phis[i], (x, 0, 1))
+    elmat_time["DM_time_q_q"] = dm_time_q_q
 
-    DDM_time_q_q = np.zeros((q + 1, q + 1))
+    ddm_time_q_q = np.zeros((q + 1, q + 1))
     for i in range(q + 1):
         for j in range(q + 1):
-            DDM_time_q_q[i, j] = integrate(
+            ddm_time_q_q[i, j] = integrate(
                 diff(phis[j], x) * diff(phis[i], x),
                 (x, 0, 1),
             )
-    elmat_time["DDM_time_q_q"] = DDM_time_q_q
+    elmat_time["DDM_time_q_q"] = ddm_time_q_q
 
     return elmat_time
 
 
-class quad_rule:
+class QuadRule:
     def __init__(self, name, npoints):
         self.name = name
         self.npoints = npoints
@@ -114,7 +116,7 @@ class quad_rule:
             self.weights = [1.0]
 
     def current_pts(self, a, b):
-        if self.name == "Gauss-Radau" or self.name == "Gauss":
+        if self.name in ("Gauss-Radau", "Gauss"):
             return [0.5 * (b - a) * pt + 0.5 * (b + a) for pt in self.points]
         elif self.name == "Newton-Cotes":
             h = (b - a) / (self.npoints - 1)
@@ -124,7 +126,7 @@ class quad_rule:
         return None
 
     def t_weights(self, delta_t):
-        if self.name == "Gauss-Radau" or self.name == "Gauss":
+        if self.name in ("Gauss-Radau", "Gauss"):
             return [0.5 * delta_t * w for w in self.weights]
         elif self.name == "Newton-Cotes":
             return [delta_t * w for w in self.weights]
@@ -133,30 +135,30 @@ class quad_rule:
         return None
 
 
-pts_Raudau_right = [0.0, 1.0]
+pts_raudau_right = [0.0, 1.0]
 
 
 def theta_ref(tau):
     result = 1
-    for x_mu in pts_Raudau_right:
+    for x_mu in pts_raudau_right:
         result *= (tau - x_mu) / (-1 - x_mu)
     return result
 
 
 def d_theta_ref(tau):
     result = 0
-    for j in range(len(pts_Raudau_right)):
-        fac_j = 1 / (-1 - pts_Raudau_right[j])
-        for mu in range(len(pts_Raudau_right)):
+    for j in range(len(pts_raudau_right)):
+        fac_j = 1 / (-1 - pts_raudau_right[j])
+        for mu in range(len(pts_raudau_right)):
             if mu != j:
-                fac_j *= (tau - pts_Raudau_right[mu]) / (-1 - pts_Raudau_right[mu])
+                fac_j *= (tau - pts_raudau_right[mu]) / (-1 - pts_raudau_right[mu])
         result += fac_j
     return result
 
 
 basis_in_time = {
-    0: ([lambda t: 1], [lambda t: 0]),
-    1: ([lambda t: 1 - t, lambda t: t], [lambda t: -1, lambda t: 1]),
+    0: ([lambda _: 1], [lambda _: 0]),
+    1: ([lambda t: 1 - t, lambda t: t], [lambda _: -1, lambda _: 1]),
     2: (
         [
             lambda t: 2 * (1 - t) * (1 / 2 - t),

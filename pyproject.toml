@@ -85,11 +85,15 @@ testpaths = [
 fix = true
 force-exclude = true
 ignore = [
+    "D10", # _temporarily_ ignore **all** missing doc warnings (TODO: revert this once #15 is fixed)
     "D203", # no-blank-line-before-class
     "D212", # multi-line-summary-first-line
     "D417", # argument description in docstring (unreliable)
+    "E501", # line too long (handled by black)
+    "FBT00", # bool values in function calls or positional arguments (TODO: these can be solved by better design)
     "PLR2004", # magic values in comparisons
     "RET505", # superfluous else return,
+    "T201", # print
     "UP007", # X | Y for type annotations (Python 3.10+ only)
 ]
 per-file-ignores = {"test_*" = [
