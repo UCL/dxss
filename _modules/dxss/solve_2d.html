@@ -304,22 +304,23 @@ document.write(`
 <span class="kn">import</span> <span class="nn">ufl</span>
 <span class="kn">from</span> <span class="nn">petsc4py</span> <span class="kn">import</span> <span class="n">PETSc</span>
 
-<span class="n">sys</span><span class="o">.</span><span class="n">setrecursionlimit</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dxss.gmres</span> <span class="kn">import</span> <span class="n">GMRes</span>
+<span class="kn">from</span> <span class="nn">dxss.gmres</span> <span class="kn">import</span> <span class="n">get_gmres_solution</span>
 <span class="kn">from</span> <span class="nn">dxss.meshes</span> <span class="kn">import</span> <span class="n">get_mesh_data_all_around</span>
-<span class="kn">from</span> <span class="nn">dxss.space_time</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dxss.space_time</span> <span class="kn">import</span> <span class="n">SpaceTime</span><span class="p">,</span> <span class="n">get_sparse_matrix</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">pypardiso</span>
 
-    <span class="n">solver_type</span> <span class="o">=</span> <span class="s2">&quot;pypardiso&quot;</span>
+    <span class="n">SOLVER_TYPE</span> <span class="o">=</span> <span class="s2">&quot;pypardiso&quot;</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">solver_type</span> <span class="o">=</span> <span class="s2">&quot;petsc-LU&quot;</span>
+    <span class="n">SOLVER_TYPE</span> <span class="o">=</span> <span class="s2">&quot;petsc-LU&quot;</span>
 <span class="kn">import</span> <span class="nn">resource</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
+<span class="n">sys</span><span class="o">.</span><span class="n">setrecursionlimit</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
 
-<div class="viewcode-block" id="GetLuSolver"><a class="viewcode-back" href="../../dxss.html#dxss.solve_2d.GetLuSolver">[docs]</a><span class="k">def</span> <span class="nf">GetLuSolver</span><span class="p">(</span><span class="n">msh</span><span class="p">,</span> <span class="n">mat</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_lu_solver"><a class="viewcode-back" href="../../dxss.html#dxss.solve_2d.get_lu_solver">[docs]</a><span class="k">def</span> <span class="nf">get_lu_solver</span><span class="p">(</span><span class="n">msh</span><span class="p">,</span> <span class="n">mat</span><span class="p">):</span>
     <span class="n">solver</span> <span class="o">=</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">KSP</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">msh</span><span class="o">.</span><span class="n">comm</span><span class="p">)</span>
     <span class="n">solver</span><span class="o">.</span><span class="n">setOperators</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
     <span class="n">solver</span><span class="o">.</span><span class="n">setType</span><span class="p">(</span><span class="n">PETSc</span><span class="o">.</span><span class="n">KSP</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">PREONLY</span><span class="p">)</span>
@@ -327,17 +328,8 @@ document.write(`
     <span class="k">return</span> <span class="n">solver</span></div>
 
 
-<span class="c1"># define alternative solvers here</span>
-<span class="c1"># def GetSpMat(mat):</span>
-
-
-<span class="c1"># class PySolver:</span>
-<span class="c1">#    def __init__(self,Asp,psolver):</span>
-<span class="c1">#    def solve(self,b_inp,x_out):</span>
-
-
 <div class="viewcode-block" id="PySolver"><a class="viewcode-back" href="../../dxss.html#dxss.solve_2d.PySolver">[docs]</a><span class="k">class</span> <span class="nc">PySolver</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Asp</span><span class="p">,</span> <span class="n">psolver</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Asp</span><span class="p">,</span> <span class="n">psolver</span><span class="p">):</span>  <span class="c1"># noqa: N803</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Asp</span> <span class="o">=</span> <span class="n">Asp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">psolver</span>
 
@@ -348,18 +340,18 @@ document.write(`
         <span class="n">x_out</span><span class="o">.</span><span class="n">array</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">_call_pardiso</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Asp</span><span class="p">,</span> <span class="n">b</span><span class="p">)[:]</span></div></div>
 
 
-<span class="n">ref_lvl_to_N</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">]</span>
-<span class="n">ref_lvl</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">REF_LVL_TO_N</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">]</span>
+<span class="n">REF_LVL</span> <span class="o">=</span> <span class="mi">3</span>
 
 <span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span>
-<span class="n">N</span> <span class="o">=</span> <span class="n">ref_lvl_to_N</span><span class="p">[</span><span class="n">ref_lvl</span><span class="p">]</span>
-<span class="n">order</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="n">k</span> <span class="o">=</span> <span class="n">order</span>
-<span class="n">q</span> <span class="o">=</span> <span class="n">order</span>
-<span class="n">kstar</span> <span class="o">=</span> <span class="n">order</span>
-<span class="n">qstar</span> <span class="o">=</span> <span class="n">order</span>
-<span class="n">stabs</span> <span class="o">=</span> <span class="p">{</span>
+<span class="n">N</span> <span class="o">=</span> <span class="n">REF_LVL_TO_N</span><span class="p">[</span><span class="n">REF_LVL</span><span class="p">]</span>
+<span class="n">ORDER</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">k</span> <span class="o">=</span> <span class="n">ORDER</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">ORDER</span>
+<span class="n">kstar</span> <span class="o">=</span> <span class="n">ORDER</span>
+<span class="n">qstar</span> <span class="o">=</span> <span class="n">ORDER</span>
+<span class="n">STABS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="mf">1e4</span><span class="p">,</span>
     <span class="s2">&quot;dual&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="s2">&quot;primal&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">,</span>
@@ -370,10 +362,10 @@ document.write(`
 <span class="n">ls_mesh</span> <span class="o">=</span> <span class="n">get_mesh_data_all_around</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
 <span class="c1"># for j in range(len(ls_mesh)):</span>
 <span class="c1">#    with io.XDMFFile(ls_mesh[j].comm, &quot;mesh-reflvl{0}.xdmf&quot;.format(j), &quot;w&quot;) as xdmf:</span>
-<span class="n">msh</span> <span class="o">=</span> <span class="n">ls_mesh</span><span class="p">[</span><span class="n">ref_lvl</span><span class="p">]</span>
+<span class="n">msh</span> <span class="o">=</span> <span class="n">ls_mesh</span><span class="p">[</span><span class="n">REF_LVL</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="omega_Ind_convex"><a class="viewcode-back" href="../../dxss.html#dxss.solve_2d.omega_Ind_convex">[docs]</a><span class="k">def</span> <span class="nf">omega_Ind_convex</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="omega_ind_convex"><a class="viewcode-back" href="../../dxss.html#dxss.solve_2d.omega_ind_convex">[docs]</a><span class="k">def</span> <span class="nf">omega_ind_convex</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PETSc</span><span class="o">.</span><span class="n">ScalarType</span><span class="p">)</span>
     <span class="n">omega_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span>
         <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.2</span><span class="p">),</span>
@@ -402,7 +394,7 @@ document.write(`
     <span class="p">)</span></div>
 
 
-<span class="n">st</span> <span class="o">=</span> <span class="n">space_time</span><span class="p">(</span>
+<span class="n">ST</span> <span class="o">=</span> <span class="n">SpaceTime</span><span class="p">(</span>
     <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
     <span class="n">qstar</span><span class="o">=</span><span class="n">qstar</span><span class="p">,</span>
     <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
@@ -411,71 +403,73 @@ document.write(`
     <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span>
     <span class="n">t</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
     <span class="n">msh</span><span class="o">=</span><span class="n">msh</span><span class="p">,</span>
-    <span class="n">Omega_Ind</span><span class="o">=</span><span class="n">omega_Ind_convex</span><span class="p">,</span>
-    <span class="n">stabs</span><span class="o">=</span><span class="n">stabs</span><span class="p">,</span>
+    <span class="n">omega_ind</span><span class="o">=</span><span class="n">omega_ind_convex</span><span class="p">,</span>
+    <span class="n">stabs</span><span class="o">=</span><span class="n">STABS</span><span class="p">,</span>
     <span class="n">sol</span><span class="o">=</span><span class="n">sample_sol</span><span class="p">,</span>
     <span class="n">dt_sol</span><span class="o">=</span><span class="n">dt_sample_sol</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">st</span><span class="o">.</span><span class="n">SetupSpaceTimeFEs</span><span class="p">()</span>
-<span class="n">st</span><span class="o">.</span><span class="n">PreparePrecondGMRes</span><span class="p">()</span>
-<span class="n">A_space_time_linop</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">GetSpaceTimeMatrixAsLinearOperator</span><span class="p">()</span>
-<span class="n">b_rhs</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">GetSpaceTimeRhs</span><span class="p">()</span>
+<span class="n">ST</span><span class="o">.</span><span class="n">setup_spacetime_finite_elements</span><span class="p">()</span>
+<span class="n">ST</span><span class="o">.</span><span class="n">prepare_precondition_gmres</span><span class="p">()</span>
+<span class="n">A_space_time_linop</span> <span class="o">=</span> <span class="n">ST</span><span class="o">.</span><span class="n">get_spacetime_matrix_as_linear_operator</span><span class="p">()</span>
+<span class="n">b_rhs</span> <span class="o">=</span> <span class="n">ST</span><span class="o">.</span><span class="n">get_spacetime_rhs</span><span class="p">()</span>
 
 <span class="c1"># Prepare the solvers for problems on the slabs</span>
 
 
-<div class="viewcode-block" id="SolveProblem"><a class="viewcode-back" href="../../dxss.html#dxss.solve_2d.SolveProblem">[docs]</a><span class="k">def</span> <span class="nf">SolveProblem</span><span class="p">(</span><span class="n">measure_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="solve_problem"><a class="viewcode-back" href="../../dxss.html#dxss.solve_2d.solve_problem">[docs]</a><span class="k">def</span> <span class="nf">solve_problem</span><span class="p">(</span><span class="n">measure_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s2">&quot;pypardiso&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">SOLVER_TYPE</span> <span class="o">==</span> <span class="s2">&quot;pypardiso&quot;</span><span class="p">:</span>
         <span class="n">genreal_slab_solver</span> <span class="o">=</span> <span class="n">pypardiso</span><span class="o">.</span><span class="n">PyPardisoSolver</span><span class="p">()</span>
-        <span class="n">SlabMatSp</span> <span class="o">=</span> <span class="n">GetSpMat</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">GetSlabMat</span><span class="p">())</span>
+        <span class="n">slab_matrix_sparse</span> <span class="o">=</span> <span class="n">get_sparse_matrix</span><span class="p">(</span><span class="n">ST</span><span class="o">.</span><span class="n">get_slab_matrix</span><span class="p">())</span>
 
-        <span class="n">genreal_slab_solver</span><span class="o">.</span><span class="n">factorize</span><span class="p">(</span><span class="n">SlabMatSp</span><span class="p">)</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">SetSolverSlab</span><span class="p">(</span><span class="n">PySolver</span><span class="p">(</span><span class="n">SlabMatSp</span><span class="p">,</span> <span class="n">genreal_slab_solver</span><span class="p">))</span>
+        <span class="n">genreal_slab_solver</span><span class="o">.</span><span class="n">factorize</span><span class="p">(</span><span class="n">slab_matrix_sparse</span><span class="p">)</span>
+        <span class="n">ST</span><span class="o">.</span><span class="n">set_solver_slab</span><span class="p">(</span><span class="n">PySolver</span><span class="p">(</span><span class="n">slab_matrix_sparse</span><span class="p">,</span> <span class="n">genreal_slab_solver</span><span class="p">))</span>
 
         <span class="n">initial_slab_solver</span> <span class="o">=</span> <span class="n">pypardiso</span><span class="o">.</span><span class="n">PyPardisoSolver</span><span class="p">()</span>
-        <span class="n">SlabMatFirstSlabSp</span> <span class="o">=</span> <span class="n">GetSpMat</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">GetSlabMatFirstSlab</span><span class="p">())</span>
-        <span class="n">initial_slab_solver</span><span class="o">.</span><span class="n">factorize</span><span class="p">(</span><span class="n">SlabMatFirstSlabSp</span><span class="p">)</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">SetSolverFirstSlab</span><span class="p">(</span><span class="n">PySolver</span><span class="p">(</span><span class="n">SlabMatFirstSlabSp</span><span class="p">,</span> <span class="n">initial_slab_solver</span><span class="p">))</span>
+        <span class="n">slab_matrix_first_slab_sparse</span> <span class="o">=</span> <span class="n">get_sparse_matrix</span><span class="p">(</span>
+            <span class="n">ST</span><span class="o">.</span><span class="n">get_slab_matrix_first_slab</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">initial_slab_solver</span><span class="o">.</span><span class="n">factorize</span><span class="p">(</span><span class="n">slab_matrix_first_slab_sparse</span><span class="p">)</span>
+        <span class="n">ST</span><span class="o">.</span><span class="n">set_solver_first_slab</span><span class="p">(</span>
+            <span class="n">PySolver</span><span class="p">(</span><span class="n">slab_matrix_first_slab_sparse</span><span class="p">,</span> <span class="n">initial_slab_solver</span><span class="p">),</span>
+        <span class="p">)</span>
 
-        <span class="n">u_sol</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">GMRes</span><span class="p">(</span>
+        <span class="n">u_sol</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">get_gmres_solution</span><span class="p">(</span>
             <span class="n">A_space_time_linop</span><span class="p">,</span>
             <span class="n">b_rhs</span><span class="p">,</span>
-            <span class="n">pre</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">,</span>
+            <span class="n">pre</span><span class="o">=</span><span class="n">ST</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">,</span>
             <span class="n">maxsteps</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
             <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span>
-            <span class="n">startiteration</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">printrates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">solver_type</span> <span class="o">==</span> <span class="s2">&quot;petsc-LU&quot;</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">SetSolverSlab</span><span class="p">(</span><span class="n">GetLuSolver</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span> <span class="n">st</span><span class="o">.</span><span class="n">GetSlabMat</span><span class="p">()))</span>  <span class="c1"># general slab</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">SetSolverFirstSlab</span><span class="p">(</span>
-            <span class="n">GetLuSolver</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span> <span class="n">st</span><span class="o">.</span><span class="n">GetSlabMatFirstSlab</span><span class="p">()),</span>
+    <span class="k">elif</span> <span class="n">SOLVER_TYPE</span> <span class="o">==</span> <span class="s2">&quot;petsc-LU&quot;</span><span class="p">:</span>
+        <span class="n">ST</span><span class="o">.</span><span class="n">set_solver_slab</span><span class="p">(</span><span class="n">get_lu_solver</span><span class="p">(</span><span class="n">ST</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span> <span class="n">ST</span><span class="o">.</span><span class="n">get_slab_matrix</span><span class="p">()))</span>  <span class="c1"># general slab</span>
+        <span class="n">ST</span><span class="o">.</span><span class="n">set_solver_first_slab</span><span class="p">(</span>
+            <span class="n">get_lu_solver</span><span class="p">(</span><span class="n">ST</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span> <span class="n">ST</span><span class="o">.</span><span class="n">get_slab_matrix_first_slab</span><span class="p">()),</span>
         <span class="p">)</span>  <span class="c1"># first slab is special</span>
-        <span class="n">u_sol</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">GMRes</span><span class="p">(</span>
+        <span class="n">u_sol</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">get_gmres_solution</span><span class="p">(</span>
             <span class="n">A_space_time_linop</span><span class="p">,</span>
             <span class="n">b_rhs</span><span class="p">,</span>
-            <span class="n">pre</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">,</span>
+            <span class="n">pre</span><span class="o">=</span><span class="n">ST</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">,</span>
             <span class="n">maxsteps</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
             <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span>
-            <span class="n">startiteration</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">printrates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">A_space_time</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">GetSpaceTimeMatrix</span><span class="p">()</span>
+        <span class="n">A_space_time</span> <span class="o">=</span> <span class="n">ST</span><span class="o">.</span><span class="n">get_spacetime_matrix</span><span class="p">()</span>  <span class="c1"># noqa: N806</span>
         <span class="n">u_sol</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">A_space_time</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
-        <span class="n">solver_space_time</span> <span class="o">=</span> <span class="n">GetLuSolver</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span> <span class="n">A_space_time</span><span class="p">)</span>
+        <span class="n">solver_space_time</span> <span class="o">=</span> <span class="n">get_lu_solver</span><span class="p">(</span><span class="n">ST</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span> <span class="n">A_space_time</span><span class="p">)</span>
         <span class="n">solver_space_time</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">u_sol</span><span class="p">,</span> <span class="n">b_rhs</span><span class="p">)</span>
 
     <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;elapsed time  &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; seconds&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">measure_errors</span><span class="p">:</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">MeasureErrors</span><span class="p">(</span><span class="n">u_sol</span><span class="p">)</span></div>
+        <span class="n">ST</span><span class="o">.</span><span class="n">measured_errors</span><span class="p">(</span><span class="n">u_sol</span><span class="p">)</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">SolveProblem</span><span class="p">(</span><span class="n">measure_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">solve_problem</span><span class="p">(</span><span class="n">measure_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span>
         <span class="s2">&quot;Memory usage in (Gb) = &quot;</span><span class="p">,</span>

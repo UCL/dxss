@@ -315,13 +315,18 @@ document.write(`
 <span class="n">eta</span> <span class="o">=</span> <span class="mf">0.6</span>
 
 
-<div class="viewcode-block" id="create_initial_mesh_convex"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.create_initial_mesh_convex">[docs]</a><span class="k">def</span> <span class="nf">create_initial_mesh_convex</span><span class="p">(</span><span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="create_initial_mesh_convex"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.create_initial_mesh_convex">[docs]</a><span class="k">def</span> <span class="nf">create_initial_mesh_convex</span><span class="p">(</span><span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+    <span class="c1"># TODO: Need to understand why there is a an import and subfunction here.</span>
+    <span class="c1"># Looks like create_mesh could be global level. The following functions have</span>
+    <span class="c1"># a **lot** of code overlap with this function.</span>
+    <span class="c1">#</span>
+    <span class="c1"># - PLR0915 Too many statements</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="p">)</span>
     <span class="n">proc</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
     <span class="n">bnd_marker</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">omega_marker</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">Bwithoutomega_marker</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">b_withoutomega_marker</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">rest_marker</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="k">if</span> <span class="n">proc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># We create one rectangle for each subdomain</span>
@@ -349,7 +354,7 @@ document.write(`
             <span class="n">com</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">getCenterOfMass</span><span class="p">(</span><span class="n">surface</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">com</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">com</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
-                <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">Bwithoutomega_marker</span><span class="p">)</span>
+                <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">b_withoutomega_marker</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">com</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.975</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
                 <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">rest_marker</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -412,13 +417,18 @@ document.write(`
     <span class="k">return</span> <span class="n">meshes</span></div>
 
 
-<div class="viewcode-block" id="get_mesh_hierarchy"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_hierarchy</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="get_mesh_hierarchy"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_hierarchy</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+    <span class="c1"># TODO: This is very WET from create_inital_mesh_complex above. We need to</span>
+    <span class="c1"># find some way to not repeat this function. Also fix PLR0915 and remove the</span>
+    <span class="c1"># suppression.</span>
+    <span class="c1">#</span>
+    <span class="c1"># - PLR0915 Too many statements</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="p">)</span>
     <span class="n">proc</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
     <span class="n">bnd_marker</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">omega_marker</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">Bwithoutomega_marker</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">b_withoutomega_marker</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">rest_marker</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="k">if</span> <span class="n">proc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># We create one rectangle for each subdomain</span>
@@ -446,7 +456,7 @@ document.write(`
             <span class="n">com</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">getCenterOfMass</span><span class="p">(</span><span class="n">surface</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">com</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">com</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
-                <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">Bwithoutomega_marker</span><span class="p">)</span>
+                <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">b_withoutomega_marker</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">com</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.975</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
                 <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">rest_marker</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -515,69 +525,14 @@ document.write(`
     <span class="k">return</span> <span class="n">mesh_hierarchy</span></div>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">ls_mesh = get_mesh_hierarchy(2)</span>
-
-<span class="sd">DrawMeshTikz(msh=ls_mesh[0],name=&quot;omega-Ind-convex-level0&quot;,case_str=&quot;convex-Mihai-omega&quot;)</span>
-<span class="sd">DrawMeshTikz(msh=ls_mesh[1],name=&quot;B-Ind-convex-level1&quot;,case_str=&quot;convex-Mihai-B&quot;)</span>
-
-<span class="sd">tol = 1e-12</span>
-<span class="sd">x_l = 0.1-tol</span>
-<span class="sd">x_r = 0.9+tol</span>
-<span class="sd">y_b = 0.25-tol</span>
-<span class="sd">y_t = 1.0+tol</span>
-
-<span class="sd">def omega_Ind(x):</span>
-
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    omega_coords = np.logical_or( ( x[0] &lt;= 0.1 ),</span>
-<span class="sd">        np.logical_or(   (x[0] &gt;= 0.9 ), (x[1] &lt;= 0.25)  )</span>
-<span class="sd">        )</span>
-<span class="sd">    rest_coords = np.invert(omega_coords)</span>
-<span class="sd">    values[omega_coords] = np.full(sum(omega_coords), 1.0)</span>
-<span class="sd">    values[rest_coords] = np.full(sum(rest_coords), 0)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">def B_Ind(x):</span>
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    # Create a boolean array indicating which dofs (corresponding to cell centers)</span>
-<span class="sd">    # that are in each domain</span>
-<span class="sd">    rest_coords = np.logical_and( ( x[0] &gt;= 0.1 ),</span>
-<span class="sd">        np.logical_and(   (x[0] &lt;= 0.9 ),</span>
-<span class="sd">          np.logical_and(   (x[1]&gt;= 0.95),  (x[1]&lt;= 1)  )</span>
-<span class="sd">        )</span>
-<span class="sd">      )</span>
-<span class="sd">    B_coords = np.invert(rest_coords)</span>
-<span class="sd">    values[B_coords] = np.full(sum(B_coords), 1.0)</span>
-<span class="sd">    values[rest_coords] = np.full(sum(rest_coords), 0)</span>
-<span class="sd">    return values</span>
-
-
-<span class="sd">for idx,mesh in enumerate(ls_mesh):</span>
-
-<span class="sd">    Q_ind = FunctionSpace(mesh, (&quot;DG&quot;, 0))</span>
-<span class="sd">    B_ind  = Function(Q_ind)</span>
-<span class="sd">    omega_ind = Function(Q_ind)</span>
-<span class="sd">    B_ind.interpolate(B_Ind)</span>
-<span class="sd">    omega_ind.interpolate(omega_Ind)</span>
-
-<span class="sd">    with XDMFFile(mesh.comm, &quot;omega-ind-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">        file.write_mesh(mesh)</span>
-<span class="sd">        file.write_function(omega_ind)</span>
-
-<span class="sd">    with XDMFFile(mesh.comm, &quot;B-ind-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">        file.write_mesh(mesh)</span>
-<span class="sd">        file.write_function(B_ind)</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-
-<div class="viewcode-block" id="get_mesh_hierarchy_nonconvex"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy_nonconvex">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_hierarchy_nonconvex</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="get_mesh_hierarchy_nonconvex"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy_nonconvex">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_hierarchy_nonconvex</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+    <span class="c1"># TODO: remove suppression of PLR0915 when refactored</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="p">)</span>
     <span class="n">proc</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
     <span class="n">bnd_marker</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">omega_marker</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">Bwithoutomega_marker</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">b_withoutomega_marker</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">rest_marker</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="k">if</span> <span class="n">proc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># We create one rectangle for each subdomain</span>
@@ -595,7 +550,7 @@ document.write(`
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">com</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.275</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
                 <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">omega_marker</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">com</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
-                <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">Bwithoutomega_marker</span><span class="p">)</span>
+                <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">b_withoutomega_marker</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">surface</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">rest_marker</span><span class="p">)</span>
 
@@ -662,68 +617,8 @@ document.write(`
     <span class="k">return</span> <span class="n">mesh_hierarchy</span></div>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">ls_mesh = get_mesh_hierarchy_nonconvex(5)</span>
-
-
-<span class="sd">for idx,mesh in enumerate(ls_mesh):</span>
-<span class="sd">    with XDMFFile(mesh.comm, &quot;mesh-nonconvex-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">        file.write_mesh(mesh)</span>
-
-<span class="sd">def omega_Ind(x):</span>
-
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    omega_coords = np.logical_and( ( x[0] &gt;= 0.25 ),</span>
-<span class="sd">                     np.logical_and(   (x[0] &lt;= 0.75 ),</span>
-<span class="sd">                       np.logical_and(   (x[1]&gt;= 0.05),  (x[1]&lt;= 0.5)  )</span>
-<span class="sd">                     )</span>
-<span class="sd">                   )</span>
-<span class="sd">    rest_coords = np.invert(omega_coords)</span>
-<span class="sd">    values[omega_coords] = np.full(sum(omega_coords), 1.0)</span>
-<span class="sd">    values[rest_coords] = np.full(sum(rest_coords), 0)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">def B_Ind(x):</span>
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    # Create a boolean array indicating which dofs (corresponding to cell centers)</span>
-<span class="sd">    # that are in each domain</span>
-<span class="sd">    B_coords = np.logical_and( ( x[0] &gt;= 0.125 ),</span>
-<span class="sd">                 np.logical_and(   (x[0] &lt;= 0.875 ),</span>
-<span class="sd">                   np.logical_and(   (x[1]&gt;= 0.05),  (x[1]&lt;= 0.95)  )</span>
-<span class="sd">                 )</span>
-<span class="sd">               )</span>
-<span class="sd">    rest_coords = np.invert(B_coords)</span>
-<span class="sd">    values[B_coords] = np.full(sum(B_coords), 1.0)</span>
-<span class="sd">    values[rest_coords] = np.full(sum(rest_coords), 0)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">for idx,mesh in enumerate(ls_mesh):</span>
-
-<span class="sd">    Q_ind = FunctionSpace(mesh, (&quot;DG&quot;, 0))</span>
-<span class="sd">    omega_ind = Function(Q_ind)</span>
-<span class="sd">    B_ind = Function(Q_ind)</span>
-<span class="sd">    B_ind.interpolate(B_Ind)</span>
-<span class="sd">    omega_ind.interpolate(omega_Ind)</span>
-
-<span class="sd">    #cells_omega = locate_entities(mesh, mesh.topology.dim, omega_Ind)</span>
-<span class="sd">    #omega_ind.x.array[:] = 0.0</span>
-<span class="sd">    #omega_ind.x.array[cells_omega] = np.full(len(cells_omega), 1)</span>
-
-<span class="sd">    #cells_B = locate_entities(mesh, mesh.topology.dim, B_Ind)</span>
-<span class="sd">    #B_ind.x.array[:] = 0.0</span>
-<span class="sd">    #B_ind.x.array[cells_B] = np.full(len(cells_B), 1)</span>
-
-<span class="sd">    with XDMFFile(mesh.comm, &quot;omega-ind-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">        file.write_mesh(mesh)</span>
-<span class="sd">        file.write_function(omega_ind)</span>
-
-<span class="sd">    with XDMFFile(mesh.comm, &quot;B-ind-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">        file.write_mesh(mesh)</span>
-<span class="sd">        file.write_function(B_ind)</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-
-<div class="viewcode-block" id="get_mesh_hierarchy_fitted_disc"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy_fitted_disc">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_hierarchy_fitted_disc</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">):</span>
+<div class="viewcode-block" id="get_mesh_hierarchy_fitted_disc"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy_fitted_disc">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_hierarchy_fitted_disc</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+    <span class="c1"># TODO: remove suppression of PLR0915 when refactored</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">h_init</span><span class="p">)</span>
     <span class="n">proc</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
@@ -737,8 +632,8 @@ document.write(`
         <span class="n">r1</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">r2</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">y_eta</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">cut</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span> <span class="n">r1</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="n">r2</span><span class="p">)],</span> <span class="n">tag</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="n">B_minus</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">y_eta</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-        <span class="n">B_plus</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">y_eta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.95</span> <span class="o">-</span> <span class="n">y_eta</span><span class="p">),</span> <span class="n">tag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">b_minus</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">y_eta</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">b_plus</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">y_eta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.95</span> <span class="o">-</span> <span class="n">y_eta</span><span class="p">),</span> <span class="n">tag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
         <span class="n">top_remainder</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span>
             <span class="mf">0.0</span><span class="p">,</span>
             <span class="n">y_eta</span><span class="p">,</span>
@@ -750,7 +645,7 @@ document.write(`
 
         <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">fragment</span><span class="p">(</span>
             <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)],</span>
-            <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="n">B_minus</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">B_plus</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">top_remainder</span><span class="p">)],</span>
+            <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="n">b_minus</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">b_plus</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">top_remainder</span><span class="p">)],</span>
         <span class="p">)</span>
 
         <span class="c1"># We fuse the two rectangles and keep the interface between them</span>
@@ -832,59 +727,8 @@ document.write(`
     <span class="k">return</span> <span class="n">mesh_hierarchy</span></div>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">ls_mesh = get_mesh_hierarchy_fitted_disc(4,eta=0.6)</span>
-<span class="sd">tol = 1e-12</span>
-<span class="sd">DrawMeshTikz(msh=ls_mesh[0],name=&quot;omega-Ind-Split-level0&quot;,case_str=&quot;splitgeom-omega&quot;)</span>
-<span class="sd">DrawMeshTikz(msh=ls_mesh[1],name=&quot;B-Ind-Split-level1&quot;,case_str=&quot;splitgeom-B&quot;)</span>
-
-<span class="sd">def omega_Ind(x):</span>
-
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    omega_coords = np.logical_or(  np.logical_and(  x[0] &lt;= 0.1 , x[1] &lt;=eta  ) ,</span>
-<span class="sd">        np.logical_or(  np.logical_and( x[0] &gt;= 0.9 , x[1] &lt;= eta  ) , (x[1] &lt;= 0.25)  )</span>
-<span class="sd">        )</span>
-<span class="sd">    #omega_coords = np.logical_or(   ( x[0] &lt;= 0.1 )  ,</span>
-<span class="sd">    #    np.logical_or(   (x[0] &gt;= 0.9 ), (x[1] &lt;= 0.25)  )</span>
-<span class="sd">    #    )</span>
-<span class="sd">    rest_coords = np.invert(omega_coords)</span>
-<span class="sd">    values[omega_coords] = np.full(sum(omega_coords), 1.0)</span>
-<span class="sd">    values[rest_coords] = np.full(sum(rest_coords), 0)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">def B_Ind(x):</span>
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    # Create a boolean array indicating which dofs (corresponding to cell centers)</span>
-<span class="sd">    # that are in each domain</span>
-<span class="sd">    B_coords = np.logical_and( ( x[0] &gt;= 0.1 ),</span>
-<span class="sd">        np.logical_and(   (x[0] &lt;= 0.9 ),</span>
-<span class="sd">          np.logical_and(   (x[1]&gt;= 0.25),  (x[1]&lt;= 0.95)  )</span>
-<span class="sd">        )</span>
-<span class="sd">    )</span>
-<span class="sd">    rest_coords = np.invert(B_coords)</span>
-<span class="sd">    values[B_coords] = np.full(sum(B_coords), 1.0)</span>
-<span class="sd">    values[rest_coords] = np.full(sum(rest_coords), 0)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">for idx,mesh in enumerate(ls_mesh):</span>
-
-<span class="sd">    Q_ind = FunctionSpace(mesh, (&quot;DG&quot;, 0))</span>
-<span class="sd">    B_ind  = Function(Q_ind)</span>
-<span class="sd">    omega_ind = Function(Q_ind)</span>
-<span class="sd">    B_ind.interpolate(B_Ind)</span>
-<span class="sd">    omega_ind.interpolate(omega_Ind)</span>
-
-<span class="sd">    with XDMFFile(mesh.comm, &quot;omega-ind-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">        file.write_mesh(mesh)</span>
-<span class="sd">        file.write_function(omega_ind)</span>
-
-<span class="sd">    with XDMFFile(mesh.comm, &quot;B-ind-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">        file.write_mesh(mesh)</span>
-<span class="sd">        file.write_function(B_ind)</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-
-<div class="viewcode-block" id="get_mesh_inclusion"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_inclusion">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_inclusion</span><span class="p">(</span><span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<div class="viewcode-block" id="get_mesh_inclusion"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_inclusion">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_inclusion</span><span class="p">(</span><span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+    <span class="c1"># TODO: remove suppression of PLR0915 when refactored</span>
     <span class="n">cell_type</span> <span class="o">=</span> <span class="n">CellType</span><span class="o">.</span><span class="n">triangle</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;inclm&quot;</span><span class="p">)</span>
@@ -900,10 +744,13 @@ document.write(`
         <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">cut</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span> <span class="n">r1</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="n">r2</span><span class="p">)],</span> <span class="n">tag</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
         <span class="n">target_dom</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
-        <span class="n">Bdisk</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addDisk</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">b_disk</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addDisk</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
         <span class="n">remainder</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="o">-</span><span class="mf">1.25</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.75</span><span class="p">)</span>
-        <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">fragment</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="n">target_dom</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Bdisk</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">remainder</span><span class="p">)])</span>
+        <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">fragment</span><span class="p">(</span>
+            <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)],</span>
+            <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="n">target_dom</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">b_disk</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">remainder</span><span class="p">)],</span>
+        <span class="p">)</span>
 
         <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
 
@@ -935,15 +782,17 @@ document.write(`
         <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">recombine</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">setOrder</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
     <span class="n">idx</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">getNodes</span><span class="p">()</span>
-    <span class="n">ls_points_2D</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ls_points_2d</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">ls_points_2D</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="n">ls_points_2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ls_points_2D</span><span class="p">)</span>
-    <span class="n">points</span> <span class="o">=</span> <span class="n">ls_points_2D</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">ls_points_2d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">ls_points_2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ls_points_2d</span><span class="p">)</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">ls_points_2d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">idx</span> <span class="o">-=</span> <span class="mi">1</span>
     <span class="n">srt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">srt</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">srt</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">))):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;idx not sequential&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># TODO: check</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">srt</span><span class="p">]</span>
 
     <span class="n">element_types</span><span class="p">,</span> <span class="n">element_tags</span><span class="p">,</span> <span class="n">node_tags</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">getElements</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -976,78 +825,16 @@ document.write(`
     <span class="k">return</span> <span class="n">msh</span></div>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">def omega_Ind_Disk(x):</span>
-
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    omega_coords = np.logical_or(   ( x[0] &lt;= -1.25 )  ,</span>
-<span class="sd">        np.logical_or(   (x[0] &gt;= 1.25 ), (x[1] &lt;= -1.25)  )</span>
-<span class="sd">        )</span>
-<span class="sd">    rest_coords = np.invert(omega_coords)</span>
-<span class="sd">    values[omega_coords] = np.full(sum(omega_coords), 1.0)</span>
-<span class="sd">    values[rest_coords] = np.full(sum(rest_coords), 0)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">def B_Ind_Disk(x):</span>
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    # Create a boolean array indicating which dofs (corresponding to cell centers)</span>
-<span class="sd">    # that are in each domain</span>
-<span class="sd">    rest_coords = np.logical_and( ( x[0] &gt;= -0.5 ),</span>
-<span class="sd">        np.logical_and(   (x[0] &lt;= 0.5 ),</span>
-<span class="sd">          np.logical_and(   (x[1]&gt;= -0.5),  (x[1]&lt;= 0.5)  )</span>
-<span class="sd">        )</span>
-<span class="sd">      )</span>
-<span class="sd">    B_coords = np.invert(rest_coords)</span>
-<span class="sd">    values[B_coords] = np.full(sum(B_coords), 0.0)</span>
-<span class="sd">    values[rest_coords] = np.full(sum(rest_coords), 1.0)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">mesh = get_mesh_inclusion(h_init=1.25)</span>
-<span class="sd">Q_ind = FunctionSpace(mesh, (&quot;DG&quot;, 0))</span>
-<span class="sd">B_ind  = Function(Q_ind)</span>
-<span class="sd">omega_ind = Function(Q_ind)</span>
-<span class="sd">B_ind.interpolate(B_Ind_Disk)</span>
-<span class="sd">omega_ind.interpolate(omega_Ind_Disk)</span>
-
-<span class="sd">idx = 99</span>
-<span class="sd">with XDMFFile(mesh.comm, &quot;omega-ind-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">    file.write_mesh(mesh)</span>
-<span class="sd">    file.write_function(omega_ind)</span>
-
-<span class="sd">with XDMFFile(mesh.comm, &quot;B-ind-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">    file.write_mesh(mesh)</span>
-<span class="sd">    file.write_function(B_ind)</span>
-
-<span class="sd">import ufl</span>
-<span class="sd">x = ufl.SpatialCoordinate(mesh)</span>
-<span class="sd">a = 1.0</span>
-<span class="sd">mu_plus = 1</span>
-<span class="sd">mu_minus = 2</span>
-<span class="sd">def mu_Ind(x):</span>
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    upper_coords = (x[0]*x[0] + x[1]*x[1]) &gt; a**2</span>
-<span class="sd">    #print(&quot;upper_coords = &quot;, upper_coords)</span>
-<span class="sd">    lower_coords = np.invert(upper_coords)</span>
-<span class="sd">    values[upper_coords] = np.full(sum(upper_coords), mu_plus)</span>
-<span class="sd">    values[lower_coords] = np.full(sum(lower_coords), mu_minus)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">mu = Function(Q_ind)</span>
-<span class="sd">mu.interpolate(mu_Ind)</span>
-<span class="sd">with XDMFFile(mesh.comm, &quot;mu-jump-disk-idx{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">    file.write_mesh(mesh)</span>
-<span class="sd">    file.write_function(mu)</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-
-<div class="viewcode-block" id="get_mesh_inclusion_square"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_inclusion_square">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_inclusion_square</span><span class="p">(</span>
+<div class="viewcode-block" id="get_mesh_inclusion_square"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_inclusion_square">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_inclusion_square</span><span class="p">(</span>  <span class="c1"># noqa: PLR0915</span>
     <span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span>
-    <span class="n">x_L</span><span class="o">=-</span><span class="mf">1.25</span><span class="p">,</span>
-    <span class="n">x_R</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span>
-    <span class="n">y_L</span><span class="o">=-</span><span class="mf">1.25</span><span class="p">,</span>
-    <span class="n">y_R</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span>
+    <span class="n">x_l</span><span class="o">=-</span><span class="mf">1.25</span><span class="p">,</span>  <span class="c1"># TODO: points could be passed as a tuple</span>
+    <span class="n">x_r</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span>
+    <span class="n">y_l</span><span class="o">=-</span><span class="mf">1.25</span><span class="p">,</span>
+    <span class="n">y_r</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span>
     <span class="n">eta</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span>
 <span class="p">):</span>
+    <span class="c1"># TODO: this function has too many statements. Try to reduce the complexity</span>
+    <span class="c1"># on refactoring and remove the suppression of PLR0915.</span>
     <span class="n">cell_type</span> <span class="o">=</span> <span class="n">CellType</span><span class="o">.</span><span class="n">triangle</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;inclm&quot;</span><span class="p">)</span>
@@ -1061,18 +848,18 @@ document.write(`
 
         <span class="k">if</span> <span class="n">eta</span> <span class="o">&lt;</span> <span class="mf">1.5</span><span class="p">:</span>
             <span class="n">target_dom_minus</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span>
-                <span class="n">x_L</span><span class="p">,</span>
-                <span class="n">y_L</span><span class="p">,</span>
+                <span class="n">x_l</span><span class="p">,</span>
+                <span class="n">y_l</span><span class="p">,</span>
                 <span class="mi">0</span><span class="p">,</span>
-                <span class="n">x_R</span> <span class="o">-</span> <span class="n">x_L</span><span class="p">,</span>
-                <span class="n">eta</span> <span class="o">-</span> <span class="n">y_L</span><span class="p">,</span>
+                <span class="n">x_r</span> <span class="o">-</span> <span class="n">x_l</span><span class="p">,</span>
+                <span class="n">eta</span> <span class="o">-</span> <span class="n">y_l</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">target_dom_plus</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span>
-                <span class="n">x_L</span><span class="p">,</span>
+                <span class="n">x_l</span><span class="p">,</span>
                 <span class="n">eta</span><span class="p">,</span>
                 <span class="mi">0</span><span class="p">,</span>
-                <span class="n">x_R</span> <span class="o">-</span> <span class="n">x_L</span><span class="p">,</span>
-                <span class="n">y_R</span> <span class="o">-</span> <span class="n">eta</span><span class="p">,</span>
+                <span class="n">x_r</span> <span class="o">-</span> <span class="n">x_l</span><span class="p">,</span>
+                <span class="n">y_r</span> <span class="o">-</span> <span class="n">eta</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">mu_inner</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
             <span class="n">remainder_top</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.5</span> <span class="o">-</span> <span class="n">eta</span><span class="p">)</span>
@@ -1090,7 +877,7 @@ document.write(`
             <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">target_dom</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="n">x_L</span><span class="p">,</span> <span class="n">y_L</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x_R</span> <span class="o">-</span> <span class="n">x_L</span><span class="p">,</span> <span class="n">y_R</span> <span class="o">-</span> <span class="n">y_L</span><span class="p">)</span>
+            <span class="n">target_dom</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="n">x_l</span><span class="p">,</span> <span class="n">y_l</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x_r</span> <span class="o">-</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">y_r</span> <span class="o">-</span> <span class="n">y_l</span><span class="p">)</span>
             <span class="n">mu_inner</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
             <span class="n">remainder</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="o">-</span><span class="mf">1.25</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.75</span><span class="p">)</span>
             <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
@@ -1130,15 +917,17 @@ document.write(`
     <span class="n">order</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">setOrder</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
     <span class="n">idx</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">getNodes</span><span class="p">()</span>
-    <span class="n">ls_points_2D</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ls_points_2d</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">ls_points_2D</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="n">ls_points_2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ls_points_2D</span><span class="p">)</span>
-    <span class="n">points</span> <span class="o">=</span> <span class="n">ls_points_2D</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">ls_points_2d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">ls_points_2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ls_points_2d</span><span class="p">)</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">ls_points_2d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">idx</span> <span class="o">-=</span> <span class="mi">1</span>
     <span class="n">srt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">srt</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">srt</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">))):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;idx not sequential&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># TODO: check</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">srt</span><span class="p">]</span>
 
     <span class="n">element_types</span><span class="p">,</span> <span class="n">element_tags</span><span class="p">,</span> <span class="n">node_tags</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">getElements</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -1163,7 +952,9 @@ document.write(`
         <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="p">,</span>
         <span class="n">cells</span><span class="p">,</span>
         <span class="n">x</span><span class="p">,</span>
-        <span class="n">ufl_mesh_from_gmsh</span><span class="p">(</span><span class="n">gmshio</span><span class="o">.</span><span class="n">ufl_mesh</span><span class="p">(</span><span class="n">gmsh_cell_id</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span>
+        <span class="n">ufl_mesh_from_gmsh</span><span class="p">(</span>  <span class="c1"># noqa: F821</span>
+            <span class="n">gmshio</span><span class="o">.</span><span class="n">ufl_mesh</span><span class="p">(</span><span class="n">gmsh_cell_id</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="p">),</span>  <span class="c1"># TODO: this function is undefined!! (old dolfinx api?)</span>
     <span class="p">)</span>
 
     <span class="k">with</span> <span class="n">XDMFFile</span><span class="p">(</span><span class="n">msh</span><span class="o">.</span><span class="n">comm</span><span class="p">,</span> <span class="s2">&quot;mesh.xdmf&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">xdmf</span><span class="p">:</span>
@@ -1171,38 +962,9 @@ document.write(`
     <span class="k">return</span> <span class="n">msh</span></div>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">x_L = -1.0</span>
-<span class="sd">x_R = 1.0</span>
-<span class="sd">y_L = -1.0</span>
-<span class="sd">y_R = 1.0</span>
-<span class="sd">mu_plus = 2.0</span>
-<span class="sd">mu_minus = 1.0</span>
-
-<span class="sd">def mu_Ind(x):</span>
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    inner_coords = np.logical_and( ( x[0] &gt;= x_L ),</span>
-<span class="sd">            np.logical_and(   (x[0] &lt;= x_R ),</span>
-<span class="sd">              np.logical_and(   (x[1]&gt;= y_L),  (x[1]&lt;= y_R)  )</span>
-<span class="sd">            )</span>
-<span class="sd">          )</span>
-<span class="sd">    outer_coords = np.invert(inner_coords)</span>
-<span class="sd">    values[inner_coords] = np.full(sum(inner_coords), mu_plus)</span>
-<span class="sd">    values[outer_coords] = np.full(sum(outer_coords), mu_minus)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">idx = 25</span>
-<span class="sd">mesh = get_mesh_inclusion_square(h_init=1.25)</span>
-<span class="sd">Q_ind = FunctionSpace(mesh, (&quot;DG&quot;, 0))</span>
-<span class="sd">mu = Function(Q_ind)</span>
-<span class="sd">mu.interpolate(mu_Ind)</span>
-<span class="sd">with XDMFFile(mesh.comm, &quot;mu-jump-disk-idx{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">    file.write_mesh(mesh)</span>
-<span class="sd">    file.write_function(mu)</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-
-<div class="viewcode-block" id="get_mesh_bottom_data"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_bottom_data">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_bottom_data</span><span class="p">(</span><span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.6</span><span class="p">):</span>
+<div class="viewcode-block" id="get_mesh_bottom_data"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_bottom_data">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_bottom_data</span><span class="p">(</span><span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.6</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+    <span class="c1"># TODO: this function has too many statements. Try to reduce the complexity</span>
+    <span class="c1"># on refactoring and remove the suppression of PLR0915.</span>
     <span class="n">cell_type</span> <span class="o">=</span> <span class="n">CellType</span><span class="o">.</span><span class="n">triangle</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;inclm&quot;</span><span class="p">)</span>
@@ -1220,9 +982,9 @@ document.write(`
             <span class="n">eta</span> <span class="o">-</span> <span class="mf">0.25</span><span class="p">,</span>
             <span class="n">tag</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">B_minus</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">eta</span> <span class="o">-</span> <span class="mf">0.25</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">b_minus</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">eta</span> <span class="o">-</span> <span class="mf">0.25</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
-        <span class="n">B_plus</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span> <span class="o">-</span> <span class="n">eta</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">b_plus</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span> <span class="o">-</span> <span class="n">eta</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
         <span class="n">top_left</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">eta</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
         <span class="n">top_middle</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">eta</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
         <span class="n">top_right</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">eta</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
@@ -1231,10 +993,10 @@ document.write(`
         <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">fragment</span><span class="p">(</span>
             <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="n">omega</span><span class="p">)],</span>
             <span class="p">[</span>
-                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">B_minus</span><span class="p">),</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">b_minus</span><span class="p">),</span>
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">middle_left</span><span class="p">),</span>
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">middle_right</span><span class="p">),</span>
-                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">B_plus</span><span class="p">),</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">b_plus</span><span class="p">),</span>
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">top_left</span><span class="p">),</span>
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">top_middle</span><span class="p">),</span>
                 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">top_right</span><span class="p">),</span>
@@ -1263,15 +1025,17 @@ document.write(`
     <span class="n">order</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">setOrder</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
     <span class="n">idx</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">getNodes</span><span class="p">()</span>
-    <span class="n">ls_points_2D</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ls_points_2d</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">ls_points_2D</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="n">ls_points_2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ls_points_2D</span><span class="p">)</span>
-    <span class="n">points</span> <span class="o">=</span> <span class="n">ls_points_2D</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">ls_points_2d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">ls_points_2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ls_points_2d</span><span class="p">)</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">ls_points_2d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">idx</span> <span class="o">-=</span> <span class="mi">1</span>
     <span class="n">srt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">srt</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">srt</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">))):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;idx not sequential&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># TODO: check</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">srt</span><span class="p">]</span>
 
     <span class="n">element_types</span><span class="p">,</span> <span class="n">element_tags</span><span class="p">,</span> <span class="n">node_tags</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">getElements</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -1304,57 +1068,9 @@ document.write(`
     <span class="k">return</span> <span class="n">msh</span></div>
 
 
-<span class="c1"># with XDMFFile(mesh.comm, &quot;mesh.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">eta = 0.6</span>
-<span class="sd">h_init = 1.25</span>
-<span class="sd">n_ref = 5</span>
-<span class="sd">ls_mesh = []</span>
-<span class="sd">for i in range(n_ref):</span>
-<span class="sd">    ls_mesh.append( get_mesh_bottom_data(h_init=h_init/2**i,eta=eta) )</span>
-
-<span class="sd">def omega_Ind(x):</span>
-
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    omega_coords = x[1] &lt;= 0.25</span>
-<span class="sd">    rest_coords = np.invert(omega_coords)</span>
-<span class="sd">    values[omega_coords] = np.full(sum(omega_coords), 1.0)</span>
-<span class="sd">    values[rest_coords] = np.full(sum(rest_coords), 0)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">def B_Ind(x):</span>
-<span class="sd">    values = np.zeros(x.shape[1],dtype=ScalarType)</span>
-<span class="sd">    # Create a boolean array indicating which dofs (corresponding to cell centers)</span>
-<span class="sd">    # that are in each domain</span>
-<span class="sd">    B_coords = np.logical_and( ( x[0] &gt;= 0.25 ),</span>
-<span class="sd">        np.logical_and(   (x[0] &lt;= 0.75 ),</span>
-<span class="sd">          np.logical_and(   (x[1]&gt;= 0.25),  (x[1]&lt;= 0.9)  )</span>
-<span class="sd">        )</span>
-<span class="sd">    )</span>
-<span class="sd">    rest_coords = np.invert(B_coords)</span>
-<span class="sd">    values[B_coords] = np.full(sum(B_coords), 1.0)</span>
-<span class="sd">    values[rest_coords] = np.full(sum(rest_coords), 0)</span>
-<span class="sd">    return values</span>
-
-<span class="sd">for idx,mesh in enumerate(ls_mesh):</span>
-
-<span class="sd">    Q_ind = FunctionSpace(mesh, (&quot;DG&quot;, 0))</span>
-<span class="sd">    B_ind  = Function(Q_ind)</span>
-<span class="sd">    omega_ind = Function(Q_ind)</span>
-<span class="sd">    B_ind.interpolate(B_Ind)</span>
-<span class="sd">    omega_ind.interpolate(omega_Ind)</span>
-
-<span class="sd">    with XDMFFile(mesh.comm, &quot;omega-ind-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">        file.write_mesh(mesh)</span>
-<span class="sd">        file.write_function(omega_ind)</span>
-
-<span class="sd">    with XDMFFile(mesh.comm, &quot;B-ind-reflvl{0}.xdmf&quot;.format(idx), &quot;w&quot;) as file:</span>
-<span class="sd">        file.write_mesh(mesh)</span>
-<span class="sd">        file.write_function(B_ind)</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-
-<div class="viewcode-block" id="get_mesh_data_all_around"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_data_all_around">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_data_all_around</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="get_mesh_data_all_around"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_data_all_around">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_data_all_around</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+    <span class="c1"># TODO: this function has too many statements. Try to reduce the complexity</span>
+    <span class="c1"># on refactoring and remove the suppression of PLR0915.</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="p">)</span>
     <span class="n">proc</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
@@ -1448,7 +1164,7 @@ document.write(`
     <span class="k">return</span> <span class="n">mesh_hierarchy</span></div>
 
 
-<div class="viewcode-block" id="get_3Dmesh_data_all_around"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_3Dmesh_data_all_around">[docs]</a><span class="k">def</span> <span class="nf">get_3Dmesh_data_all_around</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="get_3d_mesh_data_all_around"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_3d_mesh_data_all_around">[docs]</a><span class="k">def</span> <span class="nf">get_3d_mesh_data_all_around</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
     <span class="c1"># if proc == 0:</span>
     <span class="n">gdim</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>

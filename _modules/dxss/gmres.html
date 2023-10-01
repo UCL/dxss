@@ -322,9 +322,9 @@ document.write(`
         <span class="n">callback_sol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">printrates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">mat</span>
         <span class="k">if</span> <span class="n">atol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-12</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">mat</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pre</span> <span class="o">=</span> <span class="n">pre</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">atol</span> <span class="o">=</span> <span class="n">atol</span>
@@ -332,10 +332,19 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_sol</span> <span class="o">=</span> <span class="n">callback_sol</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">printrates</span> <span class="o">=</span> <span class="n">printrates</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">residuals</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="LinearSolver.Solve"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.LinearSolver.Solve">[docs]</a>    <span class="k">def</span> <span class="nf">Solve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residuals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">_solve_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method-specific solving function called by `LinearSolver.solve`.</span>
+
+<span class="sd">        This is a no-op, and is intended for derived classes to override.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="LinearSolver.solve"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.LinearSolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rhs</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span>
         <span class="n">sol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -349,10 +358,10 @@ document.write(`
         <span class="k">if</span> <span class="n">initialize</span><span class="p">:</span>
             <span class="n">sol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sol</span> <span class="o">=</span> <span class="n">sol</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_SolveImpl</span><span class="p">(</span><span class="n">rhs</span><span class="o">=</span><span class="n">rhs</span><span class="p">,</span> <span class="n">sol</span><span class="o">=</span><span class="n">sol</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_solve_impl</span><span class="p">(</span><span class="n">rhs</span><span class="o">=</span><span class="n">rhs</span><span class="p">,</span> <span class="n">sol</span><span class="o">=</span><span class="n">sol</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">residuals</span></div>
 
-<div class="viewcode-block" id="LinearSolver.CheckResiduals"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.LinearSolver.CheckResiduals">[docs]</a>    <span class="k">def</span> <span class="nf">CheckResiduals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">residual</span><span class="p">):</span>
+<div class="viewcode-block" id="LinearSolver.check_residuals"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.LinearSolver.check_residuals">[docs]</a>    <span class="k">def</span> <span class="nf">check_residuals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">residual</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">residuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residuals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -412,38 +421,57 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">restart</span> <span class="o">=</span> <span class="n">restart</span>
 
-    <span class="k">def</span> <span class="nf">_SolveImpl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">):</span>
-        <span class="n">A</span><span class="p">,</span> <span class="n">pre</span><span class="p">,</span> <span class="n">innerproduct</span><span class="p">,</span> <span class="n">norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">innerproduct</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span>
-        <span class="n">sn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-        <span class="n">cs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_solve_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">):</span>  <span class="c1"># noqa: C901, PLR0915</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The internal solving subfunction for the GMRes solver type.</span>
+
+<span class="sd">        Called by the parent class&#39; solve method. Implements the GMRes solver</span>
+<span class="sd">        type, solving a linear system of equations Ax = b. Use the Arnoldi</span>
+<span class="sd">        iteration to iteratively solve the system. It also handles special cases</span>
+<span class="sd">        for callbacks and restarts.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rhs: The b vector in Ax = b.</span>
+<span class="sd">            sol: The vector to contain solutions, x.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A vector containing solutions, x.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: when refactoring this needs to be reduced in complexity and</span>
+        <span class="c1"># split into smaller functions. We are suppressing flake8/ruff warnings</span>
+        <span class="c1"># for this function:</span>
+        <span class="c1">#  - C901 the complexity score of this function is 20!</span>
+        <span class="c1">#  - PLR0915 there are too many conditional statements.</span>
+        <span class="n">pre</span><span class="p">,</span> <span class="n">innerproduct</span><span class="p">,</span> <span class="n">norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">innerproduct</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span>
+        <span class="n">sn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">)</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_sol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">sol_start</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
             <span class="n">sol</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sol_start</span><span class="p">)</span>
         <span class="n">r</span><span class="p">,</span> <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span>  <span class="c1"># noqa: N806 | convention: Ax = b</span>
         <span class="n">A</span><span class="o">.</span><span class="n">mult</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
         <span class="n">tmp</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">rhs</span><span class="p">)</span>
         <span class="n">tmp</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">pre</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-        <span class="n">Q</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">H</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># noqa: N806</span>
         <span class="n">q_1</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
         <span class="n">Q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q_1</span><span class="p">)</span>
         <span class="n">r_norm</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CheckResiduals</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">r_norm</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_residuals</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">r_norm</span><span class="p">)):</span>
             <span class="k">return</span> <span class="n">sol</span>
         <span class="n">r</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">Q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">Q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">r_norm</span><span class="p">)</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r_norm</span>
 
-        <span class="k">def</span> <span class="nf">arnoldi</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">arnoldi</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>  <span class="c1"># noqa: N803</span>
             <span class="n">q</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
             <span class="n">A</span><span class="o">.</span><span class="n">mult</span><span class="p">(</span><span class="n">Q</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">tmp</span><span class="p">)</span>
 
             <span class="n">pre</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
 
-            <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="n">h</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">innerproduct</span><span class="p">(</span><span class="n">Q</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">q</span><span class="p">)</span>
                 <span class="n">q</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">h</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">Q</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -454,6 +482,8 @@ document.write(`
             <span class="k">return</span> <span class="n">h</span><span class="p">,</span> <span class="n">q</span>
 
         <span class="k">def</span> <span class="nf">givens_rotation</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">):</span>
+            <span class="c1"># TODO: can the Givens rotation def, and application functions be</span>
+            <span class="c1"># moved out of this into a general utilities library?</span>
             <span class="k">if</span> <span class="n">v2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
             <span class="k">elif</span> <span class="n">v1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -473,7 +503,7 @@ document.write(`
             <span class="n">h</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">cs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">h</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="n">sn</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">h</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
             <span class="n">h</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="k">def</span> <span class="nf">calcSolution</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">calculate_solution</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
             <span class="c1"># if callback_sol is set we need to recompute solution in every step</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_sol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">sol</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sol_start</span><span class="p">)</span>
@@ -486,7 +516,8 @@ document.write(`
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="n">sol</span><span class="o">.</span><span class="n">axpy</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">Q</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># noqa: N806</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">):</span>
             <span class="n">h</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">arnoldi</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
             <span class="n">H</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -497,13 +528,13 @@ document.write(`
             <span class="n">beta</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">cs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">beta</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
             <span class="n">error</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_sol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">calcSolution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CheckResiduals</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+                <span class="n">calculate_solution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_residuals</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
                 <span class="k">break</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">restart</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
                 <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">restart</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">restart</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span>
             <span class="p">):</span>
-                <span class="n">calcSolution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">calculate_solution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">Q</span>
                 <span class="n">restarted_solver</span> <span class="o">=</span> <span class="n">GMResSolver</span><span class="p">(</span>
                     <span class="n">mat</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="p">,</span>
@@ -517,16 +548,16 @@ document.write(`
                     <span class="n">printrates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">printrates</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">restarted_solver</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span>
-                <span class="n">sol</span> <span class="o">=</span> <span class="n">restarted_solver</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="n">rhs</span><span class="o">=</span><span class="n">rhs</span><span class="p">,</span> <span class="n">sol</span><span class="o">=</span><span class="n">sol</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">sol</span> <span class="o">=</span> <span class="n">restarted_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">rhs</span><span class="o">=</span><span class="n">rhs</span><span class="p">,</span> <span class="n">sol</span><span class="o">=</span><span class="n">sol</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">residuals</span> <span class="o">+=</span> <span class="n">restarted_solver</span><span class="o">.</span><span class="n">residuals</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="n">restarted_solver</span><span class="o">.</span><span class="n">iterations</span>
                 <span class="k">return</span> <span class="n">sol</span>
-        <span class="n">calcSolution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">calculate_solution</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sol</span></div>
 
 
-<div class="viewcode-block" id="GMRes"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.GMRes">[docs]</a><span class="k">def</span> <span class="nf">GMRes</span><span class="p">(</span>
-    <span class="n">A</span><span class="p">,</span>
+<div class="viewcode-block" id="get_gmres_solution"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.get_gmres_solution">[docs]</a><span class="k">def</span> <span class="nf">get_gmres_solution</span><span class="p">(</span>  <span class="c1"># noqa: PLR0913</span>
+    <span class="n">A</span><span class="p">,</span>  <span class="c1"># noqa: N803 | convention: Ax = b</span>
     <span class="n">b</span><span class="p">,</span>
     <span class="n">pre</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -535,10 +566,16 @@ document.write(`
     <span class="n">innerproduct</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">restart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">startiteration</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">printrates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">reltol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
+    <span class="c1"># TODO: this function has too many arguments</span>
+    <span class="c1"># https://refactoring.guru/smells/long-parameter-list perhaps some kind of</span>
+    <span class="c1"># configuration object could apply here. E.g. the abs and relative</span>
+    <span class="c1"># tolerances could be a tuple. TODO: remove the noqa that suppresses PLR0913</span>
+    <span class="c1"># for this function when fixed.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Suppression of N803 should probably stay.</span>
     <span class="n">solver</span> <span class="o">=</span> <span class="n">GMResSolver</span><span class="p">(</span>
         <span class="n">mat</span><span class="o">=</span><span class="n">A</span><span class="p">,</span>
         <span class="n">pre</span><span class="o">=</span><span class="n">pre</span><span class="p">,</span>
@@ -550,7 +587,7 @@ document.write(`
         <span class="n">restart</span><span class="o">=</span><span class="n">restart</span><span class="p">,</span>
         <span class="n">printrates</span><span class="o">=</span><span class="n">printrates</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">solver</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="n">rhs</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">sol</span><span class="o">=</span><span class="n">x</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">rhs</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">sol</span><span class="o">=</span><span class="n">x</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MinResSolver"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.MinResSolver">[docs]</a><span class="k">class</span> <span class="nc">MinResSolver</span><span class="p">(</span><span class="n">LinearSolver</span><span class="p">):</span>
@@ -570,7 +607,22 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">innerproduct</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_SolveImpl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_solve_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The internal solving subfunction for the MinRes solver type.</span>
+
+<span class="sd">        Called by the parent class&#39; solve method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rhs: The b vector in Ax = b.</span>
+<span class="sd">            sol: The vector to contain solutions, x.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A vector containing solutions, x.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: when refactoring this needs to be reduced in complexity and</span>
+        <span class="c1"># split into smaller functions. Also to ask Janosch: why we do line 333?</span>
+        <span class="c1"># We are suppressing a flake8/ruff warning for this function:</span>
+        <span class="c1">#  - PLR0915 &quot;there are too many conditional statements&quot;</span>
         <span class="n">pre</span><span class="p">,</span> <span class="n">mat</span><span class="p">,</span> <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="p">,</span> <span class="n">sol</span>
 
         <span class="n">innerproduct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">innerproduct</span>
@@ -592,24 +644,24 @@ document.write(`
 
         <span class="c1"># First step</span>
         <span class="n">gamma</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">innerproduct</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
-        <span class="n">gamma_new</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gamma_new</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">z</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">gamma</span><span class="p">)</span>
         <span class="n">v</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">gamma</span><span class="p">)</span>
 
-        <span class="n">ResNorm</span> <span class="o">=</span> <span class="n">gamma</span>
-        <span class="n">ResNorm_old</span> <span class="o">=</span> <span class="n">gamma</span>
+        <span class="n">res_norm</span> <span class="o">=</span> <span class="n">gamma</span>
+        <span class="n">res_norm_old</span> <span class="o">=</span> <span class="n">gamma</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ResNorm = &quot;</span><span class="p">,</span> <span class="n">ResNorm</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ResNorm = &quot;</span><span class="p">,</span> <span class="n">res_norm</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CheckResiduals</span><span class="p">(</span><span class="n">ResNorm</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_residuals</span><span class="p">(</span><span class="n">res_norm</span><span class="p">):</span>
             <span class="k">return</span>
 
         <span class="n">eta_old</span> <span class="o">=</span> <span class="n">gamma</span>
-        <span class="n">c_old</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">s_new</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">s_old</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">c_old</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">s_new</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">s_old</span> <span class="o">=</span> <span class="mf">0.0</span>
 
         <span class="n">v_old</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
         <span class="n">w_old</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
@@ -646,8 +698,8 @@ document.write(`
             <span class="n">eta</span> <span class="o">=</span> <span class="o">-</span><span class="n">s_new</span> <span class="o">*</span> <span class="n">eta_old</span>
 
             <span class="c1"># update of residuum</span>
-            <span class="n">ResNorm</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">s_new</span><span class="p">)</span> <span class="o">*</span> <span class="n">ResNorm_old</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CheckResiduals</span><span class="p">(</span><span class="n">ResNorm</span><span class="p">):</span>
+            <span class="n">res_norm</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">s_new</span><span class="p">)</span> <span class="o">*</span> <span class="n">res_norm_old</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_residuals</span><span class="p">(</span><span class="n">res_norm</span><span class="p">):</span>
                 <span class="k">return</span>
             <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -665,10 +717,10 @@ document.write(`
             <span class="n">c</span> <span class="o">=</span> <span class="n">c_new</span>
 
             <span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma_new</span>
-            <span class="n">ResNorm_old</span> <span class="o">=</span> <span class="n">ResNorm</span></div>
+            <span class="n">res_norm_old</span> <span class="o">=</span> <span class="n">res_norm</span></div>
 
 
-<div class="viewcode-block" id="MinRes"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.MinRes">[docs]</a><span class="k">def</span> <span class="nf">MinRes</span><span class="p">(</span>
+<div class="viewcode-block" id="get_minres_solution"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.get_minres_solution">[docs]</a><span class="k">def</span> <span class="nf">get_minres_solution</span><span class="p">(</span>
     <span class="n">mat</span><span class="p">,</span>
     <span class="n">rhs</span><span class="p">,</span>
     <span class="n">pre</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -686,7 +738,7 @@ document.write(`
         <span class="n">printrates</span><span class="o">=</span><span class="n">printrates</span><span class="p">,</span>
         <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
         <span class="n">innerproduct</span><span class="o">=</span><span class="n">innerproduct</span><span class="p">,</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">Solve</span><span class="p">(</span><span class="n">rhs</span><span class="o">=</span><span class="n">rhs</span><span class="p">,</span> <span class="n">sol</span><span class="o">=</span><span class="n">sol</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="n">initialize</span><span class="p">)</span></div>
+    <span class="p">)</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">rhs</span><span class="o">=</span><span class="n">rhs</span><span class="p">,</span> <span class="n">sol</span><span class="o">=</span><span class="n">sol</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="n">initialize</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pre"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.pre">[docs]</a><span class="k">def</span> <span class="nf">pre</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
