@@ -1,9 +1,11 @@
 import os
 import sys
+from abc import ABC, abstractmethod, abstractproperty
 from math import sqrt
 from typing import Callable, Optional
 
 import numpy as np
+from numpy.typing import NDArray
 from petsc4py import PETSc
 
 _clear_line_command = "" if os.name == "nt" else "\x1b[2K"
@@ -11,11 +13,34 @@ _clear_line_command = "" if os.name == "nt" else "\x1b[2K"
 sys.setrecursionlimit(10**6)
 
 
-class LinearSolver:
+class LinearSolver(ABC):
+    """
+    Abstract linear solver class for solving systems of linear equations.
+
+    Attributes:
+        mat: The matrix, A, representing the system of linear equations.
+        pre: The pre-conditioning function applied to the input vector.
+        tol: The tolerance for convergence criteria (default: None). If neither tol nor atol are set then the default is tol = 1e-5.
+        maxiter: The maximum number of iterations for the solver (default: 100).
+        atol: The absolute tolerance for convergence criteria (default: None). If neither tol nor atol are set then the default is tol = 1e-8.
+        callback: A callback function called after each iteration (default: None).
+        callback_sol: A callback function called with the solution vector (default: None).
+        printrates: If True, print convergence rates during solving (default: False).
+
+    Methods:
+        solve(self, rhs, sol=None, initialize=True):
+            Solves the linear system represented by the matrix and the
+            right-hand side vector.
+
+        check_residuals(self, residual):
+            Checks the residuals of the solution vector and returns True if the
+            convergence criteria are met.
+    """
+
     def __init__(
         self,
         mat: PETSc.Mat,
-        pre=None,
+        pre: Optional[Callable[[PETSc.Vec, PETSc.Vec], None]] = None,
         tol: Optional[float] = None,
         maxiter: int = 100,
         atol: Optional[float] = None,
@@ -34,16 +59,19 @@ class LinearSolver:
         self.callback_sol = callback_sol
         self.printrates = printrates
 
+        # List to store residuals after each iteration.
         self.residuals: list[float] = []
+        # Number of iterations performed by the solver.
         self.iterations: int = 0
 
-    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec) -> PETSc.Vec:
-        """
-        Method-specific solving function called by `LinearSolver.solve`.
+    @abstractproperty
+    def name(self):
+        """Name of the linear solver."""
+        # TODO: we should be able to remove this later and use self.__name__
 
-        This is a no-op, and is intended for derived classes to override.
-        """
-        raise NotImplementedError
+    @abstractmethod
+    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec) -> PETSc.Vec:
+        """Method-specific solving function called by `LinearSolver.solve`."""
 
     def solve(
         self,
@@ -51,6 +79,16 @@ class LinearSolver:
         sol: Optional[PETSc.Vec] = None,
         initialize: bool = True,
     ) -> PETSc.Vec:
+        """Solve the linear system Ax = b.
+
+        Args:
+            rhs: The right-hand side vector b.
+            sol: The solution vector x. If not provided, a new vector will be created (default: None).
+            initialize: Whether to initialize the solution vector to zero (default: True).
+
+        Returns:
+            The solution vector x.
+        """
         self.iterations = 0
         self.residuals = []
         if sol is None:
@@ -62,7 +100,15 @@ class LinearSolver:
         self._solve_impl(rhs=rhs, sol=sol)
         return sol, self.residuals
 
-    def check_residuals(self, residual):
+    def check_residuals(self, residual: float) -> bool:
+        """Checks the residuals of the solution vector.
+
+        Args:
+            residual: The residual of the solution vector.
+
+        Returns:
+            True if the convergence criteria are met.
+        """
         self.iterations += 1
         self.residuals.append(residual)
         if len(self.residuals) == 1:
@@ -78,7 +124,7 @@ class LinearSolver:
             if self.callback_sol is not None:
                 self.callback_sol(self.sol)
 
-        if self.printrates:
+        if self.printrates and self._final_residual:
             print(
                 f"{_clear_line_command}{self.name} iteration {self.iterations}, residual = {residual}    ",
                 end="\n" if isinstance(self.printrates, bool) else self.printrates,
@@ -88,9 +134,15 @@ class LinearSolver:
                     f"{_clear_line_command}WARNING: {self.name} did not converge tol TOL",
                 )
         is_converged = (
-            self.iterations >= self.maxiter or residual <= self._final_residual
+            self.iterations >= self.maxiter
+            or self._final_residual is not None
+            and residual <= self._final_residual
         )
-        if is_converged and self.printrates == "\r":
+        if (
+            is_converged
+            and self.printrates == "\r"
+            and self._final_residual is not None
+        ):
             print(
                 "{}{} {}converged in {} iterations to residual {}".format(
                     _clear_line_command,
@@ -104,7 +156,16 @@ class LinearSolver:
 
 
 class GMResSolver(LinearSolver):
-    name = "GMRes"
+    """
+    Implements the GMRES method for solving systems of linear equations.
+
+    Attributes:
+        name (str): The name of the solver ("GMRes").
+
+    A concrete instance of the :class:`LinearSolver` class.
+    """
+
+    name = "GMRes"  # TODO: we shouldn't need this! Can get the self.__name__
 
     def __init__(
         self,
@@ -125,10 +186,10 @@ class GMResSolver(LinearSolver):
     def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: C901, PLR0915
         """The internal solving subfunction for the GMRes solver type.
 
-        Called by the parent class' solve method. Implements the GMRes solver
-        type, solving a linear system of equations Ax = b. Use the Arnoldi
-        iteration to iteratively solve the system. It also handles special cases
-        for callbacks and restarts.
+        Called by the parent class' :meth:`solve` method. Implements the GMRes
+        solver type, solving a linear system of equations Ax = b. Use the
+        Arnoldi iteration to iteratively solve the system. Also handle special
+        cases for callbacks and restarts.
 
         Args:
             rhs: The b vector in Ax = b.
@@ -154,7 +215,8 @@ class GMResSolver(LinearSolver):
         A.mult(sol, tmp)
         tmp.axpy(-1, rhs)
         tmp.scale(-1)
-        pre(tmp, r)
+        if pre is not None:
+            pre(tmp, r)
         Q = []  # noqa: N806
         q_1, _ = self.mat.createVecs()
         Q.append(q_1)
@@ -166,11 +228,26 @@ class GMResSolver(LinearSolver):
         beta = np.zeros(self.maxiter + 1)
         beta[0] = r_norm
 
-        def arnoldi(A, Q, k):  # noqa: N803
+        def arnoldi(
+            A: PETSc.Mat,  # noqa: N803
+            Q: list[PETSc.Vec],  # noqa: N803
+            k: int,
+        ) -> tuple[NDArray, Optional[PETSc.Vec]]:
+            """Perform the Arnoldi iteration for a given matrix A and a set of orthogonal vectors Q.
+
+            Args:
+                A: The matrix A.
+                Q: The list of orthogonal vectors Q.
+                k: The number of iterations.
+
+            Returns:
+                The computed values h and the computed vector q.
+            """
             q, _ = A.createVecs()
             A.mult(Q[k], tmp)
 
-            pre(tmp, q)
+            if pre is not None:
+                pre(tmp, q)
 
             h = np.zeros(self.maxiter + 1)
             for i in range(k + 1):
@@ -182,7 +259,16 @@ class GMResSolver(LinearSolver):
             q.scale(1.0 / h[k + 1].real)
             return h, q
 
-        def givens_rotation(v1, v2):
+        def givens_rotation(v1: PETSc.Vec, v2: PETSc.Vec) -> tuple[float, float]:
+            """Perform a Givens rotation on two given vectors.
+
+            Args:
+                v1: The first vector.
+                v2: The second vector.
+
+            Returns:
+                A tuple representing the cosine and sine of the rotation angle.
+            """
             # TODO: can the Givens rotation def, and application functions be
             # moved out of this into a general utilities library?
             if v2 == 0:
@@ -195,7 +281,20 @@ class GMResSolver(LinearSolver):
                 sn = v1 / abs(v1) * v2.conjugate() / t
                 return cs, sn
 
-        def apply_givens_rotation(h, cs, sn, k):
+        def apply_givens_rotation(
+            h: PETSc.Vec,
+            cs: NDArray,
+            sn: NDArray,
+            k: int,
+        ) -> None:
+            """Apply Givens rotation to a given matrix.
+
+            Args:
+                h: The matrix to apply the Givens rotation to.
+                cs: The array of cosine values for the rotation.
+                sn: The array of sine values for the rotation.
+                k: The index of the Givens rotation.
+            """
             for i in range(k):
                 temp = cs[i] * h[i] + sn[i] * h[i + 1]
                 h[i + 1] = -sn[i].conjugate() * h[i] + cs[i].conjugate() * h[i + 1]
@@ -204,7 +303,13 @@ class GMResSolver(LinearSolver):
             h[k] = cs[k] * h[k] + sn[k] * h[k + 1]
             h[k + 1] = 0
 
-        def calculate_solution(k):
+        def calculate_solution(k: int) -> None:
+            """
+            Calculate the solution.
+
+            Args:
+                k: The iteration number.
+            """
             # if callback_sol is set we need to recompute solution in every step
             if self.callback_sol is not None:
                 sol.copy(sol_start)
@@ -258,10 +363,10 @@ class GMResSolver(LinearSolver):
 
 
 def get_gmres_solution(  # noqa: PLR0913
-    A,  # noqa: N803 | convention: Ax = b
-    b,
+    A: PETSc.Mat,  # noqa: N803 | convention: Ax = b
+    b: PETSc.Vec,
     pre=None,
-    x=None,
+    x: PETSc.Vec = None,
     maxsteps=100,
     tol=None,
     innerproduct=None,
@@ -269,7 +374,26 @@ def get_gmres_solution(  # noqa: PLR0913
     restart=None,
     printrates=True,
     reltol=None,
-):
+) -> PETSc.Vec:
+    """
+    Solve a linear system using the GMRES method.
+
+    Args:
+        A: The coefficient matrix.
+        b: The right-hand side vector.
+        pre (optional): The preconditioner (default: None).
+        x (optional): The initial guess (default: None).
+        maxsteps (optional): The maximum number of iterations (default: 100).
+        tol (optional): The absolute tolerance (default: None).
+        innerproduct (optional): The inner product function (default: None).
+        callback (optional): The callback function (default: None).
+        restart (optional): The restart parameter (default: None).
+        printrates (optional): Whether to print convergence rates (default: True).
+        reltol (optional): The relative tolerance (default: None).
+
+    Returns:
+        The solution vector.
+    """
     # TODO: this function has too many arguments
     # https://refactoring.guru/smells/long-parameter-list perhaps some kind of
     # configuration object could apply here. E.g. the abs and relative
@@ -292,7 +416,13 @@ def get_gmres_solution(  # noqa: PLR0913
 
 
 class MinResSolver(LinearSolver):
-    name = "MinRes"
+    """A solver class for solving a system of linear equations using the Minimum Residual (MinRes) method.
+
+    Attributes:
+        name (str): The name of the solver, which is "MinRes".
+    """
+
+    name = "MinRes"  # TODO: remove this!
 
     def __init__(
         self,
@@ -308,7 +438,7 @@ class MinResSolver(LinearSolver):
             self.innerproduct = lambda x, y: y.dot(x)
             self.norm = lambda x: x.norm()
 
-    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: PLR0915
+    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec) -> PETSc.Vec:  # noqa: PLR0915
         """The internal solving subfunction for the MinRes solver type.
 
         Called by the parent class' solve method.
@@ -341,7 +471,8 @@ class MinResSolver(LinearSolver):
         v.axpy(-1, rhs)
         v.scale(-1)
 
-        pre(v, z)
+        if pre is not None:
+            pre(v, z)
 
         # First step
         gamma = sqrt(innerproduct(z, v))
@@ -376,7 +507,8 @@ class MinResSolver(LinearSolver):
             v_new.axpy(-delta, v)
             v_new.axpy(-gamma, v_old)
 
-            pre(v_new, z_new)
+            if pre is not None:
+                pre(v_new, z_new)
 
             gamma_new = sqrt(innerproduct(z_new, v_new))
             z_new.scale(1 / gamma_new)
@@ -432,6 +564,23 @@ def get_minres_solution(
     tol=1e-7,
     innerproduct=None,
 ):
+    """
+    Solve a linear system using the Minimum Residual (MinRes) method.
+
+    Args:
+        mat: The coefficient matrix, A.
+        rhs: The right-hand side vector, b, of the system of equations.
+        pre: The preconditioner (optional, default: None).
+        sol: The initial solution vector, x. (optional).
+        maxsteps: The maximum number of iterations (optional).
+        printrates: Whether to print convergence rates (optional, default: True).
+        initialize: Whether to initialize the solver. (optional, default: True)
+        tol: The absolute tolerance (optional).
+        innerproduct: The inner product function (optional).
+
+    Returns:
+        The solution vector.
+    """
     return MinResSolver(
         mat=mat,
         pre=pre,
