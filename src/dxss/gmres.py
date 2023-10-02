@@ -26,15 +26,6 @@ class LinearSolver(ABC):
         callback: A callback function called after each iteration (default: None).
         callback_sol: A callback function called with the solution vector (default: None).
         printrates: If True, print convergence rates during solving (default: False).
-
-    Methods:
-        solve(self, rhs, sol=None, initialize=True):
-            Solves the linear system represented by the matrix and the
-            right-hand side vector.
-
-        check_residuals(self, residual):
-            Checks the residuals of the solution vector and returns True if the
-            convergence criteria are met.
     """
 
     def __init__(
@@ -158,9 +149,6 @@ class LinearSolver(ABC):
 class GMResSolver(LinearSolver):
     """
     Implements the GMRES method for solving systems of linear equations.
-
-    Attributes:
-        name (str): The name of the solver ("GMRes").
 
     A concrete instance of the :class:`LinearSolver` class.
     """
@@ -416,10 +404,10 @@ def get_gmres_solution(  # noqa: PLR0913
 
 
 class MinResSolver(LinearSolver):
-    """A solver class for solving a system of linear equations using the Minimum Residual (MinRes) method.
+    """
+    Implements the Minimum Residual (MinRes) method for solving systems of linear equations.
 
-    Attributes:
-        name (str): The name of the solver, which is "MinRes".
+    A concrete instance of the :class:`LinearSolver` class.
     """
 
     name = "MinRes"  # TODO: remove this!
