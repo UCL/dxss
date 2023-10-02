@@ -1,23 +1,28 @@
 import sys
+import time
 from math import pi, sqrt
 
 import numpy as np
+import scipy.sparse as sp
 import ufl
 from dolfinx.mesh import CellType, GhostMode, create_box
 from mpi4py import MPI
 from petsc4py import PETSc
 
+from dxss.space_time import SpaceTime
+
+try:
+    import pypardiso
+
+    SOLVER_TYPE = "pypardiso"
+except ImportError:
+    SOLVER_TYPE = "petsc-LU"
+
 sys.setrecursionlimit(10**6)
-import time
-
-import scipy.sparse as sp
-
-from dxss.space_time import *
-
-solver_type = "petsc-LU"
+SOLVER_TYPE = "petsc-LU"
 
 
-def GetLuSolver(msh, mat):
+def get_lu_solver(msh, mat):
     solver = PETSc.KSP().create(msh.comm)
     solver.setOperators(mat)
     solver.setType(PETSc.KSP.Type.PREONLY)
@@ -26,13 +31,13 @@ def GetLuSolver(msh, mat):
 
 
 # define alternative solvers here
-def GetSpMat(mat):
+def get_sparse_matrix(mat):
     ai, aj, av = mat.getValuesCSR()
     return sp.csr_matrix((av, aj, ai))
 
 
 class PySolver:
-    def __init__(self, Asp):
+    def __init__(self, Asp):  # noqa: N803
         self.Asp = Asp
 
     def solve(self, b_inp, x_out):
@@ -40,21 +45,21 @@ class PySolver:
         x_out.array[:] = x_py[:]
 
 
-ref_lvl_to_N = [1, 2, 4, 8, 16, 32]
-ref_lvl = 1
+REF_LVL_TO_N = [1, 2, 4, 8, 16, 32]
+REF_LVL = 1
 Nxs = [2, 4, 8, 16, 32, 64]
-Nx = Nxs[ref_lvl]
+Nx = Nxs[REF_LVL]
 
-data_size = 0.25
+DATA_SIZE = 0.25
 t0 = 0
 T = 1.0
-N = ref_lvl_to_N[ref_lvl]
-order = 3
-k = order
-q = order
+N = REF_LVL_TO_N[REF_LVL]
+ORDER = 3
+k = ORDER
+q = ORDER
 kstar = 1
 qstar = 0
-stabs = {
+STABS = {
     "data": 1e4,
     "dual": 1.0,
     "primal": 1e-3,
@@ -62,7 +67,7 @@ stabs = {
 }
 
 # define quantities depending on space
-msh = create_box(
+MSH = create_box(
     MPI.COMM_WORLD,
     [np.array([0.0, 0.0, 0.0]), np.array([1.0, 1.0, 1.0])],
     [Nx, Nx, Nx],
@@ -71,17 +76,17 @@ msh = create_box(
 )
 
 
-def omega_Ind_convex(x):
+def omega_ind_convex(x):
     values = np.zeros(x.shape[1], dtype=PETSc.ScalarType)
     omega_coords = np.logical_or(
-        (x[0] <= data_size),
+        (x[0] <= DATA_SIZE),
         np.logical_or(
-            (x[0] >= 1.0 - data_size),
+            (x[0] >= 1.0 - DATA_SIZE),
             np.logical_or(
-                (x[1] >= 1.0 - data_size),
+                (x[1] >= 1.0 - DATA_SIZE),
                 np.logical_or(
-                    (x[1] <= data_size),
-                    np.logical_or((x[2] <= data_size), (x[2] >= 1.0 - data_size)),
+                    (x[1] <= DATA_SIZE),
+                    np.logical_or((x[2] <= DATA_SIZE), (x[2] >= 1.0 - DATA_SIZE)),
                 ),
             ),
         ),
@@ -112,7 +117,7 @@ def dt_sample_sol(t, xu):
     )
 
 
-st = space_time(
+ST = SpaceTime(
     q=q,
     qstar=qstar,
     k=k,
@@ -120,33 +125,33 @@ st = space_time(
     N=N,
     T=T,
     t=t0,
-    msh=msh,
-    Omega_Ind=omega_Ind_convex,
-    stabs=stabs,
+    msh=MSH,
+    omega_ind=omega_ind_convex,
+    stabs=STABS,
     sol=sample_sol,
     dt_sol=dt_sample_sol,
 )
-st.SetupSpaceTimeFEs()
-st.PreparePrecondGMRes()
-
-# matrix for linear systems on the slabs
-SlabMat = st.GetSlabMat()
+ST.setup_spacetime_finite_elements()
+ST.prepare_precondition_gmres()
 
 
 def test_slab_problem():
+    # matrix for linear systems on the slabs
+    slab_matrix = ST.get_slab_matrix()
+
     # generate solution
-    x_in, x_out = SlabMat.createVecs()
-    x_comp, _ = SlabMat.createVecs()
-    x_in.array[:] = np.random.rand(len(x_in.array))
-    SlabMat.mult(x_in, x_out)
+    x_in, x_out = slab_matrix.createVecs()
+    x_comp, _ = slab_matrix.createVecs()
+    x_in.array[:] = np.random.default_rng().random(len(x_in.array))
+    slab_matrix.mult(x_in, x_out)
 
     start = time.time()
 
-    if solver_type == "pypardiso":
-        pardiso_solver = PySolver(GetSpMat(SlabMat))
+    if SOLVER_TYPE == "pypardiso":
+        pardiso_solver = PySolver(get_sparse_matrix(slab_matrix))
         pardiso_solver.solve(x_out, x_comp)
-    elif solver_type == "petsc-LU":
-        solver_slab = GetLuSolver(st.msh, st.GetSlabMat())  # LU-decomposition
+    elif SOLVER_TYPE == "petsc-LU":
+        solver_slab = get_lu_solver(ST.msh, ST.get_slab_matrix())  # LU-decomposition
         solver_slab.solve(x_out, x_comp)
     else:
         msg = "invalid solver_type"

@@ -7,21 +7,22 @@ from dolfinx.mesh import create_unit_interval
 from mpi4py import MPI
 from petsc4py import PETSc
 
-sys.setrecursionlimit(10**6)
-from dxss.gmres import GMRes
-from dxss.space_time import *
+from dxss.gmres import get_gmres_solution
+from dxss.space_time import SpaceTime, get_sparse_matrix
 
 try:
     import pypardiso
 
-    solver_type = "pypardiso"  #
+    SOLVER_TYPE = "pypardiso"
 except ImportError:
-    solver_type = "petsc-LU"
+    SOLVER_TYPE = "petsc-LU"
 import resource
 import time
 
+sys.setrecursionlimit(10**6)
 
-def GetLuSolver(msh, mat):
+
+def get_lu_solver(msh, mat):
     solver = PETSc.KSP().create(msh.comm)
     solver.setOperators(mat)
     solver.setType(PETSc.KSP.Type.PREONLY)
@@ -30,7 +31,7 @@ def GetLuSolver(msh, mat):
 
 
 class PySolver:
-    def __init__(self, Asp, psolver):
+    def __init__(self, Asp, psolver):  # noqa: N803 | convention Ax = b
         self.Asp = Asp
         self.solver = psolver
 
@@ -45,27 +46,24 @@ t0 = 0
 T = 1
 N = 32
 N_x = int(5 * N)
-order = 1
-k = order
-q = order
+ORDER = 1
+k = ORDER
+q = ORDER
 kstar = 1
-qstar = 1 if order == 1 else 0
+qstar = 1 if ORDER == 1 else 0
 
-stabs = {
+STABS = {
     "data": 1e4,
     "dual": 1.0,
     "primal": 1e-3,
     "primal-jump": 1.0,
 }
 
-# stabs = {"data": 1e0,
-#        "primal-jump":1.0,
-
 # define quantities depending on space
-msh = create_unit_interval(MPI.COMM_WORLD, N_x)
+MSH = create_unit_interval(MPI.COMM_WORLD, N_x)
 
 
-def omega_Ind_convex(x):
+def omega_ind_convex(x):
     values = np.zeros(x.shape[1], dtype=PETSc.ScalarType)
     omega_coords = np.logical_or((x[0] <= 0.2), (x[0] >= 0.8))
     rest_coords = np.invert(omega_coords)
@@ -74,7 +72,7 @@ def omega_Ind_convex(x):
     return values
 
 
-def omega_Ind_noGCC(x):
+def omega_ind_nogcc(x):
     values = np.zeros(x.shape[1], dtype=PETSc.ScalarType)
     omega_coords = x[0] <= 0.2
     rest_coords = np.invert(omega_coords)
@@ -91,12 +89,7 @@ def dt_sample_sol(t, xu):
     return -2 * pi * ufl.sin(2 * pi * (t)) * ufl.sin(2 * pi * xu[0])
 
 
-# def sample_sol(t,xu):
-
-# def dt_sample_sol(t,xu):
-
-
-st = space_time(
+ST = SpaceTime(
     q=q,
     qstar=qstar,
     k=k,
@@ -104,16 +97,16 @@ st = space_time(
     N=N,
     T=T,
     t=t0,
-    msh=msh,
-    Omega_Ind=omega_Ind_noGCC,
-    stabs=stabs,
+    msh=MSH,
+    omega_ind=omega_ind_nogcc,
+    stabs=STABS,
     sol=sample_sol,
     dt_sol=dt_sample_sol,
 )
-st.SetupSpaceTimeFEs()
-st.PreparePrecondGMRes()
-A_space_time_linop = st.GetSpaceTimeMatrixAsLinearOperator()
-b_rhs = st.GetSpaceTimeRhs()
+ST.setup_spacetime_finite_elements()
+ST.prepare_precondition_gmres()
+A_space_time_linop = ST.get_spacetime_matrix_as_linear_operator()
+b_rhs = ST.get_spacetime_rhs()
 # Prepare the solvers for problems on the slabs
 # GMRes iteration
 
@@ -121,60 +114,62 @@ b_rhs = st.GetSpaceTimeRhs()
 # Prepare coarse grid correction
 
 
-def SolveProblem(measure_errors=False):
+def solve_problem(measure_errors=False):
     start = time.time()
-    if solver_type == "pypardiso":
+    if SOLVER_TYPE == "pypardiso":
         genreal_slab_solver = pypardiso.PyPardisoSolver()
-        SlabMatSp = GetSpMat(st.GetSlabMat())
+        sparse_slab_matrix = get_sparse_matrix(ST.get_slab_matrix())
 
-        genreal_slab_solver.factorize(SlabMatSp)
-        st.SetSolverSlab(PySolver(SlabMatSp, genreal_slab_solver))
+        genreal_slab_solver.factorize(sparse_slab_matrix)
+        ST.set_solver_slab(PySolver(sparse_slab_matrix, genreal_slab_solver))
 
         initial_slab_solver = pypardiso.PyPardisoSolver()
-        SlabMatFirstSlabSp = GetSpMat(st.GetSlabMatFirstSlab())
-        initial_slab_solver.factorize(SlabMatFirstSlabSp)
-        st.SetSolverFirstSlab(PySolver(SlabMatFirstSlabSp, initial_slab_solver))
+        slab_matrix_first_slab_sparse = get_sparse_matrix(
+            ST.get_slab_matrix_first_slab(),
+        )
+        initial_slab_solver.factorize(slab_matrix_first_slab_sparse)
+        ST.set_solver_first_slab(
+            PySolver(slab_matrix_first_slab_sparse, initial_slab_solver),
+        )
 
-        u_sol, res = GMRes(
+        u_sol, res = get_gmres_solution(
             A_space_time_linop,
             b_rhs,
-            pre=st.pre_time_marching_improved,
+            pre=ST.pre_time_marching_improved,
             maxsteps=100000,
             tol=1e-7,
-            startiteration=0,
             printrates=True,
         )
 
-        st.PlotError(u_sol, N_space=500, N_time_subdiv=20)
-    elif solver_type == "petsc-LU":
-        st.SetSolverSlab(GetLuSolver(st.msh, st.GetSlabMat()))  # general slab
-        st.SetSolverFirstSlab(
-            GetLuSolver(st.msh, st.GetSlabMatFirstSlab()),
+        ST.plot_error(u_sol, N_space=500, N_time_subdiv=20)
+    elif SOLVER_TYPE == "petsc-LU":
+        ST.set_solver_slab(get_lu_solver(ST.msh, ST.get_slab_matrix()))  # general slab
+        ST.set_solver_first_slab(
+            get_lu_solver(ST.msh, ST.get_slab_matrix_first_slab()),
         )  # first slab is special
-        u_sol, res = GMRes(
+        u_sol, res = get_gmres_solution(
             A_space_time_linop,
             b_rhs,
-            pre=st.pre_time_marching_improved,
+            pre=ST.pre_time_marching_improved,
             maxsteps=100000,
             tol=1e-7,
-            startiteration=0,
             printrates=True,
         )
     else:
-        A_space_time = st.GetSpaceTimeMatrix()
+        A_space_time = ST.get_spacetime_matrix()  # noqa: N806
         u_sol, _ = A_space_time.createVecs()
-        solver_space_time = GetLuSolver(st.msh, A_space_time)
+        solver_space_time = get_lu_solver(ST.msh, A_space_time)
         solver_space_time.solve(u_sol, b_rhs)
 
     end = time.time()
     print("elapsed time  " + str(end - start) + " seconds")
 
     if measure_errors:
-        st.MeasureErrors(u_sol)
+        ST.measured_errors(u_sol)
 
 
 if __name__ == "__main__":
-    SolveProblem(measure_errors=True)
+    solve_problem(measure_errors=True)
 
     print(
         "Memory usage in (Gb) = ",

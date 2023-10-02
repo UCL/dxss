@@ -23,9 +23,9 @@ class LinearSolver:
         callback_sol: Optional[Callable[[PETSc.Vec], None]] = None,
         printrates: bool = False,
     ):
+        self.mat = mat
         if atol is None and tol is None:
             tol = 1e-12
-        self.mat = mat
         self.pre = pre
         self.tol = tol
         self.atol = atol
@@ -33,10 +33,19 @@ class LinearSolver:
         self.callback = callback
         self.callback_sol = callback_sol
         self.printrates = printrates
-        self.residuals = []
-        self.iterations = 0
 
-    def Solve(
+        self.residuals: list[float] = []
+        self.iterations: int = 0
+
+    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec) -> PETSc.Vec:
+        """
+        Method-specific solving function called by `LinearSolver.solve`.
+
+        This is a no-op, and is intended for derived classes to override.
+        """
+        raise NotImplementedError
+
+    def solve(
         self,
         rhs: PETSc.Vec,
         sol: Optional[PETSc.Vec] = None,
@@ -50,10 +59,10 @@ class LinearSolver:
         if initialize:
             sol.set(0)
         self.sol = sol
-        self._SolveImpl(rhs=rhs, sol=sol)
+        self._solve_impl(rhs=rhs, sol=sol)
         return sol, self.residuals
 
-    def CheckResiduals(self, residual):
+    def check_residuals(self, residual):
         self.iterations += 1
         self.residuals.append(residual)
         if len(self.residuals) == 1:
@@ -113,38 +122,57 @@ class GMResSolver(LinearSolver):
             self.norm = lambda x: x.norm()
             self.restart = restart
 
-    def _SolveImpl(self, rhs: PETSc.Vec, sol: PETSc.Vec):
-        A, pre, innerproduct, norm = self.mat, self.pre, self.innerproduct, self.norm
-        m = self.maxiter
-        sn = np.zeros(m)
-        cs = np.zeros(m)
+    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: C901, PLR0915
+        """The internal solving subfunction for the GMRes solver type.
+
+        Called by the parent class' solve method. Implements the GMRes solver
+        type, solving a linear system of equations Ax = b. Use the Arnoldi
+        iteration to iteratively solve the system. It also handles special cases
+        for callbacks and restarts.
+
+        Args:
+            rhs: The b vector in Ax = b.
+            sol: The vector to contain solutions, x.
+
+        Returns:
+            A vector containing solutions, x.
+        """
+        # TODO: when refactoring this needs to be reduced in complexity and
+        # split into smaller functions. We are suppressing flake8/ruff warnings
+        # for this function:
+        #  - C901 the complexity score of this function is 20!
+        #  - PLR0915 there are too many conditional statements.
+        pre, innerproduct, norm = self.pre, self.innerproduct, self.norm
+        sn = np.zeros(self.maxiter)
+        cs = np.zeros(self.maxiter)
         if self.callback_sol is not None:
             sol_start = sol.create()
             sol.copy(sol_start)
         r, tmp = self.mat.createVecs()
+
+        A = self.mat  # noqa: N806 | convention: Ax = b
         A.mult(sol, tmp)
         tmp.axpy(-1, rhs)
         tmp.scale(-1)
         pre(tmp, r)
-        Q = []
-        H = []
+        Q = []  # noqa: N806
         q_1, _ = self.mat.createVecs()
         Q.append(q_1)
         r_norm = norm(r)
-        if self.CheckResiduals(abs(r_norm)):
+        if self.check_residuals(abs(r_norm)):
             return sol
         r.copy(Q[0])
         Q[0].scale(1 / r_norm)
-        beta = np.zeros(m + 1)
+        beta = np.zeros(self.maxiter + 1)
         beta[0] = r_norm
 
-        def arnoldi(A, Q, k):
+        def arnoldi(A, Q, k):  # noqa: N803
             q, _ = A.createVecs()
             A.mult(Q[k], tmp)
 
             pre(tmp, q)
 
-            h = np.zeros(m + 1)
+            h = np.zeros(self.maxiter + 1)
             for i in range(k + 1):
                 h[i] = innerproduct(Q[i], q)
                 q.axpy(-1 * h[i], Q[i])
@@ -155,6 +183,8 @@ class GMResSolver(LinearSolver):
             return h, q
 
         def givens_rotation(v1, v2):
+            # TODO: can the Givens rotation def, and application functions be
+            # moved out of this into a general utilities library?
             if v2 == 0:
                 return 1, 0
             elif v1 == 0:
@@ -174,7 +204,7 @@ class GMResSolver(LinearSolver):
             h[k] = cs[k] * h[k] + sn[k] * h[k + 1]
             h[k + 1] = 0
 
-        def calcSolution(k):
+        def calculate_solution(k):
             # if callback_sol is set we need to recompute solution in every step
             if self.callback_sol is not None:
                 sol.copy(sol_start)
@@ -187,7 +217,8 @@ class GMResSolver(LinearSolver):
             for i in range(k + 1):
                 sol.axpy(y[i], Q[i])
 
-        for k in range(m):
+        H = []  # noqa: N806
+        for k in range(self.maxiter):
             h, q = arnoldi(A, Q, k)
             H.append(h)
             if q is None:
@@ -198,13 +229,13 @@ class GMResSolver(LinearSolver):
             beta[k] = cs[k] * beta[k]
             error = abs(beta[k + 1])
             if self.callback_sol is not None:
-                calcSolution(k)
-            if self.CheckResiduals(error):
+                calculate_solution(k)
+            if self.check_residuals(error):
                 break
             if self.restart is not None and (
                 k + 1 == self.restart and self.restart != self.maxiter
             ):
-                calcSolution(k)
+                calculate_solution(k)
                 del Q
                 restarted_solver = GMResSolver(
                     mat=self.mat,
@@ -218,16 +249,16 @@ class GMResSolver(LinearSolver):
                     printrates=self.printrates,
                 )
                 restarted_solver.iterations = self.iterations
-                sol = restarted_solver.Solve(rhs=rhs, sol=sol, initialize=False)
+                sol = restarted_solver.solve(rhs=rhs, sol=sol, initialize=False)
                 self.residuals += restarted_solver.residuals
                 self.iterations = restarted_solver.iterations
                 return sol
-        calcSolution(k)
+        calculate_solution(k)
         return sol
 
 
-def GMRes(
-    A,
+def get_gmres_solution(  # noqa: PLR0913
+    A,  # noqa: N803 | convention: Ax = b
     b,
     pre=None,
     x=None,
@@ -236,10 +267,16 @@ def GMRes(
     innerproduct=None,
     callback=None,
     restart=None,
-    startiteration=0,
     printrates=True,
     reltol=None,
 ):
+    # TODO: this function has too many arguments
+    # https://refactoring.guru/smells/long-parameter-list perhaps some kind of
+    # configuration object could apply here. E.g. the abs and relative
+    # tolerances could be a tuple. TODO: remove the noqa that suppresses PLR0913
+    # for this function when fixed.
+    #
+    # Suppression of N803 should probably stay.
     solver = GMResSolver(
         mat=A,
         pre=pre,
@@ -251,7 +288,7 @@ def GMRes(
         restart=restart,
         printrates=printrates,
     )
-    return solver.Solve(rhs=b, sol=x)
+    return solver.solve(rhs=b, sol=x)
 
 
 class MinResSolver(LinearSolver):
@@ -271,7 +308,22 @@ class MinResSolver(LinearSolver):
             self.innerproduct = lambda x, y: y.dot(x)
             self.norm = lambda x: x.norm()
 
-    def _SolveImpl(self, rhs: PETSc.Vec, sol: PETSc.Vec):
+    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: PLR0915
+        """The internal solving subfunction for the MinRes solver type.
+
+        Called by the parent class' solve method.
+
+        Args:
+            rhs: The b vector in Ax = b.
+            sol: The vector to contain solutions, x.
+
+        Returns:
+            A vector containing solutions, x.
+        """
+        # TODO: when refactoring this needs to be reduced in complexity and
+        # split into smaller functions. Also to ask Janosch: why we do line 333?
+        # We are suppressing a flake8/ruff warning for this function:
+        #  - PLR0915 "there are too many conditional statements"
         pre, mat, u = self.pre, self.mat, sol
 
         innerproduct = self.innerproduct
@@ -293,24 +345,24 @@ class MinResSolver(LinearSolver):
 
         # First step
         gamma = sqrt(innerproduct(z, v))
-        gamma_new = 0
+        gamma_new = 0.0
         z.scale(1 / gamma)
         v.scale(1 / gamma)
 
-        ResNorm = gamma
-        ResNorm_old = gamma
+        res_norm = gamma
+        res_norm_old = gamma
 
-        print("ResNorm = ", ResNorm)
+        print("ResNorm = ", res_norm)
 
-        if self.CheckResiduals(ResNorm):
+        if self.check_residuals(res_norm):
             return
 
         eta_old = gamma
-        c_old = 1
-        c = 1
-        s_new = 0
-        s = 0
-        s_old = 0
+        c_old = 1.0
+        c = 1.0
+        s_new = 0.0
+        s = 0.0
+        s_old = 0.0
 
         v_old.scale(0.0)
         w_old.scale(0.0)
@@ -347,8 +399,8 @@ class MinResSolver(LinearSolver):
             eta = -s_new * eta_old
 
             # update of residuum
-            ResNorm = abs(s_new) * ResNorm_old
-            if self.CheckResiduals(ResNorm):
+            res_norm = abs(s_new) * res_norm_old
+            if self.check_residuals(res_norm):
                 return
             k += 1
 
@@ -366,10 +418,10 @@ class MinResSolver(LinearSolver):
             c = c_new
 
             gamma = gamma_new
-            ResNorm_old = ResNorm
+            res_norm_old = res_norm
 
 
-def MinRes(
+def get_minres_solution(
     mat,
     rhs,
     pre=None,
@@ -387,7 +439,7 @@ def MinRes(
         printrates=printrates,
         tol=tol,
         innerproduct=innerproduct,
-    ).Solve(rhs=rhs, sol=sol, initialize=initialize)
+    ).solve(rhs=rhs, sol=sol, initialize=initialize)
 
 
 def pre(x, y):
