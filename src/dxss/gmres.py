@@ -247,12 +247,12 @@ class GMResSolver(LinearSolver):
             q.scale(1.0 / h[k + 1].real)
             return h, q
 
-        def givens_rotation(v1: PETSc.Vec, v2: PETSc.Vec) -> tuple[float, float]:
-            """Perform a Givens rotation on two given vectors.
+        def givens_rotation(v1: float, v2: float) -> tuple[float, float]:
+            """Computes the coefficients of the rotation matrix used to perform a Givens rotation.
 
             Args:
-                v1: The first vector.
-                v2: The second vector.
+                v1: The first vector component.
+                v2: The second vector component.
 
             Returns:
                 A tuple representing the cosine and sine of the rotation angle.
@@ -270,7 +270,7 @@ class GMResSolver(LinearSolver):
                 return cs, sn
 
         def apply_givens_rotation(
-            h: PETSc.Vec,
+            h: PETSc.Mat,
             cs: NDArray,
             sn: NDArray,
             k: int,
@@ -278,7 +278,7 @@ class GMResSolver(LinearSolver):
             """Apply Givens rotation to a given matrix.
 
             Args:
-                h: The matrix to apply the Givens rotation to.
+                h: The upper triangular matrix to apply the Givens rotation to.
                 cs: The array of cosine values for the rotation.
                 sn: The array of sine values for the rotation.
                 k: The index of the Givens rotation.
