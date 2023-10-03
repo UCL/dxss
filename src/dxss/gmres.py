@@ -6,6 +6,8 @@ from typing import Callable, Optional
 import numpy as np
 from petsc4py import PETSc
 
+from dxss.utils import givens_rotation
+
 _clear_line_command = "" if os.name == "nt" else "\x1b[2K"
 
 sys.setrecursionlimit(10**6)
@@ -122,7 +124,7 @@ class GMResSolver(LinearSolver):
             self.norm = lambda x: x.norm()
             self.restart = restart
 
-    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: C901, PLR0915
+    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: PLR0915
         """The internal solving subfunction for the GMRes solver type.
 
         Called by the parent class' solve method. Implements the GMRes solver
@@ -181,34 +183,6 @@ class GMResSolver(LinearSolver):
                 return h, None
             q.scale(1.0 / h[k + 1].real)
             return h, q
-
-        def givens_rotation(v1: float, v2: float) -> tuple[float, float]:
-            """
-            Computes and returns the coefficients of the rotation matrix used to perform a Givens rotation.
-
-            # TODO: can the Givens rotation def, and application functions be
-            # moved out of this into a general utilities library?
-
-            Args:
-                v1: The first component of the vector.
-                v2: The second component of the vector, which is to be zeroed out
-
-            Returns:
-                The coefficients of the rotation matrix as a tuple
-            """
-            if v2 == 0:
-                return 1, 0
-            if v1 == 0:
-                return 0, v2 / abs(v2)
-            if abs(v1) > abs(v2):
-                t = v2 / v1
-                cs = 1.0 / sqrt(1 + t**2.0)
-                sn = t * cs
-            else:
-                tau = v1 / v2
-                sn = 1.0 / sqrt(1 + tau**2.0)
-                cs = tau * sn
-            return cs, sn
 
         def apply_givens_rotation(h, cs, sn, k):
             for i in range(k):
