@@ -440,7 +440,7 @@ document.write(`
             <span class="n">printrates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">ST</span><span class="o">.</span><span class="n">plot_error</span><span class="p">(</span><span class="n">u_sol</span><span class="p">,</span> <span class="n">N_space</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">N_time_subdiv</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">ST</span><span class="o">.</span><span class="n">plot_error</span><span class="p">(</span><span class="n">u_sol</span><span class="p">,</span> <span class="n">n_space</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">n_time_subdiv</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">SOLVER_TYPE</span> <span class="o">==</span> <span class="s2">&quot;petsc-LU&quot;</span><span class="p">:</span>
         <span class="n">ST</span><span class="o">.</span><span class="n">set_solver_slab</span><span class="p">(</span><span class="n">get_lu_solver</span><span class="p">(</span><span class="n">ST</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span> <span class="n">ST</span><span class="o">.</span><span class="n">get_slab_matrix</span><span class="p">()))</span>  <span class="c1"># general slab</span>
         <span class="n">ST</span><span class="o">.</span><span class="n">set_solver_first_slab</span><span class="p">(</span>

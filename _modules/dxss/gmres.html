@@ -353,7 +353,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">residuals</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">sol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">sol</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
+            <span class="n">sol</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">create_vectors</span><span class="p">()</span>
             <span class="n">initialize</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">initialize</span><span class="p">:</span>
             <span class="n">sol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -447,7 +447,7 @@ document.write(`
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_sol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">sol_start</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
             <span class="n">sol</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sol_start</span><span class="p">)</span>
-        <span class="n">r</span><span class="p">,</span> <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">create_vectors</span><span class="p">()</span>
 
         <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span>  <span class="c1"># noqa: N806 | convention: Ax = b</span>
         <span class="n">A</span><span class="o">.</span><span class="n">mult</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
@@ -455,7 +455,7 @@ document.write(`
         <span class="n">tmp</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">pre</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
         <span class="n">Q</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># noqa: N806</span>
-        <span class="n">q_1</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
+        <span class="n">q_1</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">create_vectors</span><span class="p">()</span>
         <span class="n">Q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q_1</span><span class="p">)</span>
         <span class="n">r_norm</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_residuals</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">r_norm</span><span class="p">)):</span>
@@ -627,12 +627,12 @@ document.write(`
 
         <span class="n">innerproduct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">innerproduct</span>
 
-        <span class="n">v_new</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
-        <span class="n">v_old</span><span class="p">,</span> <span class="n">v_new2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
-        <span class="n">w</span><span class="p">,</span> <span class="n">w_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
-        <span class="n">w_old</span><span class="p">,</span> <span class="n">mz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
-        <span class="n">z</span><span class="p">,</span> <span class="n">z_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
-        <span class="n">tmp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">createVecs</span><span class="p">()</span>
+        <span class="n">v_new</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">create_vectors</span><span class="p">()</span>
+        <span class="n">v_old</span><span class="p">,</span> <span class="n">v_new2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">create_vectors</span><span class="p">()</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">w_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">create_vectors</span><span class="p">()</span>
+        <span class="n">w_old</span><span class="p">,</span> <span class="n">mz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">create_vectors</span><span class="p">()</span>
+        <span class="n">z</span><span class="p">,</span> <span class="n">z_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">create_vectors</span><span class="p">()</span>
+        <span class="n">tmp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">create_vectors</span><span class="p">()</span>
 
         <span class="c1"># def innerproduct(x,y):</span>
 
