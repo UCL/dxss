@@ -130,7 +130,6 @@ class SpaceTime:
         # SpaceTime
         self.spacetime_bilinear_form = None
         self.spacetime_matrix = None
-        self.apply_spacetime_matrix = None
         # Slab matrix with DG-jumps
         self.slab_bilinear_form = None
         self.slab_matrix = None
