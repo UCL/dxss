@@ -7,6 +7,7 @@ from dolfinx.mesh import CellType, GhostMode, create_box
 from mpi4py import MPI
 from petsc4py import PETSc
 
+from dxss._solvers import PySolver, get_lu_solver
 from dxss.gmres import get_gmres_solution
 from dxss.space_time import OrderSpace, OrderTime, SpaceTime, get_sparse_matrix
 
@@ -22,26 +23,6 @@ import time
 
 sys.setrecursionlimit(10**6)
 GCC = False
-
-
-def get_lu_solver(msh, mat):
-    solver = PETSc.KSP().create(msh.comm)
-    solver.setOperators(mat)
-    solver.setType(PETSc.KSP.Type.PREONLY)
-    solver.getPC().setType(PETSc.PC.Type.LU)
-    return solver
-
-
-class PySolver:
-    def __init__(self, Asp, psolver):  # noqa: N803
-        self.Asp = Asp
-        self.solver = psolver
-
-    def solve(self, b_inp, x_out):
-        self.solver._check_A(self.Asp)
-        b = self.solver._check_b(self.Asp, b_inp.array)
-        self.solver.set_phase(33)
-        x_out.array[:] = self.solver._call_pardiso(self.Asp, b)[:]
 
 
 REF_LVL_TO_N = [1, 2, 4, 8, 16, 32]
