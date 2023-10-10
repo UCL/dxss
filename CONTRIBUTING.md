@@ -30,14 +30,17 @@
 
 ### To run the linters locally
 
-Install [pre-commit](https://pre-commit.com/) with:
+We use [pre-commit](https://pre-commit.com/) for linting.
+It should have been installed as a development dependency (when you ran `python -m pip install -e ".[dev]"`).
+
+You should simply be able to run:
 
 ```sh
-python -m pip install pre-commit # first time only
-pre-commit install
+pre-commit install # first time only
 ```
 
-Run from the root of the repository:
+which downloads and installs pre-commit hooks and linters.
+To run, from the root of the repository, do:
 
 ```sh
 pre-commit run
