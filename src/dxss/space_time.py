@@ -26,16 +26,17 @@ class OrderTime(NamedTuple):
     q: int
     qstar: int
 
-class OrderSpace(NamedTuple):
-    k: float
-    kstar: float
 
+class OrderSpace(NamedTuple):
+    k: int
+    kstar: int
 
 
 # TODO: this is duplicated... factor out to a "PETSc interface functions" file?
 def get_sparse_matrix(mat):
     ai, aj, av = mat.getValuesCSR()
     return sp.csr_matrix((av, aj, ai))
+
 
 class SpaceTime:
     # TODO:
@@ -69,7 +70,7 @@ class SpaceTime:
         data_dom_fitted=True,
     ):
         """Construct a SpaceTime object.
-        
+
         Args:
             polynomial_order_time: polynomial degrees of the finite elements in space.
             polynomial_order_space: polynomial degrees of the finite elements in time.
@@ -105,7 +106,12 @@ class SpaceTime:
         self.qr_ho = QuadRule("Gauss-Radau", 5)
         self.phi_trial, self.dt_phi_trial = basis_in_time[self.otime.q]
         self.phi_test, self.dt_phi_test = basis_in_time[self.otime.q]
-        self.subspace_time_order = [self.otime.q, self.otime.q, self.otime.qstar, self.otime.qstar]
+        self.subspace_time_order = [
+            self.otime.q,
+            self.otime.q,
+            self.otime.qstar,
+            self.otime.qstar,
+        ]
 
         # DG0 indicator function
         if data_dom_fitted:
@@ -186,7 +192,7 @@ class SpaceTime:
 
         # Miscalleneous
         self.sample_pts_error = np.linspace(0, self.T, 105).tolist()
-        self.eps = 0
+        self.eps: float = 0.0
         if self.otime.qstar == 0:
             self.eps = 1e-15  # hack to trick form compiler
 
@@ -270,7 +276,12 @@ class SpaceTime:
         self.u_0_slab_bnd = fem.Function(self.fes_slab_bnd)
 
         # For slab
-        vel_pre_q = ufl.VectorElement("CG", self.msh.ufl_cell(), self.ospace.k, self.otime.q + 1)
+        vel_pre_q = ufl.VectorElement(
+            "CG",
+            self.msh.ufl_cell(),
+            self.ospace.k,
+            self.otime.q + 1,
+        )
         vel_pre_qstar = ufl.VectorElement(
             "CG",
             self.msh.ufl_cell(),

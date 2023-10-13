@@ -7,7 +7,7 @@ from petsc4py import PETSc
 
 from dxss.gmres import get_gmres_solution
 from dxss.meshes import get_mesh_data_all_around
-from dxss.space_time import SpaceTime, get_sparse_matrix, OrderTime, OrderSpace
+from dxss.space_time import OrderSpace, OrderTime, SpaceTime, get_sparse_matrix
 
 try:
     import pypardiso

@@ -8,7 +8,7 @@ from mpi4py import MPI
 from petsc4py import PETSc
 
 from dxss.gmres import get_gmres_solution
-from dxss.space_time import SpaceTime, get_sparse_matrix, OrderTime, OrderSpace
+from dxss.space_time import OrderSpace, OrderTime, SpaceTime, get_sparse_matrix
 
 try:
     import pypardiso
