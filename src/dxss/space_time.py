@@ -1476,8 +1476,8 @@ class SpaceTime:
 
             # measuring L2-error in time of u_t
             for tau_i, omega_i in zip(
-                self.otime.qr_ho.current_pts(0, 1),
-                self.otime.qr_ho.t_weights(1),
+                self.qr_ho.current_pts(0, 1),
+                self.qr_ho.t_weights(1),
             ):
                 time_ti = t_n + delta_t * tau_i
                 dt_ue_tni = self.dt_sol(time_ti, self.x)

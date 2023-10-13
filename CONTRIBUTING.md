@@ -16,7 +16,7 @@
 - Convert to "Ready for review" when there are no changes expected from the requester side and add, minimally, one reviewer.
 - New features should be covered by new test(s), unless it's obviously already tested.
 - All tests should pass and all linting should pass. Test coverage should, at least, stay the same.
-- If a reviewer has no comments or questions then the approving reviewer is encouraged to merge the PR themselves to keep things tidy.
+- If a reviewer has no comments or questions, and all required checks are passing in the CI, then the approving reviewer is encouraged to merge the PR themselves to keep things tidy.
 - Merge via squash merge (so we have one commit per PR).
 
 ## Code style and linters
