@@ -1,4 +1,5 @@
 from math import sqrt
+from typing import NamedTuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,6 +20,16 @@ from dxss.precomp_time_int import (
     get_elmat_time,
     theta_ref,
 )
+
+
+class OrderTime(NamedTuple):
+    q: int
+    qstar: int
+
+
+class OrderSpace(NamedTuple):
+    k: int
+    kstar: int
 
 
 # TODO: this is duplicated... factor out to a "PETSc interface functions" file?
@@ -44,10 +55,8 @@ class SpaceTime:
     #  - PLR0915 there are too many conditional statements.
     def __init__(  # noqa: PLR0913, PLR0915
         self,
-        q,
-        qstar,
-        k,
-        kstar,
+        polynomial_order_time: OrderTime,
+        polynomial_order_space: OrderSpace,
         N,  # noqa: N803
         T,  # noqa: N803
         t,
@@ -60,11 +69,16 @@ class SpaceTime:
         well_posed=False,
         data_dom_fitted=True,
     ):
+        """Construct a SpaceTime object.
+
+        Args:
+            polynomial_order_time: polynomial degrees of the finite elements in space.
+            polynomial_order_space: polynomial degrees of the finite elements in time.
+            ...
+        """
         self.name = "space-time-wave"
-        self.q = q
-        self.qstar = qstar
-        self.k = k
-        self.kstar = kstar
+        self.otime: OrderTime = polynomial_order_time
+        self.ospace: OrderSpace = polynomial_order_space
         self.jumps_in_fw_problem = jumps_in_fw_problem
         self.N = N
         self.T = T
@@ -76,23 +90,28 @@ class SpaceTime:
         self.x = ufl.SpatialCoordinate(msh)
         self.sol = sol
         self.dt_sol = dt_sol
-        self.lam_Nitsche = 5 * self.k**2
+        self.lam_Nitsche = 5 * self.ospace.k**2
         self.jumps_in_fw_problem = jumps_in_fw_problem
         self.well_posed = well_posed
 
         # mesh-related
-        self.metadata = {"quadrature_degree": 2 * self.k + 3}
+        self.metadata = {"quadrature_degree": 2 * self.ospace.k + 3}
         self.dx = ufl.Measure("dx", domain=self.msh, metadata=self.metadata)
         self.n_facet = ufl.FacetNormal(self.msh)
         self.h = ufl.CellDiameter(self.msh)
 
         # derived quantities for time discretization
-        self.elmat_time = get_elmat_time(self.q, self.qstar)
+        self.elmat_time = get_elmat_time(self.otime.q, self.otime.qstar)
         self.qr = QuadRule("Gauss-Radau", 4)
         self.qr_ho = QuadRule("Gauss-Radau", 5)
-        self.phi_trial, self.dt_phi_trial = basis_in_time[self.q]
-        self.phi_test, self.dt_phi_test = basis_in_time[self.q]
-        self.subspace_time_order = [self.q, self.q, self.qstar, self.qstar]
+        self.phi_trial, self.dt_phi_trial = basis_in_time[self.otime.q]
+        self.phi_test, self.dt_phi_test = basis_in_time[self.otime.q]
+        self.subspace_time_order = [
+            self.otime.q,
+            self.otime.q,
+            self.otime.qstar,
+            self.otime.qstar,
+        ]
 
         # DG0 indicator function
         if data_dom_fitted:
@@ -173,8 +192,8 @@ class SpaceTime:
 
         # Miscalleneous
         self.sample_pts_error = np.linspace(0, self.T, 105).tolist()
-        self.eps = 0
-        if self.qstar == 0:
+        self.eps: float = 0.0
+        if self.otime.qstar == 0:
             self.eps = 1e-15  # hack to trick form compiler
 
         # for coarse grid correction
@@ -204,14 +223,14 @@ class SpaceTime:
         vel_q = ufl.VectorElement(
             "CG",
             self.msh.ufl_cell(),
-            self.k,
-            int((self.q + 1) * self.N),
+            self.ospace.k,
+            int((self.otime.q + 1) * self.N),
         )
         vel_qstar = ufl.VectorElement(
             "CG",
             self.msh.ufl_cell(),
-            self.kstar,
-            int((self.qstar + 1) * self.N),
+            self.ospace.kstar,
+            int((self.otime.qstar + 1) * self.N),
         )
         mel = ufl.MixedElement([vel_q, vel_q, vel_qstar, vel_qstar])
         self.fes = fem.FunctionSpace(self.msh, mel)
@@ -224,8 +243,8 @@ class SpaceTime:
                 for ell in range(self.subspace_time_order[j] + 1):
                     shift_idx = int_idx_q if j in [0, 1] else int_idx_qstar
                     dofmaps_j.append(self.fes.sub(j).sub(shift_idx + ell).collapse()[1])
-                int_idx_q += self.q + 1
-                int_idx_qstar += self.qstar + 1
+                int_idx_q += self.otime.q + 1
+                int_idx_qstar += self.otime.qstar + 1
             dofmaps_full.append(dofmaps_j)
         self.dofmaps_full = dofmaps_full
 
@@ -236,10 +255,10 @@ class SpaceTime:
         self.u1_0 = fem.Function(self.fes_u1_0)
         self.u2_0 = fem.Function(self.fes_u2_0)
         self.u1_minus = fem.Function(self.fes_u1_0)
-        self.u1_slab = [fem.Function(self.fes_u1_0) for j in range(self.q + 1)]
+        self.u1_slab = [fem.Function(self.fes_u1_0) for j in range(self.otime.q + 1)]
 
         # For strong coupling between slabs
-        vel_coupling = ufl.VectorElement("CG", self.msh.ufl_cell(), self.k, 2)
+        vel_coupling = ufl.VectorElement("CG", self.msh.ufl_cell(), self.ospace.k, 2)
         mel_coupling = ufl.MixedElement([vel_coupling, vel_coupling])
         self.fes_coupling = fem.FunctionSpace(self.msh, mel_coupling)
         self.dofmaps_coupling = [
@@ -248,7 +267,7 @@ class SpaceTime:
         ]
 
         # For mass matrix between slabs
-        vel_slab_bnd = ufl.VectorElement("CG", self.msh.ufl_cell(), self.k, 1)
+        vel_slab_bnd = ufl.VectorElement("CG", self.msh.ufl_cell(), self.ospace.k, 1)
         mel_slab_bnd = ufl.MixedElement([vel_slab_bnd, vel_slab_bnd])
         self.fes_slab_bnd = fem.FunctionSpace(self.msh, mel_slab_bnd)
         self.dofmaps_slab_bnd = [
@@ -257,12 +276,17 @@ class SpaceTime:
         self.u_0_slab_bnd = fem.Function(self.fes_slab_bnd)
 
         # For slab
-        vel_pre_q = ufl.VectorElement("CG", self.msh.ufl_cell(), self.k, self.q + 1)
+        vel_pre_q = ufl.VectorElement(
+            "CG",
+            self.msh.ufl_cell(),
+            self.ospace.k,
+            self.otime.q + 1,
+        )
         vel_pre_qstar = ufl.VectorElement(
             "CG",
             self.msh.ufl_cell(),
-            self.kstar,
-            self.qstar + 1,
+            self.ospace.kstar,
+            self.otime.qstar + 1,
         )
         mel_pre = ufl.MixedElement([vel_pre_q, vel_pre_q, vel_pre_qstar, vel_pre_qstar])
         self.fes_p = fem.FunctionSpace(self.msh, mel_pre)
@@ -276,10 +300,10 @@ class SpaceTime:
 
         self.w1_p, self.w2_p, self.y1_p, self.y2_p = ufl.TestFunctions(self.fes_p)
         self.fes_u1_0_pre, self.dofmap_fes_u1_0_pre = (
-            self.fes_p.sub(0).sub(self.q).collapse()
+            self.fes_p.sub(0).sub(self.otime.q).collapse()
         )  # for top of slice
         self.fes_u2_0_pre, self.dofmap_fes_u2_0_pre = (
-            self.fes_p.sub(1).sub(self.q).collapse()
+            self.fes_p.sub(1).sub(self.otime.q).collapse()
         )  # for top of slice
         self.uh_pre = fem.Function(self.fes_p)
         self.u1_0_pre = fem.Function(self.fes_u1_0_pre)
@@ -330,8 +354,8 @@ class SpaceTime:
         for n in range(self.N):
             n * delta_t
 
-            for j in range(self.q + 1):
-                for k in range(self.qstar + 1):
+            for j in range(self.otime.q + 1):
+                for k in range(self.otime.qstar + 1):
                     a += (
                         elmat_time["DM_time_q_qstar"][k, j]
                         * inner(u2[int_idx_q + j], y1[int_idx_qstar + k])
@@ -363,8 +387,8 @@ class SpaceTime:
                             * ds
                         )  # Nitsche term
 
-            for j in range(self.q + 1):
-                for k in range(self.q + 1):
+            for j in range(self.otime.q + 1):
+                for k in range(self.otime.q + 1):
                     a += (
                         gamma_data
                         * delta_t
@@ -374,8 +398,8 @@ class SpaceTime:
                         * dx
                     )
 
-            for j in range(self.q + 1):
-                for k in range(self.qstar + 1):
+            for j in range(self.otime.q + 1):
+                for k in range(self.otime.qstar + 1):
                     a += (
                         elmat_time["DM_time_q_qstar"][k, j]
                         * inner(w2[int_idx_q + j], z1[int_idx_qstar + k])
@@ -407,8 +431,8 @@ class SpaceTime:
                             * ds
                         )  # Nitsche term
 
-            for j in range(self.qstar + 1):
-                for k in range(self.qstar + 1):
+            for j in range(self.otime.qstar + 1):
+                for k in range(self.otime.qstar + 1):
                     a -= (
                         gamma_dual
                         * delta_t
@@ -455,8 +479,8 @@ class SpaceTime:
                     * dx
                 )
 
-            for j in range(self.q + 1):
-                for k in range(self.q + 1):
+            for j in range(self.otime.q + 1):
+                for k in range(self.otime.q + 1):
                     # boundary term
                     a += (
                         gamma_primal
@@ -639,10 +663,10 @@ class SpaceTime:
                         * dx
                     )
 
-            int_idx_q += self.q + 1
-            coupling_idx_q += self.q + 1
-            int_idx_qstar += self.qstar + 1
-            coupling_idx_qstar += self.qstar + 1
+            int_idx_q += self.otime.q + 1
+            coupling_idx_q += self.otime.q + 1
+            int_idx_qstar += self.otime.qstar + 1
+            coupling_idx_qstar += self.otime.qstar + 1
 
         print("Creating bfi")
         bilinear_form = fem.form(a)
@@ -704,7 +728,7 @@ class SpaceTime:
                     * sum(
                         [
                             w1[int_idx_q + k] * self.phi_test[k](tau_i)
-                            for k in range(self.q + 1)
+                            for k in range(self.otime.q + 1)
                         ],
                     )
                     * dx
@@ -724,10 +748,10 @@ class SpaceTime:
                 )
                 # TODO: check with Janosch, was this a bug? u1_0 and u2_0 were undefined.
 
-            int_idx_q += self.q + 1
-            coupling_idx_q += self.q + 1
-            int_idx_qstar += self.qstar + 1
-            coupling_idx_qstar += self.qstar + 1
+            int_idx_q += self.otime.q + 1
+            coupling_idx_q += self.otime.q + 1
+            int_idx_qstar += self.otime.qstar + 1
+            coupling_idx_qstar += self.otime.qstar + 1
 
         linear_form = fem.form(L)
         b_rhs = fem.petsc.create_vector(linear_form)
@@ -834,8 +858,8 @@ class SpaceTime:
 
         a_pre = 1e-20 * u1_p[0] * y1_p[0] * dx
 
-        for j in range(self.q + 1):
-            for k in range(self.qstar + 1):
+        for j in range(self.otime.q + 1):
+            for k in range(self.otime.qstar + 1):
                 a_pre += (
                     elmat_time["DM_time_q_qstar"][k, j] * inner(u2_p[j], y1_p[k]) * dx
                 )
@@ -863,8 +887,8 @@ class SpaceTime:
                         * ds
                     )  # Nitsche term
 
-        for j in range(self.q + 1):
-            for k in range(self.q + 1):
+        for j in range(self.otime.q + 1):
+            for k in range(self.otime.q + 1):
                 a_pre += (
                     gamma_data
                     * delta_t
@@ -874,8 +898,8 @@ class SpaceTime:
                     * dx
                 )
 
-        for j in range(self.q + 1):
-            for k in range(self.qstar + 1):
+        for j in range(self.otime.q + 1):
+            for k in range(self.otime.qstar + 1):
                 a_pre += (
                     elmat_time["DM_time_q_qstar"][k, j] * inner(w2_p[j], z1_p[k]) * dx
                 )
@@ -903,8 +927,8 @@ class SpaceTime:
                         * ds
                     )  # Nitsche term
 
-        for j in range(self.qstar + 1):
-            for k in range(self.qstar + 1):
+        for j in range(self.otime.qstar + 1):
+            for k in range(self.otime.qstar + 1):
                 a_pre -= (
                     gamma_dual
                     * delta_t
@@ -939,8 +963,8 @@ class SpaceTime:
             a_pre -= gamma_dual * delta_t * inner(y2_p[0], z2_p[0]) * dx
             a_pre -= gamma_dual * delta_t * inner(y1_p[0], z1_p[0]) * dx
 
-        for j in range(self.q + 1):
-            for k in range(self.q + 1):
+        for j in range(self.otime.q + 1):
+            for k in range(self.otime.q + 1):
                 # boundary term
                 a_pre += (
                     gamma_primal
@@ -1124,10 +1148,10 @@ class SpaceTime:
                             self.dofmaps_full[j][coupling_idx_q + i]
                         ] += self.vec_coupling2.array[self.dofmaps_coupling[j][i]]
 
-            int_idx_q += self.q + 1
-            coupling_idx_q += self.q + 1
-            int_idx_qstar += self.qstar + 1
-            coupling_idx_qstar += self.qstar + 1
+            int_idx_q += self.otime.q + 1
+            coupling_idx_q += self.otime.q + 1
+            int_idx_qstar += self.otime.qstar + 1
+            coupling_idx_qstar += self.otime.qstar + 1
 
     def pre_time_marching(self, b, x_sol):
         dx = self.dx
@@ -1188,8 +1212,8 @@ class SpaceTime:
                 self.uh_pre.x.scatter_forward()
 
             u1_h_p, u2_h_p, z1_h_p, z2_h_p = self.uh_pre.split()
-            self.u1_0_pre.x.array[:] = u1_h_p.x.array[self.dofmaps_pre[0][self.q]]
-            self.u2_0_pre.x.array[:] = u2_h_p.x.array[self.dofmaps_pre[1][self.q]]
+            self.u1_0_pre.x.array[:] = u1_h_p.x.array[self.dofmaps_pre[0][self.otime.q]]
+            self.u2_0_pre.x.array[:] = u2_h_p.x.array[self.dofmaps_pre[1][self.otime.q]]
 
             for j in range(4):
                 shift_idx = int_idx_q if j in [0, 1] else int_idx_qstar
@@ -1198,10 +1222,10 @@ class SpaceTime:
                         self.dofmaps_full[j][shift_idx + ell]
                     ] = self.uh_pre.x.array[self.dofmaps_pre[j][ell]]
 
-            int_idx_q += self.q + 1
-            coupling_idx_q += self.q + 1
-            int_idx_qstar += self.qstar + 1
-            coupling_idx_qstar += self.qstar + 1
+            int_idx_q += self.otime.q + 1
+            coupling_idx_q += self.otime.q + 1
+            int_idx_qstar += self.otime.qstar + 1
+            coupling_idx_qstar += self.otime.qstar + 1
 
     def pre_time_marching_improved(self, b, x_sol):
         if self.jumps_in_fw_problem:
@@ -1242,10 +1266,10 @@ class SpaceTime:
 
             self.vec_0_bnd_in.array[:] = 0.0
             self.vec_0_bnd_in.array[self.dofmaps_slab_bnd[0]] += u1_h_p.x.array[
-                self.dofmaps_pre[0][self.q]
+                self.dofmaps_pre[0][self.otime.q]
             ]
             self.vec_0_bnd_in.array[self.dofmaps_slab_bnd[1]] += u2_h_p.x.array[
-                self.dofmaps_pre[1][self.q]
+                self.dofmaps_pre[1][self.otime.q]
             ]
             self.scaled_mass_matrix_between_slices.mult(
                 self.vec_0_bnd_in,
@@ -1267,10 +1291,10 @@ class SpaceTime:
                         self.dofmaps_full[j][shift_idx + ell]
                     ] = self.uh_pre.x.array[self.dofmaps_pre[j][ell]]
 
-            int_idx_q += self.q + 1
-            coupling_idx_q += self.q + 1
-            int_idx_qstar += self.qstar + 1
-            coupling_idx_qstar += self.qstar + 1
+            int_idx_q += self.otime.q + 1
+            coupling_idx_q += self.otime.q + 1
+            int_idx_qstar += self.otime.qstar + 1
+            coupling_idx_qstar += self.otime.qstar + 1
 
     def get_spacetime_matrix_as_linear_operator(self):
         return SpaceTime.FMatrix(self)
@@ -1307,14 +1331,14 @@ class SpaceTime:
         vel_coarse_q = ufl.VectorElement(
             "CG",
             self.msh_coarse.ufl_cell(),
-            self.k,
-            int((self.q + 1) * self.N),
+            self.ospace.k,
+            int((self.otime.q + 1) * self.N),
         )
         vel_coarse_qstar = ufl.VectorElement(
             "CG",
             self.msh_coarse.ufl_cell(),
-            self.kstar,
-            int((self.qstar + 1) * self.N),
+            self.ospace.kstar,
+            int((self.otime.qstar + 1) * self.N),
         )
         mel_coarse = ufl.MixedElement(
             [vel_coarse_q, vel_coarse_q, vel_coarse_qstar, vel_coarse_qstar],
@@ -1332,8 +1356,8 @@ class SpaceTime:
                     dofmaps_j_coarse.append(
                         self.fes_coarse.sub(j).sub(shift_idx + ell).collapse()[1],
                     )
-                int_idx_q += self.q + 1
-                int_idx_qstar += self.qstar + 1
+                int_idx_q += self.otime.q + 1
+                int_idx_qstar += self.otime.qstar + 1
             dofmaps_full_coarse.append(dofmaps_j_coarse)
         self.dofmaps_full_coarse = dofmaps_full_coarse
 
@@ -1377,8 +1401,8 @@ class SpaceTime:
                     x_fine.array[
                         self.dofmaps_full[j][shift_idx + ell]
                     ] = self.u_node_fine.x.array[:]
-            int_idx_q += self.q + 1
-            int_idx_qstar += self.qstar + 1
+            int_idx_q += self.otime.q + 1
+            int_idx_qstar += self.otime.qstar + 1
 
     def restriction(self, x_coarse, x_fine):
         int_idx_q = 0
@@ -1394,8 +1418,8 @@ class SpaceTime:
                     x_coarse.array[
                         self.dofmaps_full_coarse[j][shift_idx + ell]
                     ] = self.u_node_coarse.x.array[:]
-            int_idx_qstar += self.qstar + 1
-            int_idx_q += self.q + 1
+            int_idx_qstar += self.otime.qstar + 1
+            int_idx_q += self.otime.q + 1
 
     def q_op(self, x_in, x_out):
         self.restriction(self.tmp1_coarse, x_in)
@@ -1403,7 +1427,7 @@ class SpaceTime:
         self.prolongation(self.tmp2_coarse, x_out)
 
     def pre_twolvl(self, b, x_sol):
-        self.q_op(b, self.tmp3_sol)
+        self.otime.q_op(b, self.tmp3_sol)
         self.apply_spacetime_matrix(self.tmp3_sol, self.tmp4_sol)
         self.tmp5_sol.array[:] = b.array[:]
         self.tmp5_sol.array[:] -= self.tmp4_sol.array[:]
@@ -1445,15 +1469,15 @@ class SpaceTime:
                     self.dofmaps_full[0][int_idx - 1]
                 ]
 
-            for ell in range(self.q + 1):
+            for ell in range(self.otime.q + 1):
                 self.u1_slab[ell].x.array[:] = u1_h.x.array[
                     self.dofmaps_full[0][int_idx + ell]
                 ]
 
             # measuring L2-error in time of u_t
             for tau_i, omega_i in zip(
-                self.qr_ho.current_pts(0, 1),
-                self.qr_ho.t_weights(1),
+                self.otime.qr_ho.current_pts(0, 1),
+                self.otime.qr_ho.t_weights(1),
             ):
                 time_ti = t_n + delta_t * tau_i
                 dt_ue_tni = self.dt_sol(time_ti, self.x)
@@ -1462,7 +1486,7 @@ class SpaceTime:
                         (1 / delta_t)
                         * self.dt_phi_trial[j]((time_ti - t_n) / delta_t)
                         * self.u1_slab[j]
-                        for j in range(self.q + 1)
+                        for j in range(self.otime.q + 1)
                     ],
                 )
                 if n > 0:
@@ -1488,7 +1512,7 @@ class SpaceTime:
                         [
                             self.phi_trial[j]((t_sample - t_n) / delta_t)
                             * self.u1_slab[j]
-                            for j in range(self.q + 1)
+                            for j in range(self.otime.q + 1)
                         ],
                     )
                     uh_prime_at_ti = sum(
@@ -1496,7 +1520,7 @@ class SpaceTime:
                             (1 / delta_t)
                             * self.dt_phi_trial[j]((t_sample - t_n) / delta_t)
                             * self.u1_slab[j]
-                            for j in range(self.q + 1)
+                            for j in range(self.otime.q + 1)
                         ],
                     )
                     if n > 0:
@@ -1531,7 +1555,7 @@ class SpaceTime:
                             f"t = {t_sample}, L2-error u = {error_l2_abs}, L2-error u_t = {error_dt_l2_abs} ",
                         )
 
-            int_idx += self.q + 1
+            int_idx += self.otime.q + 1
 
         print("L-infty-L2 error u = ", max(l2_error_at_samples))
         print("L-infty-L2 error u_t = ", max(l2_error_dt_at_samples))
@@ -1558,7 +1582,7 @@ class SpaceTime:
         uh_plot.x.array[:] = uh_inp.array[:]
         u1_h, u2_h, z1_h, z2_h = uh_plot.split()
 
-        u1_slab_plot = [fem.Function(self.fes_u1_0) for j in range(self.q + 1)]
+        u1_slab_plot = [fem.Function(self.fes_u1_0) for j in range(self.otime.q + 1)]
 
         delta_t = self.delta_t
         right_end = 1.0
@@ -1580,17 +1604,17 @@ class SpaceTime:
 
         fun_val = np.zeros((n_time_subdiv * self.N, n_space))
         dt_fun_val = np.zeros((n_time_subdiv * self.N, n_space))
-        space_val_ti = np.zeros((self.q + 1, n_space))
+        space_val_ti = np.zeros((self.otime.q + 1, n_space))
 
         for n in range(self.N):
             t_n = n * delta_t
 
-            for ell in range(self.q + 1):
+            for ell in range(self.otime.q + 1):
                 u1_slab_plot[ell].x.array[:] = u1_h.x.array[
                     self.dofmaps_full[0][int_idx + ell]
                 ]
 
-            for ell in range(self.q + 1):
+            for ell in range(self.otime.q + 1):
                 space_val_ti[ell, :] = evaluate_function_at_points(
                     u1_slab_plot[ell],
                     eval_pts_space_3d,
@@ -1607,7 +1631,7 @@ class SpaceTime:
                             [
                                 self.phi_trial[ell]((time_ti - t_n) / delta_t)
                                 * space_val_ti[ell, j]
-                                for ell in range(self.q + 1)
+                                for ell in range(self.otime.q + 1)
                             ],
                         ),
                     )
@@ -1617,14 +1641,14 @@ class SpaceTime:
                                 (1 / delta_t)
                                 * self.dt_phi_trial[ell]((time_ti - t_n) / delta_t)
                                 * space_val_ti[ell, j]
-                                for ell in range(self.q + 1)
+                                for ell in range(self.otime.q + 1)
                             ],
                         ),
                     )
                     fun_val[time_idx + m, j] = uh_at_ti
                     dt_fun_val[time_idx + m, j] = dt_uh_at_ti
 
-            int_idx += self.q + 1
+            int_idx += self.otime.q + 1
             time_idx += n_time_subdiv
 
         if False:
@@ -1679,7 +1703,7 @@ class SpaceTime:
         uh_plot.x.array[:] = uh_inp.array[:]
         u1_h, u2_h, z1_h, z2_h = uh_plot.split()
 
-        u1_slab_plot = [fem.Function(self.fes_u1_0) for j in range(self.q + 1)]
+        u1_slab_plot = [fem.Function(self.fes_u1_0) for j in range(self.otime.q + 1)]
 
         delta_t = self.delta_t
         right_end = 1.0
@@ -1703,17 +1727,17 @@ class SpaceTime:
         dt_fun_val = np.zeros((n_time_subdiv * self.N, n_space))
         err_val = np.zeros((n_time_subdiv * self.N, n_space))
         dt_err_val = np.zeros((n_time_subdiv * self.N, n_space))
-        space_val_ti = np.zeros((self.q + 1, n_space))
+        space_val_ti = np.zeros((self.otime.q + 1, n_space))
 
         for n in range(self.N):
             t_n = n * delta_t
 
-            for i in range(self.q + 1):
+            for i in range(self.otime.q + 1):
                 u1_slab_plot[i].x.array[:] = u1_h.x.array[
                     self.dofmaps_full[0][int_idx + i]
                 ]
 
-            for i in range(self.q + 1):
+            for i in range(self.otime.q + 1):
                 space_val_ti[i, :] = evaluate_function_at_points(
                     u1_slab_plot[i],
                     eval_pts_space_3d,
@@ -1729,7 +1753,7 @@ class SpaceTime:
                         [
                             self.phi_trial[ell]((time_ti - t_n) / delta_t)
                             * space_val_ti[ell, j]
-                            for ell in range(self.q + 1)
+                            for ell in range(self.otime.q + 1)
                         ],
                     )
                     u_at_ti = self.sol(time_ti, [eval_pts_space[j]])
@@ -1739,7 +1763,7 @@ class SpaceTime:
                             (1 / delta_t)
                             * self.dt_phi_trial[ell]((time_ti - t_n) / delta_t)
                             * space_val_ti[ell, j]
-                            for ell in range(self.q + 1)
+                            for ell in range(self.otime.q + 1)
                         ],
                     )
                     dt_u_at_ti = self.dt_sol(time_ti, [eval_pts_space[j]])
@@ -1750,7 +1774,7 @@ class SpaceTime:
                     dt_fun_val[time_idx + m, j] = dt_uh_at_ti
                     dt_err_val[time_idx + m, j] = abs(dt_uh_at_ti - dt_u_at_ti)
 
-            int_idx += self.q + 1
+            int_idx += self.otime.q + 1
             time_idx += n_time_subdiv
 
         plt.pcolormesh(eval_pts_space, ts, dt_fun_val)

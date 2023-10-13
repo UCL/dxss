@@ -7,7 +7,7 @@ from petsc4py import PETSc
 
 from dxss.gmres import get_gmres_solution
 from dxss.meshes import get_mesh_data_all_around
-from dxss.space_time import SpaceTime, get_sparse_matrix
+from dxss.space_time import OrderSpace, OrderTime, SpaceTime, get_sparse_matrix
 
 try:
     import pypardiso
@@ -96,10 +96,8 @@ def dt_sample_sol(t, xu):
 
 
 ST = SpaceTime(
-    q=q,
-    qstar=qstar,
-    k=k,
-    kstar=kstar,
+    OrderTime(q, qstar),
+    OrderSpace(k, kstar),
     N=N,
     T=T,
     t=t0,
