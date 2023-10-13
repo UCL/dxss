@@ -1775,8 +1775,8 @@ document.write(`
 
             <span class="c1"># measuring L2-error in time of u_t</span>
             <span class="k">for</span> <span class="n">tau_i</span><span class="p">,</span> <span class="n">omega_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">otime</span><span class="o">.</span><span class="n">qr_ho</span><span class="o">.</span><span class="n">current_pts</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">otime</span><span class="o">.</span><span class="n">qr_ho</span><span class="o">.</span><span class="n">t_weights</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">qr_ho</span><span class="o">.</span><span class="n">current_pts</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">qr_ho</span><span class="o">.</span><span class="n">t_weights</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
             <span class="p">):</span>
                 <span class="n">time_ti</span> <span class="o">=</span> <span class="n">t_n</span> <span class="o">+</span> <span class="n">delta_t</span> <span class="o">*</span> <span class="n">tau_i</span>
                 <span class="n">dt_ue_tni</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_sol</span><span class="p">(</span><span class="n">time_ti</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
