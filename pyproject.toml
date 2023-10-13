@@ -19,7 +19,7 @@ classifiers = [
 ]
 dependencies = [
     "dxh@git+https://github.com/UCL/dxh",
-    "fenics-dolfinx>=0.6.0",
+    "fenics-dolfinx==0.6.0",
     "fenics-ufl",
     "gmsh",
     "h5py",
