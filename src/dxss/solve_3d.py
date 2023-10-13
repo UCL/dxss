@@ -8,7 +8,14 @@ from mpi4py import MPI
 from petsc4py import PETSc
 
 from dxss.gmres import get_gmres_solution
-from dxss.space_time import OrderSpace, OrderTime, SpaceTime, get_sparse_matrix
+from dxss.space_time import (
+    OrderSpace,
+    OrderTime,
+    ProblemParameters,
+    SpaceTime,
+    ValueAndDerivative,
+    get_sparse_matrix,
+)
 
 try:
     import pypardiso
@@ -164,10 +171,9 @@ ST = SpaceTime(
     t=t0,
     msh=MSH,
     omega_ind=omega_ind,
-    stabs=STABS,
-    sol=sample_sol,
-    dt_sol=dt_sample_sol,
-    data_dom_fitted=Nx > 2,
+    stabalisation_terms=STABS,
+    solution=ValueAndDerivative(sample_sol, dt_sample_sol),
+    parameters=ProblemParameters(data_domain_fitted=Nx > 2),
 )
 ST.setup_spacetime_finite_elements()
 ST.prepare_precondition_gmres()

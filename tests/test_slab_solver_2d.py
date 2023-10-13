@@ -10,7 +10,7 @@ from dolfinx import fem
 from petsc4py import PETSc
 
 from dxss.meshes import get_mesh_data_all_around
-from dxss.space_time import OrderSpace, OrderTime, SpaceTime
+from dxss.space_time import OrderSpace, OrderTime, SpaceTime, ValueAndDerivative
 
 try:
     import pypardiso
@@ -103,9 +103,8 @@ ST = SpaceTime(
     t=t0,
     msh=MSH,
     omega_ind=omega_ind_convex,
-    stabs=STABS,
-    sol=sample_sol,
-    dt_sol=dt_sample_sol,
+    stabalisation_terms=STABS,
+    solution=ValueAndDerivative(sample_sol, dt_sample_sol),
 )
 ST.setup_spacetime_finite_elements()
 ST.prepare_precondition_gmres()
