@@ -1434,7 +1434,7 @@ class SpaceTime:
 
     def q_op(self, x_in, x_out):
         self.restriction(self.tmp1_coarse, x_in)
-        self.solution.vverCoarse.solve(self.tmp1_coarse, self.tmp2_coarse)
+        self.SolverCoarse.solve(self.tmp1_coarse, self.tmp2_coarse)
         self.prolongation(self.tmp2_coarse, x_out)
 
     def pre_twolvl(self, b, x_sol):
