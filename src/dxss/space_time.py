@@ -1,5 +1,5 @@
+import dataclasses
 from math import sqrt
-from typing import NamedTuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,28 +22,35 @@ from dxss.precomp_time_int import (
 )
 
 
-class OrderTime(NamedTuple):
+@dataclasses.dataclass
+class OrderTime:
     q: int
     qstar: int
 
 
-class OrderSpace(NamedTuple):
+@dataclasses.dataclass
+class OrderSpace:
     k: int
     kstar: int
 
 
-class ValueAndDerivative(NamedTuple):
+@dataclasses.dataclass
+class ValueAndDerivative:
     v: np.ndarray
     dvdt: np.ndarray
 
 
-class ProblemParameters(NamedTuple):
+@dataclasses.dataclass
+class ProblemParameters:
     jumps_in_fw_problem: bool = False
     well_posed: bool = False
     data_domain_fitted: bool = True
 
+    def __iter__(self):
+        return (getattr(self, field.name) for field in dataclasses.fields(self))
 
-_PARAMETERS_DEFAULT = ProblemParameters()
+
+_DEFAULT_PARAMETERS = ProblemParameters()
 
 
 # TODO: this is duplicated... factor out to a "PETSc interface functions" file?
@@ -78,7 +85,7 @@ class SpaceTime:
         omega_ind,
         stabalisation_terms,
         solution: ValueAndDerivative,
-        parameters: ProblemParameters = _PARAMETERS_DEFAULT,
+        parameters: ProblemParameters = _DEFAULT_PARAMETERS,
     ):
         """Construct a SpaceTime object.
 
