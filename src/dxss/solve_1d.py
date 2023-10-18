@@ -9,6 +9,7 @@ from petsc4py import PETSc
 
 from dxss.gmres import get_gmres_solution
 from dxss.space_time import (
+    DataDomain,
     OrderSpace,
     OrderTime,
     SpaceTime,
@@ -102,7 +103,7 @@ ST = SpaceTime(
     T=T,
     t=t0,
     msh=MSH,
-    omega_ind=omega_ind_nogcc,
+    omega=DataDomain(indicator_function=omega_ind_nogcc),
     stabalisation_terms=STABS,
     solution=ValueAndDerivative(sample_sol, dt_sample_sol),
 )

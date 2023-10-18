@@ -1,5 +1,6 @@
 import dataclasses
 from math import sqrt
+from typing import Callable
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -41,10 +42,15 @@ class ValueAndDerivative:
 
 
 @dataclasses.dataclass
+class DataDomain:
+    indicator_function: Callable | fem.Function = None
+    fitted: bool = True
+
+
+@dataclasses.dataclass
 class ProblemParameters:
     jumps_in_fw_problem: bool = False
     well_posed: bool = False
-    data_domain_fitted: bool = True
 
     def __iter__(self):
         return (getattr(self, field.name) for field in dataclasses.fields(self))
@@ -82,8 +88,8 @@ class SpaceTime:
         T,  # noqa: N803
         t,
         msh,
-        omega_ind,
         stabalisation_terms,
+        omega: DataDomain,
         solution: ValueAndDerivative,
         parameters: ProblemParameters = _DEFAULT_PARAMETERS,
     ):
@@ -93,6 +99,7 @@ class SpaceTime:
             polynomial_order_time: Polynomial degrees of the finite elements in space.
             polynomial_order_space: Polynomial degrees of the finite elements in time.
             stabalisation_terms: A dictionary of stabilisation terms.
+            omega: A DataDomain object holding the indicator function.
             solution: A best starting guess for the solution and its derivative.
             parameters: Problem-specific parameters.
             ...
@@ -105,12 +112,12 @@ class SpaceTime:
         self.t = t
         self.delta_t = self.T / self.N
         self.msh = msh
-        self.omega_ind = omega_ind
+        self.omega = omega
         self.x = ufl.SpatialCoordinate(msh)
         self.solution = solution
         self.lam_Nitsche = 5 * self.ospace.k**2
         self.stabalisation_terms = stabalisation_terms
-        self.jumps_in_fw_problem, self.well_posed, _ = parameters
+        self.jumps_in_fw_problem, self.well_posed = parameters
 
         # mesh-related
         self.metadata = {"quadrature_degree": 2 * self.ospace.k + 3}
@@ -132,12 +139,13 @@ class SpaceTime:
         ]
 
         # DG0 indicator function
-        if parameters.data_domain_fitted:
+        # todo: could this be moved to the constructor of the dataclass?
+        if omega.fitted:
             q_ind = fem.FunctionSpace(self.msh, ("DG", 0))
-            self.omega_ind = fem.Function(q_ind)
-            self.omega_ind.interpolate(self.omega_ind)
+            self.omega.indicator_function = fem.Function(q_ind)
+            self.omega.indicator_function.interpolate(self.omega.indicator_function)
         else:
-            self.omega_ind = self.omega_ind
+            self.omega.indicator_function = self.omega.indicator_function
 
         # FESpaces
         self.fes = None
@@ -350,11 +358,11 @@ class SpaceTime:
         elmat_time = self.elmat_time
 
         if afes == self.fes:
-            omega_ind = self.omega_ind
+            omega_ind = self.omega.indicator_function
         else:
             q_ind = fem.FunctionSpace(afes.mesh, ("DG", 0))
             omega_ind = fem.Function(q_ind)
-            omega_ind.interpolate(self.omega_ind)
+            omega_ind.interpolate(self.omega.indicator_function)
 
         # retrieve stabilization parameter
         gamma_data = self.stabalisation_terms["data"]
@@ -742,7 +750,7 @@ class SpaceTime:
                     * delta_t
                     * omega_i
                     * sol_ti
-                    * self.omega_ind
+                    * self.omega.indicator_function
                     * sum(
                         [
                             w1[int_idx_q + k] * self.phi_test[k](tau_i)
@@ -911,7 +919,7 @@ class SpaceTime:
                     gamma_data
                     * delta_t
                     * elmat_time["M_time_q_q"][k, j]
-                    * self.omega_ind
+                    * self.omega.indicator_function
                     * inner(u1_p[j], w1_p[k])
                     * dx
                 )
