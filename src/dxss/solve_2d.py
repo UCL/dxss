@@ -110,7 +110,7 @@ ST = SpaceTime(
     t=t0,
     msh=msh,
     omega=DataDomain(indicator_function=omega_ind_convex),
-    stabalisation_terms=STABS,
+    stabilisation_terms=STABS,
     solution=ValueAndDerivative(sample_sol, dt_sample_sol),
 )
 ST.setup_spacetime_finite_elements()

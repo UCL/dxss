@@ -172,7 +172,7 @@ ST = SpaceTime(
     t=t0,
     msh=MSH,
     omega=DataDomain(indicator_function=omega_ind),
-    stabalisation_terms=STABS,
+    stabilisation_terms=STABS,
     solution=ValueAndDerivative(sample_sol, dt_sample_sol),
     parameters=ProblemParameters(data_domain_fitted=Nx > 2),
 )

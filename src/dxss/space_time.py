@@ -88,7 +88,7 @@ class SpaceTime:
         T,  # noqa: N803
         t,
         msh,
-        stabalisation_terms,
+        stabilisation_terms: dict[str, float],
         omega: DataDomain,
         solution: ValueAndDerivative,
         parameters: ProblemParameters = _DEFAULT_PARAMETERS,
@@ -98,7 +98,7 @@ class SpaceTime:
         Args:
             polynomial_order_time: Polynomial degrees of the finite elements in space.
             polynomial_order_space: Polynomial degrees of the finite elements in time.
-            stabalisation_terms: A dictionary of stabilisation terms.
+            stabilisation_terms: A dictionary of stabilisation terms.
             omega: A DataDomain object holding the indicator function.
             solution: A best starting guess for the solution and its derivative.
             parameters: Problem-specific parameters.
@@ -116,7 +116,7 @@ class SpaceTime:
         self.x = ufl.SpatialCoordinate(msh)
         self.solution = solution
         self.lam_Nitsche = 5 * self.ospace.k**2
-        self.stabalisation_terms = stabalisation_terms
+        self.stabilisation_terms = stabilisation_terms
         self.jumps_in_fw_problem, self.well_posed = parameters
 
         # mesh-related
@@ -365,10 +365,10 @@ class SpaceTime:
             omega_ind.interpolate(self.omega.indicator_function)
 
         # retrieve stabilization parameter
-        gamma_data = self.stabalisation_terms["data"]
-        gamma_dual = self.stabalisation_terms["dual"]
-        gamma_primal = self.stabalisation_terms["primal"]
-        gamma_primal_jump = self.stabalisation_terms["primal-jump"]
+        gamma_data = self.stabilisation_terms["data"]
+        gamma_dual = self.stabilisation_terms["dual"]
+        gamma_primal = self.stabilisation_terms["primal"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
 
         int_idx_q = 0
         coupling_idx_q = -1
@@ -728,8 +728,8 @@ class SpaceTime:
 
         dx = self.dx
         delta_t = self.delta_t
-        gamma_primal_jump = self.stabalisation_terms["primal-jump"]
-        gamma_data = self.stabalisation_terms["data"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
+        gamma_data = self.stabilisation_terms["data"]
 
         int_idx_q = 0
         coupling_idx_q = -1
@@ -803,7 +803,7 @@ class SpaceTime:
 
         dx = self.dx
         delta_t = self.delta_t
-        gamma_primal_jump = self.stabalisation_terms["primal-jump"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
 
         a_coupling = 1e-20 * u1_c[0] * w1_c[0] * dx
         a_coupling += (
@@ -841,7 +841,7 @@ class SpaceTime:
 
         dx = self.dx
         delta_t = self.delta_t
-        gamma_primal_jump = self.stabalisation_terms["primal-jump"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
 
         m_bnd = gamma_primal_jump * (1 / delta_t) * inner(u0_bnd[0], v0_bnd[0]) * dx
         m_bnd += (
@@ -877,10 +877,10 @@ class SpaceTime:
         elmat_time = self.elmat_time
 
         # retrieve stabilization parameter
-        gamma_data = self.stabalisation_terms["data"]
-        gamma_dual = self.stabalisation_terms["dual"]
-        gamma_primal = self.stabalisation_terms["primal"]
-        gamma_primal_jump = self.stabalisation_terms["primal-jump"]
+        gamma_data = self.stabilisation_terms["data"]
+        gamma_dual = self.stabilisation_terms["dual"]
+        gamma_primal = self.stabilisation_terms["primal"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
 
         a_pre = 1e-20 * u1_p[0] * y1_p[0] * dx
 
@@ -1189,7 +1189,7 @@ class SpaceTime:
         coupling_idx_qstar = -1
 
         # retrieve stabilization parameter
-        gamma_primal_jump = self.stabalisation_terms["primal-jump"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
 
         for n in range(self.N):
             n * delta_t
@@ -1266,7 +1266,7 @@ class SpaceTime:
         coupling_idx_qstar = -1
 
         # retrieve stabilization parameter
-        self.stabalisation_terms["primal-jump"]  # TODO: check why this is here
+        self.stabilisation_terms["primal-jump"]  # TODO: check why this is here
 
         self.b_rhs_pre.array[:] = 0.0
 
