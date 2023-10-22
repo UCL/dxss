@@ -19,7 +19,7 @@
 [pypi-link]:                https://pypi.org/project/dxss/
 [pypi-platforms]:           https://img.shields.io/pypi/pyversions/dxss
 [pypi-version]:             https://img.shields.io/pypi/v/dxss
-[licence-badge]:             https://img.shields.io/badge/License-MIT-yellow.svg
+[licence-badge]:            https://img.shields.io/badge/License-MIT-yellow.svg
 <!-- prettier-ignore-end -->
 
 `dxss` provides DOLFINx solvers on space-time finite element spaces which use a partition of the time interval to decompose the spatio-temporal domain into a collection of _time slabs_.
@@ -56,14 +56,19 @@ Centre for Advanced Research Computing, University College London
 ## Built with
 
 - [FEniCSx](https://fenicsproject.org/)
-- [Matplotlib](https://matplotlib.org/)
+- [PETSc](https://petsc.org/release/petsc4py/)
+- [PyPardiso](https://github.com/haasad/PyPardisoProject)
 - [NumPy](https://numpy.org/)
 
 ## Getting started
 
 ### Prerequisites
 
-Compatible with Python 3.9 and 3.10. [Requires DOLFINx v0.6.0 or above to be installed](https://github.com/FEniCS/dolfinx#installation).
+Compatible with Python 3.9 and 3.10.
+[Requires DOLFINx v0.6 to be installed](https://github.com/FEniCS/dolfinx#installation).
+
+> [!NOTE]
+> We don't currently support DOLFINx v0.7 but [are working on it](https://github.com/UCL/dxss/issues/37)!
 
 ### Installation
 
@@ -86,6 +91,19 @@ pip install -e .
 ```
 
 from the root of your clone of the repository.
+
+In order to maximise cross-platform multi-arch compatibility, `dxss` uses `PETSc` solvers by default.
+If you have an Intel system you can install our [PyPardiso](https://github.com/haasad/PyPardisoProject) solver backend with
+
+```sh
+pip install -e ".[pypardiso]"
+```
+
+or simply install it separately in the same environment as `dxss` with
+
+```sh
+pip install pypardiso
+```
 
 ### Running tests
 
