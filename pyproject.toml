@@ -51,6 +51,7 @@ dev = [
     "pydata-sphinx-theme",
     "pytest",
     "pytest-cov",
+    "pytest-mock",
     "ruff",
     "sphinx<7",
     "sphinx_autodoc_typehints",
@@ -198,6 +199,7 @@ commands =
 deps =
     pytest
     pytest-cov
+    pytest-mock
 
 [testenv:docs]
 commands =
