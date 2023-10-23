@@ -2,6 +2,7 @@
 
 import pytest
 
+
 def test_dummy():
     """Dummy test - just try importing dxss."""
     import dxss  # noqa: F401
@@ -9,7 +10,7 @@ def test_dummy():
 
 def test_pardiso():
     """Test for PyPardiso. Print info for `pytest -s` logging."""
-    from dxss.solve_1d import pypardiso, PySolver
+    from dxss.solve_1d import PySolver, pypardiso
 
     if pypardiso is not None:
         import pypardiso as _  # noqa: F401
@@ -18,4 +19,4 @@ def test_pardiso():
     else:
         print("PyPardiso is not available.")
         with pytest.warns(UserWarning):
-            pypardiso_solver = PySolver(Asp=None, psolver=None)
+            PySolver(Asp=None, psolver=None)
