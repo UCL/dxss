@@ -10,7 +10,13 @@ from dolfinx import fem
 from petsc4py import PETSc
 
 from dxss.meshes import get_mesh_data_all_around
-from dxss.space_time import DataDomain, OrderSpace, OrderTime, SpaceTime, ValueAndDerivative
+from dxss.space_time import (
+    DataDomain,
+    OrderSpace,
+    OrderTime,
+    SpaceTime,
+    ValueAndDerivative,
+)
 
 try:
     import pypardiso
