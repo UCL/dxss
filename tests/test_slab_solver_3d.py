@@ -17,15 +17,8 @@ from dxss.space_time import (
     ValueAndDerivative,
 )
 
-try:
-    import pypardiso
-
-    SOLVER_TYPE = "pypardiso"
-except ImportError:
-    SOLVER_TYPE = "petsc-LU"
-
 sys.setrecursionlimit(10**6)
-SOLVER_TYPE = "petsc-LU"
+SOLVER_TYPE = "petsc-LU"  # TODO: check with Janosch that this is sensible.
 
 
 # define alternative solvers here

@@ -1,11 +1,13 @@
+import resource
 import sys
-import warnings
+import time
 from math import pi, sqrt
 
 import numpy as np
 import ufl
 from petsc4py import PETSc
 
+import dxss._solver_backend
 from dxss._solvers import PySolver, get_lu_solver
 from dxss.gmres import get_gmres_solution
 from dxss.meshes import get_mesh_data_all_around
@@ -17,16 +19,6 @@ from dxss.space_time import (
     ValueAndDerivative,
     get_sparse_matrix,
 )
-
-try:
-    import pypardiso
-
-    SOLVER_TYPE = "pypardiso"
-except ImportError:
-    pypardiso = None
-    SOLVER_TYPE = "petsc-LU"
-import resource
-import time
 
 sys.setrecursionlimit(10**6)
 
@@ -106,14 +98,14 @@ b_rhs = ST.get_spacetime_rhs()
 
 def solve_problem(measure_errors=False):
     start = time.time()
-    if SOLVER_TYPE == "pypardiso":
-        genreal_slab_solver = pypardiso.PyPardisoSolver()
+    if dxss._solver_backend.SOLVER_TYPE == "pypardiso":
+        genreal_slab_solver = dxss._solver_backend.pypardiso.PyPardisoSolver()
         slab_matrix_sparse = get_sparse_matrix(ST.get_slab_matrix())
 
         genreal_slab_solver.factorize(slab_matrix_sparse)
         ST.set_solver_slab(PySolver(slab_matrix_sparse, genreal_slab_solver))
 
-        initial_slab_solver = pypardiso.PyPardisoSolver()
+        initial_slab_solver = dxss._solver_backend.pypardiso.PyPardisoSolver()
         slab_matrix_first_slab_sparse = get_sparse_matrix(
             ST.get_slab_matrix_first_slab(),
         )
@@ -130,7 +122,7 @@ def solve_problem(measure_errors=False):
             tol=1e-7,
             printrates=True,
         )
-    elif SOLVER_TYPE == "petsc-LU":
+    elif dxss._solver_backend.SOLVER_TYPE == "petsc-LU":
         ST.set_solver_slab(get_lu_solver(ST.msh, ST.get_slab_matrix()))  # general slab
         ST.set_solver_first_slab(
             get_lu_solver(ST.msh, ST.get_slab_matrix_first_slab()),
