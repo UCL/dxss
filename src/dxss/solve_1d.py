@@ -1,4 +1,5 @@
 import sys
+import warnings
 from math import pi
 
 import numpy as np
@@ -22,6 +23,7 @@ try:
 
     SOLVER_TYPE = "pypardiso"
 except ImportError:
+    pypardiso = None
     SOLVER_TYPE = "petsc-LU"
 import resource
 import time
@@ -41,6 +43,11 @@ class PySolver:
     def __init__(self, Asp, psolver):  # noqa: N803 | convention Ax = b
         self.Asp = Asp
         self.solver = psolver
+        if not pypardiso:
+            warnings.warn(
+                "Initialising a PySolver, but PyPardiso is not available.",
+                stacklevel=2,
+            )
 
     def solve(self, b_inp, x_out):
         self.solver._check_A(self.Asp)

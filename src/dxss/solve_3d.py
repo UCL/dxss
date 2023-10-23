@@ -1,4 +1,5 @@
 import sys
+import warnings
 from math import pi, sqrt
 
 import numpy as np
@@ -23,6 +24,7 @@ try:
 
     SOLVER_TYPE = "pypardiso"
 except ImportError:
+    pypardiso = None
     SOLVER_TYPE = "petsc-LU"
 
 import resource
@@ -44,6 +46,11 @@ class PySolver:
     def __init__(self, Asp, psolver):  # noqa: N803
         self.Asp = Asp
         self.solver = psolver
+        if not pypardiso:
+            warnings.warn(
+                "Initialising a PySolver, but PyPardiso is not available.",
+                stacklevel=2,
+            )
 
     def solve(self, b_inp, x_out):
         self.solver._check_A(self.Asp)

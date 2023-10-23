@@ -28,7 +28,6 @@ dependencies = [
     "mpi4py",
     "numpy",
     "petsc4py",
-    "pypardiso",
     "scipy",
     "sympy",
 ]
@@ -39,7 +38,12 @@ dynamic = [
 keywords = [
 ]
 name = "dxss"
-optional-dependencies = {dev = [
+readme = "README.md"
+requires-python = ">=3.9,<3.11"
+license.file = "LICENSE.md"
+
+[project.optional-dependencies]
+dev = [
     "black",
     "build",
     "mypy",
@@ -47,16 +51,17 @@ optional-dependencies = {dev = [
     "pydata-sphinx-theme",
     "pytest",
     "pytest-cov",
+    "pytest-mock",
     "ruff",
     "sphinx<7",
     "sphinx_autodoc_typehints",
     "tox",
     "twine",
-]}
-readme = "README.md"
-requires-python = ">=3.9,<3.11"
-license.file = "LICENSE.md"
-urls.homepage = "https://github.com/UCL/dxss"
+]
+pypardiso = ["pypardiso"]
+
+[project.urls]
+homepage = "https://github.com/UCL/dxss"
 
 [tool.coverage]
 report = {skip_covered = true, sort = "cover"}
@@ -190,10 +195,11 @@ conda_channels =
 
 [testenv:test-py{39,310}]
 commands =
-    pytest --cov --cov-report=xml
+    pytest -s --cov --cov-report=xml
 deps =
     pytest
     pytest-cov
+    pytest-mock
 
 [testenv:docs]
 commands =
