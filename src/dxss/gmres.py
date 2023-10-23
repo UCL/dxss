@@ -6,6 +6,8 @@ from typing import Callable, Optional
 import numpy as np
 from petsc4py import PETSc
 
+from dxss._utils import givens_rotation
+
 _clear_line_command = "" if os.name == "nt" else "\x1b[2K"
 
 sys.setrecursionlimit(10**6)
@@ -122,7 +124,7 @@ class GMResSolver(LinearSolver):
             self.norm = lambda x: x.norm()
             self.restart = restart
 
-    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: C901, PLR0915
+    def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: PLR0915
         """The internal solving subfunction for the GMRes solver type.
 
         Called by the parent class' solve method. Implements the GMRes solver
@@ -140,7 +142,6 @@ class GMResSolver(LinearSolver):
         # TODO: when refactoring this needs to be reduced in complexity and
         # split into smaller functions. We are suppressing flake8/ruff warnings
         # for this function:
-        #  - C901 the complexity score of this function is 20!
         #  - PLR0915 there are too many conditional statements.
         pre, innerproduct, norm = self.pre, self.innerproduct, self.norm
         sn = np.zeros(self.maxiter)
@@ -181,19 +182,6 @@ class GMResSolver(LinearSolver):
                 return h, None
             q.scale(1.0 / h[k + 1].real)
             return h, q
-
-        def givens_rotation(v1, v2):
-            # TODO: can the Givens rotation def, and application functions be
-            # moved out of this into a general utilities library?
-            if v2 == 0:
-                return 1, 0
-            elif v1 == 0:
-                return 0, v2 / abs(v2)
-            else:
-                t = sqrt((v1.conjugate() * v1 + v2.conjugate() * v2).real)
-                cs = abs(v1) / t
-                sn = v1 / abs(v1) * v2.conjugate() / t
-                return cs, sn
 
         def apply_givens_rotation(h, cs, sn, k):
             for i in range(k):
