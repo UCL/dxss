@@ -1,4 +1,5 @@
 import sys
+import warnings
 from math import pi, sqrt
 
 import numpy as np
@@ -9,13 +10,22 @@ from petsc4py import PETSc
 
 from dxss._solvers import PySolver, get_lu_solver
 from dxss.gmres import get_gmres_solution
-from dxss.space_time import OrderSpace, OrderTime, SpaceTime, get_sparse_matrix
+from dxss.space_time import (
+    DataDomain,
+    OrderSpace,
+    OrderTime,
+    ProblemParameters,
+    SpaceTime,
+    ValueAndDerivative,
+    get_sparse_matrix,
+)
 
 try:
     import pypardiso
 
     SOLVER_TYPE = "pypardiso"
 except ImportError:
+    pypardiso = None
     SOLVER_TYPE = "petsc-LU"
 
 import resource
@@ -144,11 +154,10 @@ ST = SpaceTime(
     T=T,
     t=t0,
     msh=MSH,
-    omega_ind=omega_ind,
-    stabs=STABS,
-    sol=sample_sol,
-    dt_sol=dt_sample_sol,
-    data_dom_fitted=Nx > 2,
+    omega=DataDomain(indicator_function=omega_ind, fitted=Nx > 2),
+    stabilisation_terms=STABS,
+    solution=ValueAndDerivative(sample_sol, dt_sample_sol),
+    parameters=ProblemParameters(),
 )
 ST.setup_spacetime_finite_elements()
 ST.prepare_precondition_gmres()

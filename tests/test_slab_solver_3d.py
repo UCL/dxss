@@ -9,7 +9,13 @@ from petsc4py import PETSc
 
 from dxss._solvers import PySolver, get_lu_solver
 from dxss.solve_3d import dt_sample_sol, sample_sol
-from dxss.space_time import OrderSpace, OrderTime, SpaceTime
+from dxss.space_time import (
+    DataDomain,
+    OrderSpace,
+    OrderTime,
+    SpaceTime,
+    ValueAndDerivative,
+)
 
 try:
     import pypardiso
@@ -87,10 +93,9 @@ ST = SpaceTime(
     T=T,
     t=t0,
     msh=MSH,
-    omega_ind=omega_ind_convex,
-    stabs=STABS,
-    sol=sample_sol,
-    dt_sol=dt_sample_sol,
+    omega=DataDomain(indicator_function=omega_ind_convex),
+    stabilisation_terms=STABS,
+    solution=ValueAndDerivative(sample_sol, dt_sample_sol),
 )
 ST.setup_spacetime_finite_elements()
 ST.prepare_precondition_gmres()
