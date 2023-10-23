@@ -56,7 +56,7 @@ class LinearSolver:
         self.iterations = 0
         self.residuals = []
         if sol is None:
-            sol, _ = self.mat.createVecs()
+            sol, _ = self.mat.create_vectors()
             initialize = True
         if initialize:
             sol.set(0)
@@ -149,7 +149,7 @@ class GMResSolver(LinearSolver):
         if self.callback_sol is not None:
             sol_start = sol.create()
             sol.copy(sol_start)
-        r, tmp = self.mat.createVecs()
+        r, tmp = self.mat.create_vectors()
 
         A = self.mat  # noqa: N806 | convention: Ax = b
         A.mult(sol, tmp)
@@ -157,7 +157,7 @@ class GMResSolver(LinearSolver):
         tmp.scale(-1)
         pre(tmp, r)
         Q = []  # noqa: N806
-        q_1, _ = self.mat.createVecs()
+        q_1, _ = self.mat.create_vectors()
         Q.append(q_1)
         r_norm = norm(r)
         if self.check_residuals(abs(r_norm)):
@@ -316,12 +316,12 @@ class MinResSolver(LinearSolver):
 
         innerproduct = self.innerproduct
 
-        v_new, v = self.mat.createVecs()
-        v_old, v_new2 = self.mat.createVecs()
-        w, w_new = self.mat.createVecs()
-        w_old, mz = self.mat.createVecs()
-        z, z_new = self.mat.createVecs()
-        tmp, _ = self.mat.createVecs()
+        v_new, v = self.mat.create_vectors()
+        v_old, v_new2 = self.mat.create_vectors()
+        w, w_new = self.mat.create_vectors()
+        w_old, mz = self.mat.create_vectors()
+        z, z_new = self.mat.create_vectors()
+        tmp, _ = self.mat.create_vectors()
 
         # def innerproduct(x,y):
 

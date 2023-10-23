@@ -122,6 +122,10 @@ tox -e docs
 
 from the root of the repository with the output being written to `docs/_build/html`.
 
+### Other contributing guidelines
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 ## Acknowledgements
 
 This work was funded by a grant from the the Engineering and Physical Sciences Research Council (EPSRC).

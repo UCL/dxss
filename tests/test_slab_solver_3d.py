@@ -9,7 +9,7 @@ from dolfinx.mesh import CellType, GhostMode, create_box
 from mpi4py import MPI
 from petsc4py import PETSc
 
-from dxss.space_time import SpaceTime
+from dxss.space_time import OrderSpace, OrderTime, SpaceTime
 
 try:
     import pypardiso
@@ -118,10 +118,8 @@ def dt_sample_sol(t, xu):
 
 
 ST = SpaceTime(
-    q=q,
-    qstar=qstar,
-    k=k,
-    kstar=kstar,
+    OrderTime(q, qstar),
+    OrderSpace(k, kstar),
     N=N,
     T=T,
     t=t0,

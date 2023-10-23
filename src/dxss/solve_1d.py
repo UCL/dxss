@@ -8,7 +8,7 @@ from mpi4py import MPI
 from petsc4py import PETSc
 
 from dxss.gmres import get_gmres_solution
-from dxss.space_time import SpaceTime, get_sparse_matrix
+from dxss.space_time import OrderSpace, OrderTime, SpaceTime, get_sparse_matrix
 
 try:
     import pypardiso
@@ -90,10 +90,8 @@ def dt_sample_sol(t, xu):
 
 
 ST = SpaceTime(
-    q=q,
-    qstar=qstar,
-    k=k,
-    kstar=kstar,
+    OrderTime(q, qstar),
+    OrderSpace(k, kstar),
     N=N,
     T=T,
     t=t0,
@@ -141,7 +139,7 @@ def solve_problem(measure_errors=False):
             printrates=True,
         )
 
-        ST.plot_error(u_sol, N_space=500, N_time_subdiv=20)
+        ST.plot_error(u_sol, n_space=500, n_time_subdiv=20)
     elif SOLVER_TYPE == "petsc-LU":
         ST.set_solver_slab(get_lu_solver(ST.msh, ST.get_slab_matrix()))  # general slab
         ST.set_solver_first_slab(

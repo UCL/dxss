@@ -10,7 +10,7 @@ from dolfinx import fem
 from petsc4py import PETSc
 
 from dxss.meshes import get_mesh_data_all_around
-from dxss.space_time import SpaceTime
+from dxss.space_time import OrderSpace, OrderTime, SpaceTime
 
 try:
     import pypardiso
@@ -96,10 +96,8 @@ def dt_sample_sol(t, xu):
 
 
 ST = SpaceTime(
-    q=q,
-    qstar=qstar,
-    k=k,
-    kstar=kstar,
+    OrderTime(q, qstar),
+    OrderSpace(k, kstar),
     N=N,
     T=T,
     t=t0,
