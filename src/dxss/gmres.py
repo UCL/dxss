@@ -6,7 +6,7 @@ from typing import Callable, Optional
 import numpy as np
 from petsc4py import PETSc
 
-from dxss.utils import givens_rotation
+from dxss._utils import givens_rotation
 
 _clear_line_command = "" if os.name == "nt" else "\x1b[2K"
 
@@ -142,7 +142,6 @@ class GMResSolver(LinearSolver):
         # TODO: when refactoring this needs to be reduced in complexity and
         # split into smaller functions. We are suppressing flake8/ruff warnings
         # for this function:
-        #  - C901 the complexity score of this function is 20!
         #  - PLR0915 there are too many conditional statements.
         pre, innerproduct, norm = self.pre, self.innerproduct, self.norm
         sn = np.zeros(self.maxiter)
