@@ -298,6 +298,7 @@ document.write(`
                   
   <h1>Source code for dxss.solve_1d</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -321,6 +322,7 @@ document.write(`
 
     <span class="n">SOLVER_TYPE</span> <span class="o">=</span> <span class="s2">&quot;pypardiso&quot;</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">pypardiso</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">SOLVER_TYPE</span> <span class="o">=</span> <span class="s2">&quot;petsc-LU&quot;</span>
 <span class="kn">import</span> <span class="nn">resource</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -340,6 +342,11 @@ document.write(`
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Asp</span><span class="p">,</span> <span class="n">psolver</span><span class="p">):</span>  <span class="c1"># noqa: N803 | convention Ax = b</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Asp</span> <span class="o">=</span> <span class="n">Asp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">psolver</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pypardiso</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Initialising a PySolver, but PyPardiso is not available.&quot;</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="PySolver.solve"><a class="viewcode-back" href="../../dxss.html#dxss.solve_1d.PySolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_inp</span><span class="p">,</span> <span class="n">x_out</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">_check_A</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Asp</span><span class="p">)</span>
