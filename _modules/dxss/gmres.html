@@ -305,6 +305,8 @@ document.write(`
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">petsc4py</span> <span class="kn">import</span> <span class="n">PETSc</span>
 
+<span class="kn">from</span> <span class="nn">dxss._utils</span> <span class="kn">import</span> <span class="n">givens_rotation</span>
+
 <span class="n">_clear_line_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[2K&quot;</span>
 
 <span class="n">sys</span><span class="o">.</span><span class="n">setrecursionlimit</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
@@ -421,7 +423,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">restart</span> <span class="o">=</span> <span class="n">restart</span>
 
-    <span class="k">def</span> <span class="nf">_solve_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">):</span>  <span class="c1"># noqa: C901, PLR0915</span>
+    <span class="k">def</span> <span class="nf">_solve_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The internal solving subfunction for the GMRes solver type.</span>
 
 <span class="sd">        Called by the parent class&#39; solve method. Implements the GMRes solver</span>
@@ -439,7 +441,6 @@ document.write(`
         <span class="c1"># TODO: when refactoring this needs to be reduced in complexity and</span>
         <span class="c1"># split into smaller functions. We are suppressing flake8/ruff warnings</span>
         <span class="c1"># for this function:</span>
-        <span class="c1">#  - C901 the complexity score of this function is 20!</span>
         <span class="c1">#  - PLR0915 there are too many conditional statements.</span>
         <span class="n">pre</span><span class="p">,</span> <span class="n">innerproduct</span><span class="p">,</span> <span class="n">norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">innerproduct</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span>
         <span class="n">sn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">)</span>
@@ -480,19 +481,6 @@ document.write(`
                 <span class="k">return</span> <span class="n">h</span><span class="p">,</span> <span class="kc">None</span>
             <span class="n">q</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">h</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">h</span><span class="p">,</span> <span class="n">q</span>
-
-        <span class="k">def</span> <span class="nf">givens_rotation</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">):</span>
-            <span class="c1"># TODO: can the Givens rotation def, and application functions be</span>
-            <span class="c1"># moved out of this into a general utilities library?</span>
-            <span class="k">if</span> <span class="n">v2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
-            <span class="k">elif</span> <span class="n">v1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="n">v2</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">t</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">v1</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">v2</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()</span> <span class="o">*</span> <span class="n">v2</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
-                <span class="n">cs</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span> <span class="o">/</span> <span class="n">t</span>
-                <span class="n">sn</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span> <span class="o">*</span> <span class="n">v2</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()</span> <span class="o">/</span> <span class="n">t</span>
-                <span class="k">return</span> <span class="n">cs</span><span class="p">,</span> <span class="n">sn</span>
 
         <span class="k">def</span> <span class="nf">apply_givens_rotation</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">sn</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
