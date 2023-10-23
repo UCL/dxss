@@ -171,10 +171,10 @@ ST = SpaceTime(
     T=T,
     t=t0,
     msh=MSH,
-    omega=DataDomain(indicator_function=omega_ind),
+    omega=DataDomain(indicator_function=omega_ind, fitted=Nx > 2),
     stabilisation_terms=STABS,
     solution=ValueAndDerivative(sample_sol, dt_sample_sol),
-    parameters=ProblemParameters(data_domain_fitted=Nx > 2),
+    parameters=ProblemParameters(),
 )
 ST.setup_spacetime_finite_elements()
 ST.prepare_precondition_gmres()
