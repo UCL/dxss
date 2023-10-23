@@ -306,7 +306,14 @@ document.write(`
 
 <span class="kn">from</span> <span class="nn">dxss.gmres</span> <span class="kn">import</span> <span class="n">get_gmres_solution</span>
 <span class="kn">from</span> <span class="nn">dxss.meshes</span> <span class="kn">import</span> <span class="n">get_mesh_data_all_around</span>
-<span class="kn">from</span> <span class="nn">dxss.space_time</span> <span class="kn">import</span> <span class="n">OrderSpace</span><span class="p">,</span> <span class="n">OrderTime</span><span class="p">,</span> <span class="n">SpaceTime</span><span class="p">,</span> <span class="n">get_sparse_matrix</span>
+<span class="kn">from</span> <span class="nn">dxss.space_time</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DataDomain</span><span class="p">,</span>
+    <span class="n">OrderSpace</span><span class="p">,</span>
+    <span class="n">OrderTime</span><span class="p">,</span>
+    <span class="n">SpaceTime</span><span class="p">,</span>
+    <span class="n">ValueAndDerivative</span><span class="p">,</span>
+    <span class="n">get_sparse_matrix</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">pypardiso</span>
@@ -401,10 +408,9 @@ document.write(`
     <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span>
     <span class="n">t</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
     <span class="n">msh</span><span class="o">=</span><span class="n">msh</span><span class="p">,</span>
-    <span class="n">omega_ind</span><span class="o">=</span><span class="n">omega_ind_convex</span><span class="p">,</span>
-    <span class="n">stabs</span><span class="o">=</span><span class="n">STABS</span><span class="p">,</span>
-    <span class="n">sol</span><span class="o">=</span><span class="n">sample_sol</span><span class="p">,</span>
-    <span class="n">dt_sol</span><span class="o">=</span><span class="n">dt_sample_sol</span><span class="p">,</span>
+    <span class="n">omega</span><span class="o">=</span><span class="n">DataDomain</span><span class="p">(</span><span class="n">indicator_function</span><span class="o">=</span><span class="n">omega_ind_convex</span><span class="p">),</span>
+    <span class="n">stabilisation_terms</span><span class="o">=</span><span class="n">STABS</span><span class="p">,</span>
+    <span class="n">solution</span><span class="o">=</span><span class="n">ValueAndDerivative</span><span class="p">(</span><span class="n">sample_sol</span><span class="p">,</span> <span class="n">dt_sample_sol</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">ST</span><span class="o">.</span><span class="n">setup_spacetime_finite_elements</span><span class="p">()</span>
 <span class="n">ST</span><span class="o">.</span><span class="n">prepare_precondition_gmres</span><span class="p">()</span>

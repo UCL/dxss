@@ -297,8 +297,11 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <h1>Source code for dxss.space_time</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NamedTuple</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -321,14 +324,40 @@ document.write(`
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="OrderTime"><a class="viewcode-back" href="../../dxss.html#dxss.space_time.OrderTime">[docs]</a><span class="k">class</span> <span class="nc">OrderTime</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<div class="viewcode-block" id="OrderTime"><a class="viewcode-back" href="../../dxss.html#dxss.space_time.OrderTime">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">OrderTime</span><span class="p">:</span>
     <span class="n">q</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">qstar</span><span class="p">:</span> <span class="nb">int</span></div>
 
 
-<div class="viewcode-block" id="OrderSpace"><a class="viewcode-back" href="../../dxss.html#dxss.space_time.OrderSpace">[docs]</a><span class="k">class</span> <span class="nc">OrderSpace</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<div class="viewcode-block" id="OrderSpace"><a class="viewcode-back" href="../../dxss.html#dxss.space_time.OrderSpace">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">OrderSpace</span><span class="p">:</span>
     <span class="n">k</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">kstar</span><span class="p">:</span> <span class="nb">int</span></div>
+
+
+<div class="viewcode-block" id="ValueAndDerivative"><a class="viewcode-back" href="../../dxss.html#dxss.space_time.ValueAndDerivative">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">ValueAndDerivative</span><span class="p">:</span>
+    <span class="n">v</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">dvdt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></div>
+
+
+<div class="viewcode-block" id="DataDomain"><a class="viewcode-back" href="../../dxss.html#dxss.space_time.DataDomain">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">DataDomain</span><span class="p">:</span>
+    <span class="n">indicator_function</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="n">fem</span><span class="o">.</span><span class="n">Function</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fitted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="ProblemParameters"><a class="viewcode-back" href="../../dxss.html#dxss.space_time.ProblemParameters">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">ProblemParameters</span><span class="p">:</span>
+    <span class="n">jumps_in_fw_problem</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">well_posed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
+
+
+<span class="n">_DEFAULT_PARAMETERS</span> <span class="o">=</span> <span class="n">ProblemParameters</span><span class="p">()</span>
 
 
 <span class="c1"># TODO: this is duplicated... factor out to a &quot;PETSc interface functions&quot; file?</span>
@@ -360,38 +389,36 @@ document.write(`
         <span class="n">T</span><span class="p">,</span>  <span class="c1"># noqa: N803</span>
         <span class="n">t</span><span class="p">,</span>
         <span class="n">msh</span><span class="p">,</span>
-        <span class="n">omega_ind</span><span class="p">,</span>
-        <span class="n">stabs</span><span class="p">,</span>
-        <span class="n">sol</span><span class="p">,</span>
-        <span class="n">dt_sol</span><span class="p">,</span>
-        <span class="n">jumps_in_fw_problem</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">well_posed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">data_dom_fitted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">stabilisation_terms</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">omega</span><span class="p">:</span> <span class="n">DataDomain</span><span class="p">,</span>
+        <span class="n">solution</span><span class="p">:</span> <span class="n">ValueAndDerivative</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">ProblemParameters</span> <span class="o">=</span> <span class="n">_DEFAULT_PARAMETERS</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a SpaceTime object.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            polynomial_order_time: polynomial degrees of the finite elements in space.</span>
-<span class="sd">            polynomial_order_space: polynomial degrees of the finite elements in time.</span>
+<span class="sd">            polynomial_order_time: Polynomial degrees of the finite elements in space.</span>
+<span class="sd">            polynomial_order_space: Polynomial degrees of the finite elements in time.</span>
+<span class="sd">            stabilisation_terms: A dictionary of stabilisation terms.</span>
+<span class="sd">            omega: A DataDomain object holding the indicator function.</span>
+<span class="sd">            solution: A best starting guess for the solution and its derivative.</span>
+<span class="sd">            parameters: Problem-specific parameters.</span>
 <span class="sd">            ...</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;space-time-wave&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">otime</span><span class="p">:</span> <span class="n">OrderTime</span> <span class="o">=</span> <span class="n">polynomial_order_time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ospace</span><span class="p">:</span> <span class="n">OrderSpace</span> <span class="o">=</span> <span class="n">polynomial_order_space</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">jumps_in_fw_problem</span> <span class="o">=</span> <span class="n">jumps_in_fw_problem</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delta_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msh</span> <span class="o">=</span> <span class="n">msh</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">omega_ind</span> <span class="o">=</span> <span class="n">omega_ind</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span> <span class="o">=</span> <span class="n">stabs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">omega</span> <span class="o">=</span> <span class="n">omega</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">SpatialCoordinate</span><span class="p">(</span><span class="n">msh</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sol</span> <span class="o">=</span> <span class="n">sol</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dt_sol</span> <span class="o">=</span> <span class="n">dt_sol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="n">solution</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lam_Nitsche</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ospace</span><span class="o">.</span><span class="n">k</span><span class="o">**</span><span class="mi">2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">jumps_in_fw_problem</span> <span class="o">=</span> <span class="n">jumps_in_fw_problem</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">well_posed</span> <span class="o">=</span> <span class="n">well_posed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span> <span class="o">=</span> <span class="n">stabilisation_terms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jumps_in_fw_problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">well_posed</span> <span class="o">=</span> <span class="n">parameters</span>
 
         <span class="c1"># mesh-related</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;quadrature_degree&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ospace</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="mi">3</span><span class="p">}</span>
@@ -413,12 +440,13 @@ document.write(`
         <span class="p">]</span>
 
         <span class="c1"># DG0 indicator function</span>
-        <span class="k">if</span> <span class="n">data_dom_fitted</span><span class="p">:</span>
+        <span class="c1"># todo: could this be moved to the constructor of the dataclass?</span>
+        <span class="k">if</span> <span class="n">omega</span><span class="o">.</span><span class="n">fitted</span><span class="p">:</span>
             <span class="n">q_ind</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">omega_ind</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">q_ind</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">omega_ind</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega_ind</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">indicator_function</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">q_ind</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">indicator_function</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">indicator_function</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">omega_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega_ind</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">indicator_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">indicator_function</span>
 
         <span class="c1"># FESpaces</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fes</span> <span class="o">=</span> <span class="kc">None</span>
@@ -631,17 +659,17 @@ document.write(`
         <span class="n">elmat_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elmat_time</span>
 
         <span class="k">if</span> <span class="n">afes</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">fes</span><span class="p">:</span>
-            <span class="n">omega_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega_ind</span>
+            <span class="n">omega_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">indicator_function</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">q_ind</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">FunctionSpace</span><span class="p">(</span><span class="n">afes</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;DG&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
             <span class="n">omega_ind</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">q_ind</span><span class="p">)</span>
-            <span class="n">omega_ind</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega_ind</span><span class="p">)</span>
+            <span class="n">omega_ind</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">indicator_function</span><span class="p">)</span>
 
         <span class="c1"># retrieve stabilization parameter</span>
-        <span class="n">gamma_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
-        <span class="n">gamma_dual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;dual&quot;</span><span class="p">]</span>
-        <span class="n">gamma_primal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;primal&quot;</span><span class="p">]</span>
-        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
+        <span class="n">gamma_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="n">gamma_dual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;dual&quot;</span><span class="p">]</span>
+        <span class="n">gamma_primal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;primal&quot;</span><span class="p">]</span>
+        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
 
         <span class="n">int_idx_q</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">coupling_idx_q</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -1001,8 +1029,8 @@ document.write(`
 
         <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="n">delta_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_t</span>
-        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
-        <span class="n">gamma_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
+        <span class="n">gamma_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
         <span class="n">int_idx_q</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">coupling_idx_q</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -1017,13 +1045,13 @@ document.write(`
             <span class="c1"># right hand side</span>
             <span class="k">for</span> <span class="n">tau_i</span><span class="p">,</span> <span class="n">omega_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="o">.</span><span class="n">current_pts</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="o">.</span><span class="n">t_weights</span><span class="p">(</span><span class="mi">1</span><span class="p">)):</span>
                 <span class="n">time_ti</span> <span class="o">=</span> <span class="n">t_n</span> <span class="o">+</span> <span class="n">delta_t</span> <span class="o">*</span> <span class="n">tau_i</span>
-                <span class="n">sol_ti</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="p">(</span><span class="n">time_ti</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">sol_ti</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">time_ti</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
                 <span class="n">L</span> <span class="o">+=</span> <span class="p">(</span>  <span class="c1"># noqa: N806 | convention LU</span>
                     <span class="n">gamma_data</span>
                     <span class="o">*</span> <span class="n">delta_t</span>
                     <span class="o">*</span> <span class="n">omega_i</span>
                     <span class="o">*</span> <span class="n">sol_ti</span>
-                    <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega_ind</span>
+                    <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">indicator_function</span>
                     <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span>
                         <span class="p">[</span>
                             <span class="n">w1</span><span class="p">[</span><span class="n">int_idx_q</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_test</span><span class="p">[</span><span class="n">k</span><span class="p">](</span><span class="n">tau_i</span><span class="p">)</span>
@@ -1076,7 +1104,7 @@ document.write(`
 
         <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="n">delta_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_t</span>
-        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
+        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
 
         <span class="n">a_coupling</span> <span class="o">=</span> <span class="mf">1e-20</span> <span class="o">*</span> <span class="n">u1_c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">w1_c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dx</span>
         <span class="n">a_coupling</span> <span class="o">+=</span> <span class="p">(</span>
@@ -1114,7 +1142,7 @@ document.write(`
 
         <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="n">delta_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_t</span>
-        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
+        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
 
         <span class="n">m_bnd</span> <span class="o">=</span> <span class="n">gamma_primal_jump</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">delta_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">inner</span><span class="p">(</span><span class="n">u0_bnd</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v0_bnd</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">dx</span>
         <span class="n">m_bnd</span> <span class="o">+=</span> <span class="p">(</span>
@@ -1150,10 +1178,10 @@ document.write(`
         <span class="n">elmat_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elmat_time</span>
 
         <span class="c1"># retrieve stabilization parameter</span>
-        <span class="n">gamma_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
-        <span class="n">gamma_dual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;dual&quot;</span><span class="p">]</span>
-        <span class="n">gamma_primal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;primal&quot;</span><span class="p">]</span>
-        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
+        <span class="n">gamma_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="n">gamma_dual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;dual&quot;</span><span class="p">]</span>
+        <span class="n">gamma_primal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;primal&quot;</span><span class="p">]</span>
+        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
 
         <span class="n">a_pre</span> <span class="o">=</span> <span class="mf">1e-20</span> <span class="o">*</span> <span class="n">u1_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">y1_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dx</span>
 
@@ -1192,7 +1220,7 @@ document.write(`
                     <span class="n">gamma_data</span>
                     <span class="o">*</span> <span class="n">delta_t</span>
                     <span class="o">*</span> <span class="n">elmat_time</span><span class="p">[</span><span class="s2">&quot;M_time_q_q&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-                    <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega_ind</span>
+                    <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">indicator_function</span>
                     <span class="o">*</span> <span class="n">inner</span><span class="p">(</span><span class="n">u1_p</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">w1_p</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
                     <span class="o">*</span> <span class="n">dx</span>
                 <span class="p">)</span>
@@ -1462,7 +1490,7 @@ document.write(`
         <span class="n">coupling_idx_qstar</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
         <span class="c1"># retrieve stabilization parameter</span>
-        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
+        <span class="n">gamma_primal_jump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
             <span class="n">n</span> <span class="o">*</span> <span class="n">delta_t</span>
@@ -1539,7 +1567,7 @@ document.write(`
         <span class="n">coupling_idx_qstar</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
         <span class="c1"># retrieve stabilization parameter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stabs</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stabilisation_terms</span><span class="p">[</span><span class="s2">&quot;primal-jump&quot;</span><span class="p">]</span>  <span class="c1"># TODO: check why this is here</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">b_rhs_pre</span><span class="o">.</span><span class="n">array</span><span class="p">[:]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
@@ -1747,7 +1775,7 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">u1_0</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">array</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">u1_h</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dofmaps_full</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">u2_0</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">array</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">u2_h</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dofmaps_full</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-        <span class="n">ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="n">l2_error</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="n">ufl</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u1_0</span> <span class="o">-</span> <span class="n">ue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">u1_0</span> <span class="o">-</span> <span class="n">ue</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
         <span class="n">error_local</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">assemble_scalar</span><span class="p">(</span><span class="n">l2_error</span><span class="p">)</span>
         <span class="n">error_l2_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msh</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">error_local</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="o">.</span><span class="n">SUM</span><span class="p">))</span>
@@ -1779,7 +1807,7 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">qr_ho</span><span class="o">.</span><span class="n">t_weights</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
             <span class="p">):</span>
                 <span class="n">time_ti</span> <span class="o">=</span> <span class="n">t_n</span> <span class="o">+</span> <span class="n">delta_t</span> <span class="o">*</span> <span class="n">tau_i</span>
-                <span class="n">dt_ue_tni</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_sol</span><span class="p">(</span><span class="n">time_ti</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">dt_ue_tni</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">dvdt</span><span class="p">(</span><span class="n">time_ti</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
                 <span class="n">uh_prime_at_ti</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
                     <span class="p">[</span>
                         <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">delta_t</span><span class="p">)</span>
@@ -1805,8 +1833,8 @@ document.write(`
 
             <span class="k">for</span> <span class="n">t_sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_pts_error</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">t_sample</span> <span class="o">&gt;=</span> <span class="n">t_n</span> <span class="ow">and</span> <span class="n">t_sample</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">t_n</span> <span class="o">+</span> <span class="n">delta_t</span><span class="p">):</span>
-                    <span class="n">ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="p">(</span><span class="n">t_sample</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
-                    <span class="n">dt_ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_sol</span><span class="p">(</span><span class="n">t_sample</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                    <span class="n">ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">t_sample</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                    <span class="n">dt_ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">dvdt</span><span class="p">(</span><span class="n">t_sample</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
                     <span class="n">uh_at_ti</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
                         <span class="p">[</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">phi_trial</span><span class="p">[</span><span class="n">j</span><span class="p">]((</span><span class="n">t_sample</span> <span class="o">-</span> <span class="n">t_n</span><span class="p">)</span> <span class="o">/</span> <span class="n">delta_t</span><span class="p">)</span>
@@ -2055,7 +2083,7 @@ document.write(`
                             <span class="k">for</span> <span class="n">ell</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">otime</span><span class="o">.</span><span class="n">q</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                         <span class="p">],</span>
                     <span class="p">)</span>
-                    <span class="n">u_at_ti</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="p">(</span><span class="n">time_ti</span><span class="p">,</span> <span class="p">[</span><span class="n">eval_pts_space</span><span class="p">[</span><span class="n">j</span><span class="p">]])</span>
+                    <span class="n">u_at_ti</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">time_ti</span><span class="p">,</span> <span class="p">[</span><span class="n">eval_pts_space</span><span class="p">[</span><span class="n">j</span><span class="p">]])</span>
 
                     <span class="n">dt_uh_at_ti</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
                         <span class="p">[</span>
@@ -2065,7 +2093,7 @@ document.write(`
                             <span class="k">for</span> <span class="n">ell</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">otime</span><span class="o">.</span><span class="n">q</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                         <span class="p">],</span>
                     <span class="p">)</span>
-                    <span class="n">dt_u_at_ti</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_sol</span><span class="p">(</span><span class="n">time_ti</span><span class="p">,</span> <span class="p">[</span><span class="n">eval_pts_space</span><span class="p">[</span><span class="n">j</span><span class="p">]])</span>
+                    <span class="n">dt_u_at_ti</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">dvdt</span><span class="p">(</span><span class="n">time_ti</span><span class="p">,</span> <span class="p">[</span><span class="n">eval_pts_space</span><span class="p">[</span><span class="n">j</span><span class="p">]])</span>
 
                     <span class="n">fun_val</span><span class="p">[</span><span class="n">time_idx</span> <span class="o">+</span> <span class="n">m</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">uh_at_ti</span>
                     <span class="n">err_val</span><span class="p">[</span><span class="n">time_idx</span> <span class="o">+</span> <span class="n">m</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">uh_at_ti</span> <span class="o">-</span> <span class="n">u_at_ti</span><span class="p">)</span>
@@ -2125,8 +2153,8 @@ document.write(`
         <span class="n">ut_exact</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fes_u2_0</span><span class="p">)</span>
         <span class="n">ut_diff</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fes_u2_0</span><span class="p">)</span>
 
-        <span class="n">ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">dt_ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_sol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">dt_ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">dvdt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
 
         <span class="n">u_expr_exact</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">Expression</span><span class="p">(</span><span class="n">ue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fes_u1_0</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">interpolation_points</span><span class="p">())</span>
         <span class="n">u_exact</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">u_expr_exact</span><span class="p">)</span>
