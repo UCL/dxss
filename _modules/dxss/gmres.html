@@ -410,18 +410,13 @@ document.write(`
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-        <span class="n">innerproduct</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">restart</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">innerproduct</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">innerproduct</span> <span class="o">=</span> <span class="n">innerproduct</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">innerproduct</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">innerproduct</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">restart</span> <span class="o">=</span> <span class="n">restart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">innerproduct</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restart</span> <span class="o">=</span> <span class="n">restart</span>
 
     <span class="k">def</span> <span class="nf">_solve_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The internal solving subfunction for the GMRes solver type.</span>
@@ -544,14 +539,13 @@ document.write(`
         <span class="k">return</span> <span class="n">sol</span></div>
 
 
-<div class="viewcode-block" id="get_gmres_solution"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.get_gmres_solution">[docs]</a><span class="k">def</span> <span class="nf">get_gmres_solution</span><span class="p">(</span>  <span class="c1"># noqa: PLR0913</span>
+<div class="viewcode-block" id="get_gmres_solution"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.get_gmres_solution">[docs]</a><span class="k">def</span> <span class="nf">get_gmres_solution</span><span class="p">(</span>
     <span class="n">A</span><span class="p">,</span>  <span class="c1"># noqa: N803 | convention: Ax = b</span>
     <span class="n">b</span><span class="p">,</span>
     <span class="n">pre</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">maxsteps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
     <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">innerproduct</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">restart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">printrates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -570,7 +564,6 @@ document.write(`
         <span class="n">maxiter</span><span class="o">=</span><span class="n">maxsteps</span><span class="p">,</span>
         <span class="n">tol</span><span class="o">=</span><span class="n">reltol</span><span class="p">,</span>
         <span class="n">atol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
-        <span class="n">innerproduct</span><span class="o">=</span><span class="n">innerproduct</span><span class="p">,</span>
         <span class="n">callback_sol</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
         <span class="n">restart</span><span class="o">=</span><span class="n">restart</span><span class="p">,</span>
         <span class="n">printrates</span><span class="o">=</span><span class="n">printrates</span><span class="p">,</span>
