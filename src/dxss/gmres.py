@@ -111,18 +111,13 @@ class GMResSolver(LinearSolver):
     def __init__(
         self,
         *args,
-        innerproduct: Optional[Callable[[PETSc.Vec, PETSc.Vec], float]] = None,
         restart: Optional[int] = None,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        if innerproduct is not None:
-            self.innerproduct = innerproduct
-            self.norm = lambda x: sqrt(innerproduct(x, x).real)
-        else:
-            self.innerproduct = lambda x, y: y.dot(x)
-            self.norm = lambda x: x.norm()
-            self.restart = restart
+        self.innerproduct = lambda x, y: y.dot(x)
+        self.norm = lambda x: x.norm()
+        self.restart = restart
 
     def _solve_impl(self, rhs: PETSc.Vec, sol: PETSc.Vec):  # noqa: PLR0915
         """The internal solving subfunction for the GMRes solver type.
@@ -245,14 +240,13 @@ class GMResSolver(LinearSolver):
         return sol
 
 
-def get_gmres_solution(  # noqa: PLR0913
+def get_gmres_solution(
     A,  # noqa: N803 | convention: Ax = b
     b,
     pre=None,
     x=None,
     maxsteps=100,
     tol=None,
-    innerproduct=None,
     callback=None,
     restart=None,
     printrates=True,
@@ -271,7 +265,6 @@ def get_gmres_solution(  # noqa: PLR0913
         maxiter=maxsteps,
         tol=reltol,
         atol=tol,
-        innerproduct=innerproduct,
         callback_sol=callback,
         restart=restart,
         printrates=printrates,
