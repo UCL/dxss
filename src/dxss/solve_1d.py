@@ -146,7 +146,6 @@ def solve_problem(measure_errors=False):
         u_sol, res = get_gmres_solution(
             A_space_time_linop,
             b_rhs,
-            pre=ST.pre_time_marching_improved,
             maxsteps=100000,
             tol=1e-7,
             printrates=True,
@@ -161,7 +160,6 @@ def solve_problem(measure_errors=False):
         u_sol, res = get_gmres_solution(
             A_space_time_linop,
             b_rhs,
-            pre=ST.pre_time_marching_improved,
             maxsteps=100000,
             tol=1e-7,
             printrates=True,
