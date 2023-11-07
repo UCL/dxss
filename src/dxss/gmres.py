@@ -3,8 +3,21 @@ from petsc4py import PETSc
 from dxss.space_time import SpaceTime
 
 
-# Custom preconditioner.
 class PreTimeMarchingImproved:
+    """Class that wraps our research-grade improved time marching precondition.
+    
+    The class wrapper is needed to get it into the format needed by PETSc's KSP
+    interface.
+    
+    Attributes:
+        context: (dxss.SpaceTime) the sparse matrix context containing n, T, ...
+        
+    TODO:
+        Ultimately we could move the code really into this class, and
+        potentially make some computational savings by splitting the function
+        SpaceTime.pre_time_marching_improved into this class's setup and apply.
+        Also TODO is to review this docstring.
+    """
     def setUp(self, pc):
         A_shell, _ = pc.getOperators()  # noqa: N806 | convention for matrix
         self.context = A_shell.getPythonContext()  # retrieve & set context
@@ -13,11 +26,37 @@ class PreTimeMarchingImproved:
         return self.context.st.pre_time_marching_improved(x, y)
 
 
-def convergence_monitor(ksp, its, rnorm):  # noqa: ARG001
+def convergence_monitor(ksp: PETSc.KSP, its: int, rnorm: float) -> None:  # noqa: ARG001
+     """A simple rate-printing convergence monitor.
+
+    The function trace is dictated by PETSc. 
+    https://petsc.org/release/petsc4py/reference/petsc4py.typing.KSPMonitorFunction.html  
+      
+    Args:
+        ksp: The PETSc.KSP instance. Currently unused (ARG001). Needed to comply
+             with PETSc's monitor function format.
+        its: The iteration count passed in by PETSc.
+        rnorm: The (estimated) 2-norm of (preconditioned) residual.
+    
+    Note: 
+        The `rnorm` is _not_ the relative normalisation despite its name.
+    """
     PETSc.Sys.Print(f"GMRes iteration {its:>3}, residual = {rnorm:4.2e}")
 
 
-def shellmult(self, A, vec_in, vec_out):  # noqa: N803, ARG001
+def shellmult(self, A: SpaceTime.FMatrix, vec_in: PETSc.Vec, vec_out: PETSc.Vec) -> None:  # noqa: N803, ARG001
+    """Shell matrix multiplication wrapper function.
+    
+    Needed to monkey-patch an instance of dxss.SpaceTime to recover the desired behavior.
+    
+    Args:
+        A: The shell representation of the LHS in our 'matrix-free' scheme.
+        vec_in: The vector to multiply with A.
+        vec_out: The output vector to contain the multiplication result.
+        
+    TODO:
+        Ultimately this should be integrated into the dxss.SpaceTime class during a refactoring pass.
+    """
     self.st.apply_spacetime_matrix(vec_in, vec_out)
 
 
@@ -32,7 +71,8 @@ def get_gmres_solution(
     printrates=True,
     reltol=None,
 ):
-    # QUESTION: The 'A' passed into this function is an instance of 'SpaceTime.FMatrix'. This serves as the PETSc 'context' for the shell matrix subsequently initialised. The sole reason why this object is copied to the variable named 'context' is simply for user's comprehension. Not sure if this is efficient.
+    # The 'A' passed into this function serves as the PETSc 'context' for the shell matrix.
+    # Renaming for readability and consistency with PETSc docs. Potentially a minor inefficiency.
     context = A
 
     # Patch the 'mult' method only for this 'context' instance of SpaceTime.FMatrix to comply with PETSc's signature
