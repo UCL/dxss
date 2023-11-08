@@ -1,4 +1,5 @@
 import sys
+import warnings
 from math import pi, sqrt
 
 import numpy as np
@@ -8,13 +9,22 @@ from mpi4py import MPI
 from petsc4py import PETSc
 
 from dxss.gmres import get_gmres_solution
-from dxss.space_time import OrderSpace, OrderTime, SpaceTime, get_sparse_matrix
+from dxss.space_time import (
+    DataDomain,
+    OrderSpace,
+    OrderTime,
+    ProblemParameters,
+    SpaceTime,
+    ValueAndDerivative,
+    get_sparse_matrix,
+)
 
 try:
     import pypardiso
 
     SOLVER_TYPE = "pypardiso"
 except ImportError:
+    pypardiso = None
     SOLVER_TYPE = "petsc-LU"
 
 import resource
@@ -36,6 +46,11 @@ class PySolver:
     def __init__(self, Asp, psolver):  # noqa: N803
         self.Asp = Asp
         self.solver = psolver
+        if not pypardiso:
+            warnings.warn(
+                "Initialising a PySolver, but PyPardiso is not available.",
+                stacklevel=2,
+            )
 
     def solve(self, b_inp, x_out):
         self.solver._check_A(self.Asp)
@@ -163,11 +178,10 @@ ST = SpaceTime(
     T=T,
     t=t0,
     msh=MSH,
-    omega_ind=omega_ind,
-    stabs=STABS,
-    sol=sample_sol,
-    dt_sol=dt_sample_sol,
-    data_dom_fitted=Nx > 2,
+    omega=DataDomain(indicator_function=omega_ind, fitted=Nx > 2),
+    stabilisation_terms=STABS,
+    solution=ValueAndDerivative(sample_sol, dt_sample_sol),
+    parameters=ProblemParameters(),
 )
 ST.setup_spacetime_finite_elements()
 ST.prepare_precondition_gmres()

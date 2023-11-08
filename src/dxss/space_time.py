@@ -1,5 +1,8 @@
+from __future__ import annotations
+
+import dataclasses
 from math import sqrt
-from typing import NamedTuple
+from typing import Callable
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,14 +25,40 @@ from dxss.precomp_time_int import (
 )
 
 
-class OrderTime(NamedTuple):
+@dataclasses.dataclass
+class OrderTime:
     q: int
     qstar: int
 
 
-class OrderSpace(NamedTuple):
+@dataclasses.dataclass
+class OrderSpace:
     k: int
     kstar: int
+
+
+@dataclasses.dataclass
+class ValueAndDerivative:
+    v: np.ndarray
+    dvdt: np.ndarray
+
+
+@dataclasses.dataclass
+class DataDomain:
+    indicator_function: Callable | fem.Function = None
+    fitted: bool = True
+
+
+@dataclasses.dataclass
+class ProblemParameters:
+    jumps_in_fw_problem: bool = False
+    well_posed: bool = False
+
+    def __iter__(self):
+        return (getattr(self, field.name) for field in dataclasses.fields(self))
+
+
+_DEFAULT_PARAMETERS = ProblemParameters()
 
 
 # TODO: this is duplicated... factor out to a "PETSc interface functions" file?
@@ -61,38 +90,36 @@ class SpaceTime:
         T,  # noqa: N803
         t,
         msh,
-        omega_ind,
-        stabs,
-        sol,
-        dt_sol,
-        jumps_in_fw_problem=False,
-        well_posed=False,
-        data_dom_fitted=True,
+        stabilisation_terms: dict[str, float],
+        omega: DataDomain,
+        solution: ValueAndDerivative,
+        parameters: ProblemParameters = _DEFAULT_PARAMETERS,
     ):
         """Construct a SpaceTime object.
 
         Args:
-            polynomial_order_time: polynomial degrees of the finite elements in space.
-            polynomial_order_space: polynomial degrees of the finite elements in time.
+            polynomial_order_time: Polynomial degrees of the finite elements in space.
+            polynomial_order_space: Polynomial degrees of the finite elements in time.
+            stabilisation_terms: A dictionary of stabilisation terms.
+            omega: A DataDomain object holding the indicator function.
+            solution: A best starting guess for the solution and its derivative.
+            parameters: Problem-specific parameters.
             ...
         """
         self.name = "space-time-wave"
         self.otime: OrderTime = polynomial_order_time
         self.ospace: OrderSpace = polynomial_order_space
-        self.jumps_in_fw_problem = jumps_in_fw_problem
         self.N = N
         self.T = T
         self.t = t
         self.delta_t = self.T / self.N
         self.msh = msh
-        self.omega_ind = omega_ind
-        self.stabs = stabs
+        self.omega = omega
         self.x = ufl.SpatialCoordinate(msh)
-        self.sol = sol
-        self.dt_sol = dt_sol
+        self.solution = solution
         self.lam_Nitsche = 5 * self.ospace.k**2
-        self.jumps_in_fw_problem = jumps_in_fw_problem
-        self.well_posed = well_posed
+        self.stabilisation_terms = stabilisation_terms
+        self.jumps_in_fw_problem, self.well_posed = parameters
 
         # mesh-related
         self.metadata = {"quadrature_degree": 2 * self.ospace.k + 3}
@@ -114,12 +141,13 @@ class SpaceTime:
         ]
 
         # DG0 indicator function
-        if data_dom_fitted:
+        # todo: could this be moved to the constructor of the dataclass?
+        if omega.fitted:
             q_ind = fem.FunctionSpace(self.msh, ("DG", 0))
-            self.omega_ind = fem.Function(q_ind)
-            self.omega_ind.interpolate(self.omega_ind)
+            self.omega.indicator_function = fem.Function(q_ind)
+            self.omega.indicator_function.interpolate(self.omega.indicator_function)
         else:
-            self.omega_ind = self.omega_ind
+            self.omega.indicator_function = self.omega.indicator_function
 
         # FESpaces
         self.fes = None
@@ -332,17 +360,17 @@ class SpaceTime:
         elmat_time = self.elmat_time
 
         if afes == self.fes:
-            omega_ind = self.omega_ind
+            omega_ind = self.omega.indicator_function
         else:
             q_ind = fem.FunctionSpace(afes.mesh, ("DG", 0))
             omega_ind = fem.Function(q_ind)
-            omega_ind.interpolate(self.omega_ind)
+            omega_ind.interpolate(self.omega.indicator_function)
 
         # retrieve stabilization parameter
-        gamma_data = self.stabs["data"]
-        gamma_dual = self.stabs["dual"]
-        gamma_primal = self.stabs["primal"]
-        gamma_primal_jump = self.stabs["primal-jump"]
+        gamma_data = self.stabilisation_terms["data"]
+        gamma_dual = self.stabilisation_terms["dual"]
+        gamma_primal = self.stabilisation_terms["primal"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
 
         int_idx_q = 0
         coupling_idx_q = -1
@@ -702,8 +730,8 @@ class SpaceTime:
 
         dx = self.dx
         delta_t = self.delta_t
-        gamma_primal_jump = self.stabs["primal-jump"]
-        gamma_data = self.stabs["data"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
+        gamma_data = self.stabilisation_terms["data"]
 
         int_idx_q = 0
         coupling_idx_q = -1
@@ -718,13 +746,13 @@ class SpaceTime:
             # right hand side
             for tau_i, omega_i in zip(self.qr.current_pts(0, 1), self.qr.t_weights(1)):
                 time_ti = t_n + delta_t * tau_i
-                sol_ti = self.sol(time_ti, self.x)
+                sol_ti = self.solution.v(time_ti, self.x)
                 L += (  # noqa: N806 | convention LU
                     gamma_data
                     * delta_t
                     * omega_i
                     * sol_ti
-                    * self.omega_ind
+                    * self.omega.indicator_function
                     * sum(
                         [
                             w1[int_idx_q + k] * self.phi_test[k](tau_i)
@@ -777,7 +805,7 @@ class SpaceTime:
 
         dx = self.dx
         delta_t = self.delta_t
-        gamma_primal_jump = self.stabs["primal-jump"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
 
         a_coupling = 1e-20 * u1_c[0] * w1_c[0] * dx
         a_coupling += (
@@ -815,7 +843,7 @@ class SpaceTime:
 
         dx = self.dx
         delta_t = self.delta_t
-        gamma_primal_jump = self.stabs["primal-jump"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
 
         m_bnd = gamma_primal_jump * (1 / delta_t) * inner(u0_bnd[0], v0_bnd[0]) * dx
         m_bnd += (
@@ -851,10 +879,10 @@ class SpaceTime:
         elmat_time = self.elmat_time
 
         # retrieve stabilization parameter
-        gamma_data = self.stabs["data"]
-        gamma_dual = self.stabs["dual"]
-        gamma_primal = self.stabs["primal"]
-        gamma_primal_jump = self.stabs["primal-jump"]
+        gamma_data = self.stabilisation_terms["data"]
+        gamma_dual = self.stabilisation_terms["dual"]
+        gamma_primal = self.stabilisation_terms["primal"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
 
         a_pre = 1e-20 * u1_p[0] * y1_p[0] * dx
 
@@ -893,7 +921,7 @@ class SpaceTime:
                     gamma_data
                     * delta_t
                     * elmat_time["M_time_q_q"][k, j]
-                    * self.omega_ind
+                    * self.omega.indicator_function
                     * inner(u1_p[j], w1_p[k])
                     * dx
                 )
@@ -1163,7 +1191,7 @@ class SpaceTime:
         coupling_idx_qstar = -1
 
         # retrieve stabilization parameter
-        gamma_primal_jump = self.stabs["primal-jump"]
+        gamma_primal_jump = self.stabilisation_terms["primal-jump"]
 
         for n in range(self.N):
             n * delta_t
@@ -1240,7 +1268,7 @@ class SpaceTime:
         coupling_idx_qstar = -1
 
         # retrieve stabilization parameter
-        self.stabs["primal-jump"]
+        self.stabilisation_terms["primal-jump"]  # TODO: check why this is here
 
         self.b_rhs_pre.array[:] = 0.0
 
@@ -1448,7 +1476,7 @@ class SpaceTime:
 
         self.u1_0.x.array[:] = u1_h.x.array[self.dofmaps_full[0][-1]]
         self.u2_0.x.array[:] = u2_h.x.array[self.dofmaps_full[1][-1]]
-        ue = self.sol(self.T, self.x)
+        ue = self.solution.v(self.T, self.x)
         l2_error = fem.form(ufl.inner(self.u1_0 - ue, self.u1_0 - ue) * dx)
         error_local = fem.assemble_scalar(l2_error)
         error_l2_abs = np.sqrt(self.msh.comm.allreduce(error_local, op=MPI.SUM))
@@ -1480,7 +1508,7 @@ class SpaceTime:
                 self.qr_ho.t_weights(1),
             ):
                 time_ti = t_n + delta_t * tau_i
-                dt_ue_tni = self.dt_sol(time_ti, self.x)
+                dt_ue_tni = self.solution.dvdt(time_ti, self.x)
                 uh_prime_at_ti = sum(
                     [
                         (1 / delta_t)
@@ -1506,8 +1534,8 @@ class SpaceTime:
 
             for t_sample in self.sample_pts_error:
                 if t_sample >= t_n and t_sample <= (t_n + delta_t):
-                    ue = self.sol(t_sample, self.x)
-                    dt_ue = self.dt_sol(t_sample, self.x)
+                    ue = self.solution.v(t_sample, self.x)
+                    dt_ue = self.solution.dvdt(t_sample, self.x)
                     uh_at_ti = sum(
                         [
                             self.phi_trial[j]((t_sample - t_n) / delta_t)
@@ -1756,7 +1784,7 @@ class SpaceTime:
                             for ell in range(self.otime.q + 1)
                         ],
                     )
-                    u_at_ti = self.sol(time_ti, [eval_pts_space[j]])
+                    u_at_ti = self.solution.v(time_ti, [eval_pts_space[j]])
 
                     dt_uh_at_ti = sum(
                         [
@@ -1766,7 +1794,7 @@ class SpaceTime:
                             for ell in range(self.otime.q + 1)
                         ],
                     )
-                    dt_u_at_ti = self.dt_sol(time_ti, [eval_pts_space[j]])
+                    dt_u_at_ti = self.solution.dvdt(time_ti, [eval_pts_space[j]])
 
                     fun_val[time_idx + m, j] = uh_at_ti
                     err_val[time_idx + m, j] = abs(uh_at_ti - u_at_ti)
@@ -1826,8 +1854,8 @@ class SpaceTime:
         ut_exact = fem.Function(self.fes_u2_0)
         ut_diff = fem.Function(self.fes_u2_0)
 
-        ue = self.sol(self.T, self.x)
-        dt_ue = self.dt_sol(self.T, self.x)
+        ue = self.solution.v(self.T, self.x)
+        dt_ue = self.solution.dvdt(self.T, self.x)
 
         u_expr_exact = fem.Expression(ue, self.fes_u1_0.element.interpolation_points())
         u_exact.interpolate(u_expr_exact)

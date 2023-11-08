@@ -1,9 +1,10 @@
 # DOLFINx time slab solver
 
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Tests](https://github.com/UCL/dxss/actions/workflows/tests.yml/badge.svg)](https://github.com/UCL/dxss/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/UCL/dxss/graph/badge.svg?token=1O6E05lrHn)](https://codecov.io/gh/UCL/dxss)
 [![Linting](https://github.com/UCL/dxss/actions/workflows/linting.yml/badge.svg)](https://github.com/UCL/dxss/actions/workflows/linting.yml)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Documentation](https://github.com/UCL/dxss/actions/workflows/docs.yml/badge.svg)](https://github-pages.ucl.ac.uk/dxss/)
 [![Licence][licence-badge]](./LICENCE.md)
 
@@ -19,7 +20,7 @@
 [pypi-link]:                https://pypi.org/project/dxss/
 [pypi-platforms]:           https://img.shields.io/pypi/pyversions/dxss
 [pypi-version]:             https://img.shields.io/pypi/v/dxss
-[licence-badge]:             https://img.shields.io/badge/License-MIT-yellow.svg
+[licence-badge]:            https://img.shields.io/badge/License-MIT-yellow.svg
 <!-- prettier-ignore-end -->
 
 `dxss` provides DOLFINx solvers on space-time finite element spaces which use a partition of the time interval to decompose the spatio-temporal domain into a collection of _time slabs_.
@@ -56,14 +57,19 @@ Centre for Advanced Research Computing, University College London
 ## Built with
 
 - [FEniCSx](https://fenicsproject.org/)
-- [Matplotlib](https://matplotlib.org/)
+- [PETSc](https://petsc.org/release/petsc4py/)
+- [PyPardiso](https://github.com/haasad/PyPardisoProject)
 - [NumPy](https://numpy.org/)
 
 ## Getting started
 
 ### Prerequisites
 
-Compatible with Python 3.9 and 3.10. [Requires DOLFINx v0.6.0 or above to be installed](https://github.com/FEniCS/dolfinx#installation).
+Compatible with Python 3.9 and 3.10.
+[Requires DOLFINx v0.6 to be installed](https://github.com/FEniCS/dolfinx#installation).
+
+> [!NOTE]
+> We don't currently support DOLFINx v0.7 but [are working on it](https://github.com/UCL/dxss/issues/37)!
 
 ### Installation
 
@@ -86,6 +92,19 @@ pip install -e .
 ```
 
 from the root of your clone of the repository.
+
+In order to maximise cross-platform multi-arch compatibility, `dxss` uses `PETSc` solvers by default.
+If you have an Intel system you can install our [PyPardiso](https://github.com/haasad/PyPardisoProject) solver backend with
+
+```sh
+pip install -e ".[pypardiso]"
+```
+
+or simply install it separately in the same environment as `dxss` with
+
+```sh
+pip install pypardiso
+```
 
 ### Running tests
 

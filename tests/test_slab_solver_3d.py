@@ -9,7 +9,13 @@ from dolfinx.mesh import CellType, GhostMode, create_box
 from mpi4py import MPI
 from petsc4py import PETSc
 
-from dxss.space_time import OrderSpace, OrderTime, SpaceTime
+from dxss.space_time import (
+    DataDomain,
+    OrderSpace,
+    OrderTime,
+    SpaceTime,
+    ValueAndDerivative,
+)
 
 try:
     import pypardiso
@@ -124,10 +130,9 @@ ST = SpaceTime(
     T=T,
     t=t0,
     msh=MSH,
-    omega_ind=omega_ind_convex,
-    stabs=STABS,
-    sol=sample_sol,
-    dt_sol=dt_sample_sol,
+    omega=DataDomain(indicator_function=omega_ind_convex),
+    stabilisation_terms=STABS,
+    solution=ValueAndDerivative(sample_sol, dt_sample_sol),
 )
 ST.setup_spacetime_finite_elements()
 ST.prepare_precondition_gmres()
