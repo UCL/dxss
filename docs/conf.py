@@ -19,6 +19,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
     "sphinx_autodoc_typehints",
 ]
 
