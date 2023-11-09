@@ -29,6 +29,7 @@ def test_mock_no_pypardiso_for_solver_warns(mocker):
 
     # need to reload the modules in case they where cached
     import dxss._solvers  # fmt: skip
+
     importlib.reload(sys.modules["dxss._solver_backend"])
     importlib.reload(sys.modules["dxss._solvers"])
 

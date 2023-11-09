@@ -2,6 +2,7 @@
 
 try:
     import pypardiso  # fmt: skip
+
     SOLVER_TYPE = "pypardiso"
 except ImportError:
     pypardiso = None
