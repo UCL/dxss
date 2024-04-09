@@ -68,10 +68,9 @@ def get_sparse_matrix(mat):
 
 
 class SpaceTime:
-    # TODO:
-    # this is a *large class* (https://refactoring.guru/smells/large-class) with
-    # a *long parameter list* constructor
-    # (https://refactoring.guru/smells/long-parameter-list)
+    # TODO: this is a *large class*
+    # (https://refactoring.guru/smells/large-class) with a *long parameter list*
+    # constructor (https://refactoring.guru/smells/long-parameter-list)
     #
     # We can create intermediary data objects (where relevant) or split up some
     # of the configuration of this object.  Ideally we'd also split up the
@@ -141,7 +140,7 @@ class SpaceTime:
         ]
 
         # DG0 indicator function
-        # todo: could this be moved to the constructor of the dataclass?
+        # TODO: could this be moved to the constructor of the dataclass?
         if omega.fitted:
             q_ind = fem.FunctionSpace(self.msh, ("DG", 0))
             self.omega.indicator_function = fem.Function(q_ind)
@@ -222,7 +221,7 @@ class SpaceTime:
         self.sample_pts_error = np.linspace(0, self.T, 105).tolist()
         self.eps: float = 0.0
         if self.otime.qstar == 0:
-            self.eps = 1e-15  # hack to trick form compiler
+            self.eps = 1e-15  # small hack to trick form compiler
 
         # for coarse grid correction
         self.msh_coarse = None

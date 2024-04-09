@@ -90,61 +90,30 @@ testpaths = [
 fix = true
 force-exclude = true
 ignore = [
+    "ANN", # temporarily ignore flake8 annotation warnings (missing type hints is fine for now)
     "D10", # _temporarily_ ignore **all** missing doc warnings (TODO: revert this once #15 is fixed)
     "D203", # no-blank-line-before-class
     "D212", # multi-line-summary-first-line
     "D417", # argument description in docstring (unreliable)
     "E501", # line too long (handled by black)
     "FBT00", # bool values in function calls or positional arguments (TODO: these can be solved by better design)
+    "FIX002", # TODOs are fine
     "PLR2004", # magic values in comparisons
     "RET505", # superfluous else return,
     "T201", # print
+    "TD002",
+    "TD003", # TODOs are fine
     "UP007", # X | Y for type annotations (Python 3.10+ only)
 ]
-per-file-ignores = {"test_*" = [
+per-file-ignores = {"conf.py" = ["INP001"], "test_*" = [
     "D103",
+    "INP001",
     "S101",
 ]}
 select = [
-    "A",
-    "ARG",
-    "B",
-    "BLE",
-    "C",
-    "COM",
-    "D",
-    "DJ",
-    "DTZ",
-    "E",
-    "EM",
-    "ERA",
-    "EXE",
-    "F",
-    "FBT",
-    "I",
-    "ICN",
-    "ISC",
-    "N",
-    "NPY",
-    "PD",
-    "PGH",
-    "PIE",
-    "PL",
-    "PT",
-    "PTH",
-    "PYI",
-    "Q",
-    "RET",
-    "RSE",
-    "RUF",
-    "S",
-    "SIM",
-    "T",
-    "TCH",
-    "TID",
-    "UP",
-    "W",
-    "YTT",
+    "ALL",
+    "I001",
+    "I002",
 ]
 target-version = "py39"
 isort.known-first-party = [

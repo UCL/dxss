@@ -483,10 +483,7 @@ def get_mesh_inclusion(h_init=1.25, order=2):  # noqa: PLR0915
         gmsh.model.mesh.recombine()
     gmsh.model.mesh.setOrder(order)
     idx, points, _ = gmsh.model.mesh.getNodes()
-    ls_points_2d = []
-    for i in range(len(points)):
-        if (i + 1) % 3 != 0:
-            ls_points_2d.append(points[i])
+    ls_points_2d = [point for i, point in enumerate(points) if (i + 1) % 3 != 0]
     ls_points_2d = np.array(ls_points_2d)
     points = ls_points_2d.reshape(-1, 2)
     idx -= 1
@@ -618,10 +615,7 @@ def get_mesh_inclusion_square(  # noqa: PLR0915
     order = 1
     gmsh.model.mesh.setOrder(order)
     idx, points, _ = gmsh.model.mesh.getNodes()
-    ls_points_2d = []
-    for i in range(len(points)):
-        if (i + 1) % 3 != 0:
-            ls_points_2d.append(points[i])
+    ls_points_2d = [point for i, point in enumerate(points) if (i + 1) % 3 != 0]
     ls_points_2d = np.array(ls_points_2d)
     points = ls_points_2d.reshape(-1, 2)
     idx -= 1
@@ -663,7 +657,7 @@ def get_mesh_inclusion_square(  # noqa: PLR0915
     return msh
 
 
-def get_mesh_bottom_data(h_init=1.25, eta=0.6):  # noqa: PLR0915
+def get_mesh_bottom_data(h_init=1.25, eta=0.6):
     # TODO: this function has too many statements. Try to reduce the complexity
     # on refactoring and remove the suppression of PLR0915.
     cell_type = CellType.triangle
@@ -726,10 +720,7 @@ def get_mesh_bottom_data(h_init=1.25, eta=0.6):  # noqa: PLR0915
     order = 1
     gmsh.model.mesh.setOrder(order)
     idx, points, _ = gmsh.model.mesh.getNodes()
-    ls_points_2d = []
-    for i in range(len(points)):
-        if (i + 1) % 3 != 0:
-            ls_points_2d.append(points[i])
+    ls_points_2d = [point for i, point in enumerate(points) if (i + 1) % 3 != 0]
     ls_points_2d = np.array(ls_points_2d)
     points = ls_points_2d.reshape(-1, 2)
     idx -= 1
