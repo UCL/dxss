@@ -50,7 +50,7 @@ class PySolver:
             )
 
     def solve(self, b_inp, x_out):
-        self.solver.check_A(self.Asp)
+        self.solver._check_A(self.Asp)  # noqa: SLF001, TODO: fix this.
         b = self.solver._check_b(self.Asp, b_inp.array)  # noqa: SLF001, TODO: fix this.
         self.solver.set_phase(33)
         x_out.array[:] = self.solver._call_pardiso(self.Asp, b)[:]  # noqa: SLF001, TODO: fix this.
