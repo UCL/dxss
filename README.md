@@ -25,7 +25,7 @@
 
 `dxss` provides DOLFINx solvers on space-time finite element spaces which use a partition of the time interval to decompose the spatio-temporal domain into a collection of _time slabs_.
 
-This project is developed in collaboration with the [Centre for Advanced Research Computing](https://ucl.ac.uk/arc), University College London.
+This project is developed by the [Department of Mathematics](https://www.ucl.ac.uk/maths/research-0) in collaboration with the [Centre for Advanced Research Computing](https://ucl.ac.uk/arc), at University College London.
 
 ## Documentation
 
