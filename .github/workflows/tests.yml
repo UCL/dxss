@@ -11,15 +11,16 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version:
-          - "3.9"
-          - "3.10"
-        solver-backend:
-          - "petsc"
-          - "pardiso"
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.9", "3.10"]
+        solver-backend: ["petsc", "pardiso"]
+        exclude:
+          # can't run pardiso on macos
+          - os: macos-latest
+            solver-backend: pardiso
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -43,12 +44,14 @@ jobs:
       - name: Convert Python version and solver backend to tox env
         # Workaround to map x.y Python version to form test-xy
         # https://stackoverflow.com/a/67248310
+        shell: bash
         run: |
           RAW_TOX_ENV="test-py${{ matrix.python-version }}-${{ matrix.solver-backend }}"
           TOX_ENV=$(echo $RAW_TOX_ENV | sed 's/\.//')
           echo "tox_env=$TOX_ENV" >> "$GITHUB_ENV"
 
       - name: Test with tox
+        shell: bash
         run: tox -e ${{ env.tox_env }}
 
       - name: Upload coverage reports to Codecov
