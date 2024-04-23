@@ -56,7 +56,7 @@ dev = [
     "pytest-cov",
     "pytest-mock",
     "ruff",
-    "sphinx<7",
+    "sphinx",
     "sphinx_autodoc_typehints",
     "tox",
     "twine",
@@ -175,7 +175,7 @@ commands =
     sphinx-apidoc -o docs src/ -T
     sphinx-build -W -b html docs docs/_build/html
 deps =
-    sphinx<7
+    sphinx
     pydata-sphinx-theme
     sphinx-autodoc-typehints
 
