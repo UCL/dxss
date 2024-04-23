@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
@@ -28,16 +27,16 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dxss/meshes';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -318,7 +317,9 @@ document.write(`
 <span class="n">eta</span> <span class="o">=</span> <span class="mf">0.6</span>
 
 
-<div class="viewcode-block" id="create_initial_mesh_convex"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.create_initial_mesh_convex">[docs]</a><span class="k">def</span> <span class="nf">create_initial_mesh_convex</span><span class="p">(</span><span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+<div class="viewcode-block" id="create_initial_mesh_convex">
+<a class="viewcode-back" href="../../dxss.html#dxss.meshes.create_initial_mesh_convex">[docs]</a>
+<span class="k">def</span> <span class="nf">create_initial_mesh_convex</span><span class="p">(</span><span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
     <span class="c1"># TODO: Need to understand why there is a an import and subfunction here.</span>
     <span class="c1"># Looks like create_mesh could be global level. The following functions have</span>
     <span class="c1"># a **lot** of code overlap with this function.</span>
@@ -412,7 +413,10 @@ document.write(`
     <span class="k">return</span> <span class="n">mesh</span></div>
 
 
-<div class="viewcode-block" id="get_mesh_convex"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_convex">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_convex</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_mesh_convex">
+<a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_convex">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mesh_convex</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
     <span class="n">meshes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_ref</span><span class="p">):</span>
         <span class="n">h_scale_j</span> <span class="o">=</span> <span class="n">init_h_scale</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">j</span><span class="p">)</span>
@@ -420,7 +424,10 @@ document.write(`
     <span class="k">return</span> <span class="n">meshes</span></div>
 
 
-<div class="viewcode-block" id="get_mesh_hierarchy"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_hierarchy</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+
+<div class="viewcode-block" id="get_mesh_hierarchy">
+<a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mesh_hierarchy</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
     <span class="c1"># TODO: This is very WET from create_inital_mesh_complex above. We need to</span>
     <span class="c1"># find some way to not repeat this function. Also fix PLR0915 and remove the</span>
     <span class="c1"># suppression.</span>
@@ -528,7 +535,10 @@ document.write(`
     <span class="k">return</span> <span class="n">mesh_hierarchy</span></div>
 
 
-<div class="viewcode-block" id="get_mesh_hierarchy_nonconvex"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy_nonconvex">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_hierarchy_nonconvex</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+
+<div class="viewcode-block" id="get_mesh_hierarchy_nonconvex">
+<a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy_nonconvex">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mesh_hierarchy_nonconvex</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
     <span class="c1"># TODO: remove suppression of PLR0915 when refactored</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="p">)</span>
@@ -620,7 +630,10 @@ document.write(`
     <span class="k">return</span> <span class="n">mesh_hierarchy</span></div>
 
 
-<div class="viewcode-block" id="get_mesh_hierarchy_fitted_disc"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy_fitted_disc">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_hierarchy_fitted_disc</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+
+<div class="viewcode-block" id="get_mesh_hierarchy_fitted_disc">
+<a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_hierarchy_fitted_disc">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mesh_hierarchy_fitted_disc</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
     <span class="c1"># TODO: remove suppression of PLR0915 when refactored</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MeshSizeFactor&quot;</span><span class="p">,</span> <span class="n">h_init</span><span class="p">)</span>
@@ -730,7 +743,10 @@ document.write(`
     <span class="k">return</span> <span class="n">mesh_hierarchy</span></div>
 
 
-<div class="viewcode-block" id="get_mesh_inclusion"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_inclusion">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_inclusion</span><span class="p">(</span><span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+
+<div class="viewcode-block" id="get_mesh_inclusion">
+<a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_inclusion">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mesh_inclusion</span><span class="p">(</span><span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
     <span class="c1"># TODO: remove suppression of PLR0915 when refactored</span>
     <span class="n">cell_type</span> <span class="o">=</span> <span class="n">CellType</span><span class="o">.</span><span class="n">triangle</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
@@ -825,7 +841,10 @@ document.write(`
     <span class="k">return</span> <span class="n">msh</span></div>
 
 
-<div class="viewcode-block" id="get_mesh_inclusion_square"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_inclusion_square">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_inclusion_square</span><span class="p">(</span>  <span class="c1"># noqa: PLR0915</span>
+
+<div class="viewcode-block" id="get_mesh_inclusion_square">
+<a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_inclusion_square">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mesh_inclusion_square</span><span class="p">(</span>  <span class="c1"># noqa: PLR0915</span>
     <span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span>
     <span class="n">x_l</span><span class="o">=-</span><span class="mf">1.25</span><span class="p">,</span>  <span class="c1"># TODO: points could be passed as a tuple</span>
     <span class="n">x_r</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span>
@@ -959,7 +978,10 @@ document.write(`
     <span class="k">return</span> <span class="n">msh</span></div>
 
 
-<div class="viewcode-block" id="get_mesh_bottom_data"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_bottom_data">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_bottom_data</span><span class="p">(</span><span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.6</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_mesh_bottom_data">
+<a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_bottom_data">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mesh_bottom_data</span><span class="p">(</span><span class="n">h_init</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.6</span><span class="p">):</span>
     <span class="c1"># TODO: this function has too many statements. Try to reduce the complexity</span>
     <span class="c1"># on refactoring and remove the suppression of PLR0915.</span>
     <span class="n">cell_type</span> <span class="o">=</span> <span class="n">CellType</span><span class="o">.</span><span class="n">triangle</span>
@@ -1062,7 +1084,10 @@ document.write(`
     <span class="k">return</span> <span class="n">msh</span></div>
 
 
-<div class="viewcode-block" id="get_mesh_data_all_around"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_data_all_around">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_data_all_around</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
+
+<div class="viewcode-block" id="get_mesh_data_all_around">
+<a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_mesh_data_all_around">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mesh_data_all_around</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>  <span class="c1"># noqa: PLR0915</span>
     <span class="c1"># TODO: this function has too many statements. Try to reduce the complexity</span>
     <span class="c1"># on refactoring and remove the suppression of PLR0915.</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
@@ -1165,7 +1190,10 @@ document.write(`
     <span class="k">return</span> <span class="n">mesh_hierarchy</span></div>
 
 
-<div class="viewcode-block" id="get_3d_mesh_data_all_around"><a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_3d_mesh_data_all_around">[docs]</a><span class="k">def</span> <span class="nf">get_3d_mesh_data_all_around</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_3d_mesh_data_all_around">
+<a class="viewcode-back" href="../../dxss.html#dxss.meshes.get_3d_mesh_data_all_around">[docs]</a>
+<span class="k">def</span> <span class="nf">get_3d_mesh_data_all_around</span><span class="p">(</span><span class="n">n_ref</span><span class="p">,</span> <span class="n">init_h_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
     <span class="c1"># if proc == 0:</span>
     <span class="n">gdim</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
@@ -1229,6 +1257,7 @@ document.write(`
         <span class="n">mesh</span> <span class="o">=</span> <span class="n">refine</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
         <span class="n">mesh_hierarchy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">mesh_hierarchy</span></div>
+
 </pre></div>
 
                 </article>
@@ -1281,7 +1310,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

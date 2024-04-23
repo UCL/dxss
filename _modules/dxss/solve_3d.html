@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
@@ -28,16 +27,16 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dxss/solve_3d';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -333,7 +332,9 @@ document.write(`
 <span class="n">GCC</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="get_lu_solver"><a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.get_lu_solver">[docs]</a><span class="k">def</span> <span class="nf">get_lu_solver</span><span class="p">(</span><span class="n">msh</span><span class="p">,</span> <span class="n">mat</span><span class="p">):</span>
+<div class="viewcode-block" id="get_lu_solver">
+<a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.get_lu_solver">[docs]</a>
+<span class="k">def</span> <span class="nf">get_lu_solver</span><span class="p">(</span><span class="n">msh</span><span class="p">,</span> <span class="n">mat</span><span class="p">):</span>
     <span class="n">solver</span> <span class="o">=</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">KSP</span><span class="p">()</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">msh</span><span class="o">.</span><span class="n">comm</span><span class="p">)</span>
     <span class="n">solver</span><span class="o">.</span><span class="n">setOperators</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
     <span class="n">solver</span><span class="o">.</span><span class="n">setType</span><span class="p">(</span><span class="n">PETSc</span><span class="o">.</span><span class="n">KSP</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">PREONLY</span><span class="p">)</span>
@@ -341,7 +342,10 @@ document.write(`
     <span class="k">return</span> <span class="n">solver</span></div>
 
 
-<div class="viewcode-block" id="PySolver"><a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.PySolver">[docs]</a><span class="k">class</span> <span class="nc">PySolver</span><span class="p">:</span>
+
+<div class="viewcode-block" id="PySolver">
+<a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.PySolver">[docs]</a>
+<span class="k">class</span> <span class="nc">PySolver</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Asp</span><span class="p">,</span> <span class="n">psolver</span><span class="p">):</span>  <span class="c1"># noqa: N803</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Asp</span> <span class="o">=</span> <span class="n">Asp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">psolver</span>
@@ -351,11 +355,15 @@ document.write(`
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="PySolver.solve"><a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.PySolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_inp</span><span class="p">,</span> <span class="n">x_out</span><span class="p">):</span>
+<div class="viewcode-block" id="PySolver.solve">
+<a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.PySolver.solve">[docs]</a>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_inp</span><span class="p">,</span> <span class="n">x_out</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">_check_A</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Asp</span><span class="p">)</span>  <span class="c1"># noqa: SLF001, TODO: fix this.</span>
         <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">_check_b</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Asp</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>  <span class="c1"># noqa: SLF001, TODO: fix this.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">set_phase</span><span class="p">(</span><span class="mi">33</span><span class="p">)</span>
-        <span class="n">x_out</span><span class="o">.</span><span class="n">array</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">_call_pardiso</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Asp</span><span class="p">,</span> <span class="n">b</span><span class="p">)[:]</span>  <span class="c1"># noqa: SLF001, TODO: fix this.</span></div></div>
+        <span class="n">x_out</span><span class="o">.</span><span class="n">array</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">_call_pardiso</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Asp</span><span class="p">,</span> <span class="n">b</span><span class="p">)[:]</span>  <span class="c1"># noqa: SLF001, TODO: fix this.</span></div>
+</div>
+
 
 
 <span class="n">REF_LVL_TO_N</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">]</span>
@@ -436,7 +444,9 @@ document.write(`
         <span class="n">omega_ind</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">conditional</span><span class="p">(</span><span class="n">omega_indicator</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="k">elif</span> <span class="n">Nx</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
 
-<div class="viewcode-block" id="omega_ind"><a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.omega_ind">[docs]</a>    <span class="k">def</span> <span class="nf">omega_ind</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="omega_ind">
+<a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.omega_ind">[docs]</a>
+    <span class="k">def</span> <span class="nf">omega_ind</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PETSc</span><span class="o">.</span><span class="n">ScalarType</span><span class="p">)</span>
         <span class="n">omega_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">DATA_SIZE</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">))</span>
         <span class="n">rest_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">omega_coords</span><span class="p">)</span>
@@ -444,13 +454,16 @@ document.write(`
         <span class="n">values</span><span class="p">[</span><span class="n">rest_coords</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">rest_coords</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">values</span></div>
 
+
 <span class="k">else</span><span class="p">:</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">SpatialCoordinate</span><span class="p">(</span><span class="n">MSH</span><span class="p">)</span>
     <span class="n">omega_indicator</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">DATA_SIZE</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="n">omega_ind</span> <span class="o">=</span> <span class="n">ufl</span><span class="o">.</span><span class="n">conditional</span><span class="p">(</span><span class="n">omega_indicator</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="sample_sol"><a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.sample_sol">[docs]</a><span class="k">def</span> <span class="nf">sample_sol</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">xu</span><span class="p">):</span>
+<div class="viewcode-block" id="sample_sol">
+<a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.sample_sol">[docs]</a>
+<span class="k">def</span> <span class="nf">sample_sol</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">xu</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">ufl</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
         <span class="o">*</span> <span class="n">ufl</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">pi</span> <span class="o">*</span> <span class="n">xu</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -459,7 +472,10 @@ document.write(`
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dt_sample_sol"><a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.dt_sample_sol">[docs]</a><span class="k">def</span> <span class="nf">dt_sample_sol</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">xu</span><span class="p">):</span>
+
+<div class="viewcode-block" id="dt_sample_sol">
+<a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.dt_sample_sol">[docs]</a>
+<span class="k">def</span> <span class="nf">dt_sample_sol</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">xu</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
         <span class="o">*</span> <span class="n">pi</span>
@@ -468,6 +484,7 @@ document.write(`
         <span class="o">*</span> <span class="n">ufl</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">pi</span> <span class="o">*</span> <span class="n">xu</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="o">*</span> <span class="n">ufl</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">pi</span> <span class="o">*</span> <span class="n">xu</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
     <span class="p">)</span></div>
+
 
 
 <span class="n">ST</span> <span class="o">=</span> <span class="n">SpaceTime</span><span class="p">(</span>
@@ -490,7 +507,9 @@ document.write(`
 <span class="c1"># Prepare the solvers for problems on the slabs</span>
 
 
-<div class="viewcode-block" id="solve_problem"><a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.solve_problem">[docs]</a><span class="k">def</span> <span class="nf">solve_problem</span><span class="p">(</span><span class="n">measure_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="solve_problem">
+<a class="viewcode-back" href="../../dxss.html#dxss.solve_3d.solve_problem">[docs]</a>
+<span class="k">def</span> <span class="nf">solve_problem</span><span class="p">(</span><span class="n">measure_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">SOLVER_TYPE</span> <span class="o">==</span> <span class="s2">&quot;pypardiso&quot;</span><span class="p">:</span>
         <span class="n">genreal_slab_solver</span> <span class="o">=</span> <span class="n">pypardiso</span><span class="o">.</span><span class="n">PyPardisoSolver</span><span class="p">()</span>
@@ -543,6 +562,7 @@ document.write(`
     <span class="k">if</span> <span class="n">measure_errors</span><span class="p">:</span>
         <span class="n">ST</span><span class="o">.</span><span class="n">plot_para_view</span><span class="p">(</span><span class="n">u_sol</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;abserr-cube-GCC-order</span><span class="si">{</span><span class="n">ORDER</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">ST</span><span class="o">.</span><span class="n">measured_errors</span><span class="p">(</span><span class="n">u_sol</span><span class="p">)</span></div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -604,7 +624,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

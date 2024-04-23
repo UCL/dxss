@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
@@ -28,16 +27,16 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dxss/gmres';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -302,7 +301,9 @@ document.write(`
 <span class="kn">from</span> <span class="nn">dxss.space_time</span> <span class="kn">import</span> <span class="n">SpaceTime</span>
 
 
-<div class="viewcode-block" id="PreTimeMarchingImproved"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.PreTimeMarchingImproved">[docs]</a><span class="k">class</span> <span class="nc">PreTimeMarchingImproved</span><span class="p">:</span>
+<div class="viewcode-block" id="PreTimeMarchingImproved">
+<a class="viewcode-back" href="../../dxss.html#dxss.gmres.PreTimeMarchingImproved">[docs]</a>
+<span class="k">class</span> <span class="nc">PreTimeMarchingImproved</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that wraps our research-grade improved time marching precondition.</span>
 
 <span class="sd">    The class wrapper is needed to get it into the format needed by PETSc&#39;s KSP</span>
@@ -318,15 +319,24 @@ document.write(`
 <span class="sd">        Also TODO is to review this docstring.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="PreTimeMarchingImproved.setUp"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.PreTimeMarchingImproved.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
+<div class="viewcode-block" id="PreTimeMarchingImproved.setUp">
+<a class="viewcode-back" href="../../dxss.html#dxss.gmres.PreTimeMarchingImproved.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
         <span class="n">A_shell</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">getOperators</span><span class="p">()</span>  <span class="c1"># noqa: N806 | convention for matrix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">A_shell</span><span class="o">.</span><span class="n">getPythonContext</span><span class="p">()</span>  <span class="c1"># retrieve &amp; set context</span></div>
 
-<div class="viewcode-block" id="PreTimeMarchingImproved.apply"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.PreTimeMarchingImproved.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>  <span class="c1"># noqa: ARG002 | &#39;pc&#39; argument is required by PETSc</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="PreTimeMarchingImproved.apply">
+<a class="viewcode-back" href="../../dxss.html#dxss.gmres.PreTimeMarchingImproved.apply">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>  <span class="c1"># noqa: ARG002 | &#39;pc&#39; argument is required by PETSc</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="convergence_monitor"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.convergence_monitor">[docs]</a><span class="k">def</span> <span class="nf">convergence_monitor</span><span class="p">(</span><span class="n">ksp</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">KSP</span><span class="p">,</span> <span class="n">its</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rnorm</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ARG001</span>
+
+<div class="viewcode-block" id="convergence_monitor">
+<a class="viewcode-back" href="../../dxss.html#dxss.gmres.convergence_monitor">[docs]</a>
+<span class="k">def</span> <span class="nf">convergence_monitor</span><span class="p">(</span><span class="n">ksp</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">KSP</span><span class="p">,</span> <span class="n">its</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rnorm</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ARG001</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A simple rate-printing convergence monitor.</span>
 
 <span class="sd">    The function trace is dictated by PETSc.</span>
@@ -343,7 +353,10 @@ document.write(`
     <span class="n">PETSc</span><span class="o">.</span><span class="n">Sys</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GMRes iteration </span><span class="si">{</span><span class="n">its</span><span class="si">:</span><span class="s2">&gt;3</span><span class="si">}</span><span class="s2">, residual = </span><span class="si">{</span><span class="n">rnorm</span><span class="si">:</span><span class="s2">4.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="shellmult"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.shellmult">[docs]</a><span class="k">def</span> <span class="nf">shellmult</span><span class="p">(</span>
+
+<div class="viewcode-block" id="shellmult">
+<a class="viewcode-back" href="../../dxss.html#dxss.gmres.shellmult">[docs]</a>
+<span class="k">def</span> <span class="nf">shellmult</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">A</span><span class="p">:</span> <span class="n">SpaceTime</span><span class="o">.</span><span class="n">FMatrix</span><span class="p">,</span>  <span class="c1"># noqa: ARG001,N803</span>
     <span class="n">vec_in</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span>
@@ -366,7 +379,10 @@ document.write(`
     <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">apply_spacetime_matrix</span><span class="p">(</span><span class="n">vec_in</span><span class="p">,</span> <span class="n">vec_out</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_gmres_solution"><a class="viewcode-back" href="../../dxss.html#dxss.gmres.get_gmres_solution">[docs]</a><span class="k">def</span> <span class="nf">get_gmres_solution</span><span class="p">(</span>
+
+<div class="viewcode-block" id="get_gmres_solution">
+<a class="viewcode-back" href="../../dxss.html#dxss.gmres.get_gmres_solution">[docs]</a>
+<span class="k">def</span> <span class="nf">get_gmres_solution</span><span class="p">(</span>
     <span class="n">A</span><span class="p">,</span>  <span class="c1"># noqa: N803 | convention: Ax = b</span>
     <span class="n">b</span><span class="p">,</span>
     <span class="n">pre</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -441,6 +457,7 @@ document.write(`
     <span class="n">r</span> <span class="o">=</span> <span class="n">ksp</span><span class="o">.</span><span class="n">buildResidual</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span></div>
+
 </pre></div>
 
                 </article>
@@ -493,7 +510,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>
