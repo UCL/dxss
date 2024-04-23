@@ -297,7 +297,9 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for dxss.meshes</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">gmsh</span>
+<span></span><span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">version</span>
+
+<span class="kn">import</span> <span class="nn">gmsh</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">dolfinx.cpp.io</span> <span class="kn">import</span> <span class="n">perm_gmsh</span>
 <span class="kn">from</span> <span class="nn">dolfinx.io</span> <span class="kn">import</span> <span class="n">XDMFFile</span><span class="p">,</span> <span class="n">gmshio</span>
@@ -310,6 +312,7 @@ document.write(`
     <span class="n">refine</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>
+<span class="kn">from</span> <span class="nn">packaging.version</span> <span class="kn">import</span> <span class="n">Version</span>
 
 <span class="n">GM</span> <span class="o">=</span> <span class="n">GhostMode</span><span class="o">.</span><span class="n">shared_facet</span>
 <span class="n">eta</span> <span class="o">=</span> <span class="mf">0.6</span>
@@ -1149,7 +1152,14 @@ document.write(`
     <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_ref</span><span class="p">):</span>
         <span class="n">mesh</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">create_entities</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">cells</span> <span class="o">=</span> <span class="n">locate_entities</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">dim</span><span class="p">,</span> <span class="n">refine_all</span><span class="p">)</span>
-        <span class="n">edges</span> <span class="o">=</span> <span class="n">compute_incident_entities</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Call signature for compute_incident_entities changed to accept mesh topology</span>
+        <span class="c1"># rather than mesh in dolfinx v0.7 so set relevant argument accordingly based on</span>
+        <span class="c1"># installed version</span>
+        <span class="k">if</span> <span class="n">Version</span><span class="p">(</span><span class="n">version</span><span class="p">(</span><span class="s2">&quot;fenics-dolfinx&quot;</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">Version</span><span class="p">(</span><span class="s2">&quot;0.7&quot;</span><span class="p">):</span>
+            <span class="n">mesh_or_topology</span> <span class="o">=</span> <span class="n">mesh</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mesh_or_topology</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">topology</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">compute_incident_entities</span><span class="p">(</span><span class="n">mesh_or_topology</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">mesh</span> <span class="o">=</span> <span class="n">refine</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">redistribute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">mesh_hierarchy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">mesh_hierarchy</span></div>
