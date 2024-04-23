@@ -1,3 +1,5 @@
+from importlib.metadata import version
+
 import gmsh
 import numpy as np
 from dolfinx.cpp.io import perm_gmsh
@@ -11,6 +13,7 @@ from dolfinx.mesh import (
     refine,
 )
 from mpi4py import MPI
+from packaging.version import Version
 
 GM = GhostMode.shared_facet
 eta = 0.6
@@ -850,7 +853,14 @@ def get_mesh_data_all_around(n_ref, init_h_scale=1.0):  # noqa: PLR0915
     for _i in range(n_ref):
         mesh.topology.create_entities(1)
         cells = locate_entities(mesh, mesh.topology.dim, refine_all)
-        edges = compute_incident_entities(mesh, cells, 2, 1)
+        # Call signature for compute_incident_entities changed to accept mesh topology
+        # rather than mesh in dolfinx v0.7 so set relevant argument accordingly based on
+        # installed version
+        if Version(version("fenics-dolfinx")) < Version("0.7"):
+            mesh_or_topology = mesh
+        else:
+            mesh_or_topology = mesh.topology
+        edges = compute_incident_entities(mesh_or_topology, cells, 2, 1)
         mesh = refine(mesh, edges, redistribute=True)
         mesh_hierarchy.append(mesh)
     return mesh_hierarchy

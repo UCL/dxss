@@ -15,11 +15,13 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Typing :: Typed",
 ]
 dependencies = [
     "dxh@git+https://github.com/UCL/dxh",
-    "fenics-dolfinx==0.6.0",
+    "fenics-dolfinx>=0.6",
     "fenics-ufl",
     "gmsh",
     "h5py",
@@ -27,6 +29,7 @@ dependencies = [
     "meshio",
     "mpi4py",
     "numpy",
+    "packaging",
     "petsc4py",
     "scipy",
     "sympy",
@@ -39,7 +42,7 @@ keywords = [
 ]
 name = "dxss"
 readme = "README.md"
-requires-python = ">=3.9,<3.11"
+requires-python = ">=3.9"
 license.file = "LICENSE.md"
 
 [project.optional-dependencies]
@@ -142,27 +145,24 @@ overrides."tool.coverage.paths.source".inline_arrays = false
 legacy_tox_ini = """
 [gh-actions]
 python =
-    3.9: test-py39
-    3.10: test-py310
+    3.9: py39
+    3.10: py310
+    3.11: py311
+    3.12: py312
 
 [testenv]
 conda_deps =
-    fenics-dolfinx==0.6.0
-    fenics-ufl
+    dolfinx06: fenics-dolfinx==0.6.*
+    dolfinx07: fenics-dolfinx==0.7.*
+    docs: fenics-dolfinx
+    # Install gmsh with conda to avoid error
+    #     libGLU.so.1: cannot open shared object file: No such file or directory
+    # when libGLU not installed natively on system
     gmsh
-    h5py
-    matplotlib
-    meshio
-    mpi4py
-    numpy
-    petsc4py
-    pypardiso
-    scipy
-    sympy
 conda_channels =
     conda-forge
 
-[testenv:test-py{39,310}]
+[testenv:test-py{39,310,311,312}-dolfinx{06,07}]
 commands =
     pytest -s --cov --cov-report=xml
 deps =
@@ -181,8 +181,8 @@ deps =
 
 [tox]
 envlist =
-    test-py39
-    test-py310
+    test-py{39,310}-dolfinx{06,07}
+    test-py{311,312}-dolfinx07
 isolated_build = true
 requires = tox-conda
 """
