@@ -55,7 +55,7 @@ jobs:
         run: python -m pip install tox
 
       - name: Convert Python version and solver backend to tox env
-        # Workaround to map x.y Python version to form test-xy
+        # Workaround to map x.y version to form xy
         # https://stackoverflow.com/a/67248310
         run: |
           RAW_TOX_ENV="test-py${{ matrix.python-version }}-dolfinx${{ matrix.dolfinx-version }}-${{ matrix.solver-backend }}"
