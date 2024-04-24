@@ -11,12 +11,24 @@ on:
 
 jobs:
   tests:
+    name: Tests with Python ${{ matrix.python-version }} and dolfinx ${{ matrix.dolfinx-version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version:
           - "3.9"
           - "3.10"
+          - "3.11"
+          - "3.12"
+        dolfinx-version:
+          - "0.6"
+          - "0.7"
+        exclude:
+          - dolfinx-version: "0.6"
+            python-version: "3.11"
+          - dolfinx-version: "0.6"
+            python-version: "3.12"
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -41,8 +53,8 @@ jobs:
         # Workaround to map x.y Python version to form test-xy
         # https://stackoverflow.com/a/67248310
         run: |
-          RAW_TOX_ENV="test-py${{ matrix.python-version }}"
-          TOX_ENV=$(echo $RAW_TOX_ENV | sed 's/\.//')
+          RAW_TOX_ENV="test-py${{ matrix.python-version }}-dolfinx${{ matrix.dolfinx-version }}"
+          TOX_ENV=$(echo $RAW_TOX_ENV | sed 's/\.//g')
           echo "tox_env=$TOX_ENV" >> "$GITHUB_ENV"
 
       - name: Test with tox

@@ -25,7 +25,6 @@ from dxss.space_time import (
 sys.setrecursionlimit(10**6)
 GCC = False
 
-
 REF_LVL_TO_N = [1, 2, 4, 8, 16, 32]
 REF_LVL = 3
 
