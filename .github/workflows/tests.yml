@@ -11,7 +11,9 @@ on:
 
 jobs:
   tests:
-    name: Tests with Python ${{ matrix.python-version }} and dolfinx ${{ matrix.dolfinx-version }}
+    name: >
+      Tests with Python ${{ matrix.python-version }}, dolfinx
+      ${{ matrix.dolfinx-version }} and ${{ matrix.solver-backend }} solver backend
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
