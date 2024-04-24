@@ -1,4 +1,5 @@
 import gmsh
+import meshio
 import numpy as np
 from dolfinx.cpp.io import perm_gmsh
 from dolfinx.io import XDMFFile, gmshio
@@ -16,11 +17,18 @@ GM = GhostMode.shared_facet
 eta = 0.6
 
 
-def create_initial_mesh_convex(init_h_scale=1.0):  # noqa: PLR0915
-    # TODO: Need to understand why there is a an import and subfunction here.
-    # Looks like create_mesh could be global level. The following functions have
-    # a **lot** of code overlap with this function.
-    #
+def _create_mesh(mesh, cell_type: str, prune_z: bool = False) -> meshio.Mesh:
+    cells = mesh.get_cells_type(cell_type)
+    cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
+    points = mesh.points[:, :2] if prune_z else mesh.points
+    return meshio.Mesh(
+        points=points,
+        cells={cell_type: cells},
+        cell_data={"name_to_read": [cell_data]},
+    )
+
+
+def create_initial_mesh_convex(init_h_scale=1.0):
     # - PLR0915 Too many statements
     gmsh.initialize()
     gmsh.option.setNumber("Mesh.MeshSizeFactor", init_h_scale)
@@ -77,25 +85,13 @@ def create_initial_mesh_convex(init_h_scale=1.0):  # noqa: PLR0915
         gmsh.write("mesh.msh")
         gmsh.finalize()
 
-    import meshio
-
-    def create_mesh(mesh, cell_type, prune_z=False):
-        cells = mesh.get_cells_type(cell_type)
-        cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
-        points = mesh.points[:, :2] if prune_z else mesh.points
-        return meshio.Mesh(
-            points=points,
-            cells={cell_type: cells},
-            cell_data={"name_to_read": [cell_data]},
-        )
-
     if proc == 0:
         # Read in mesh
         msh = meshio.read("mesh.msh")
 
         # Create and save one file for the mesh, and one file for the facets
-        triangle_mesh = create_mesh(msh, "triangle", prune_z=True)
-        line_mesh = create_mesh(msh, "line", prune_z=True)
+        triangle_mesh = _create_mesh(msh, "triangle", prune_z=True)
+        line_mesh = _create_mesh(msh, "line", prune_z=True)
         meshio.write("mesh.xdmf", triangle_mesh)
         meshio.write("mt.xdmf", line_mesh)
 
@@ -179,25 +175,13 @@ def get_mesh_hierarchy(n_ref, init_h_scale=1.0):  # noqa: PLR0915
         gmsh.write("mesh.msh")
     gmsh.finalize()
 
-    import meshio
-
-    def create_mesh(mesh, cell_type, prune_z=False):
-        cells = mesh.get_cells_type(cell_type)
-        cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
-        points = mesh.points[:, :2] if prune_z else mesh.points
-        return meshio.Mesh(
-            points=points,
-            cells={cell_type: cells},
-            cell_data={"name_to_read": [cell_data]},
-        )
-
     if proc == 0:
         # Read in mesh
         msh = meshio.read("mesh.msh")
 
         # Create and save one file for the mesh, and one file for the facets
-        triangle_mesh = create_mesh(msh, "triangle", prune_z=True)
-        line_mesh = create_mesh(msh, "line", prune_z=True)
+        triangle_mesh = _create_mesh(msh, "triangle", prune_z=True)
+        line_mesh = _create_mesh(msh, "line", prune_z=True)
         meshio.write("mesh.xdmf", triangle_mesh)
         meshio.write("mt.xdmf", line_mesh)
 
@@ -226,7 +210,7 @@ def get_mesh_hierarchy(n_ref, init_h_scale=1.0):  # noqa: PLR0915
     return mesh_hierarchy
 
 
-def get_mesh_hierarchy_nonconvex(n_ref, init_h_scale=1.0):  # noqa: PLR0915
+def get_mesh_hierarchy_nonconvex(n_ref, init_h_scale=1.0):
     # TODO: remove suppression of PLR0915 when refactored
     gmsh.initialize()
     gmsh.option.setNumber("Mesh.MeshSizeFactor", init_h_scale)
@@ -272,24 +256,12 @@ def get_mesh_hierarchy_nonconvex(n_ref, init_h_scale=1.0):  # noqa: PLR0915
         gmsh.write("mesh.msh")
     gmsh.finalize()
 
-    import meshio
-
-    def create_mesh(mesh, cell_type, prune_z=False):
-        cells = mesh.get_cells_type(cell_type)
-        cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
-        points = mesh.points[:, :2] if prune_z else mesh.points
-        return meshio.Mesh(
-            points=points,
-            cells={cell_type: cells},
-            cell_data={"name_to_read": [cell_data]},
-        )
-
     if proc == 0:
         # Read in mesh
         msh = meshio.read("mesh.msh")
         # Create and save one file for the mesh, and one file for the facets
-        triangle_mesh = create_mesh(msh, "triangle", prune_z=True)
-        line_mesh = create_mesh(msh, "line", prune_z=True)
+        triangle_mesh = _create_mesh(msh, "triangle", prune_z=True)
+        line_mesh = _create_mesh(msh, "line", prune_z=True)
         meshio.write("mesh.xdmf", triangle_mesh)
         meshio.write("mt.xdmf", line_mesh)
 
@@ -318,7 +290,7 @@ def get_mesh_hierarchy_nonconvex(n_ref, init_h_scale=1.0):  # noqa: PLR0915
     return mesh_hierarchy
 
 
-def get_mesh_hierarchy_fitted_disc(n_ref, eta, h_init=1.25):  # noqa: PLR0915
+def get_mesh_hierarchy_fitted_disc(n_ref, eta, h_init=1.25):
     # TODO: remove suppression of PLR0915 when refactored
     gmsh.initialize()
     gmsh.option.setNumber("Mesh.MeshSizeFactor", h_init)
@@ -381,25 +353,13 @@ def get_mesh_hierarchy_fitted_disc(n_ref, eta, h_init=1.25):  # noqa: PLR0915
         gmsh.write("mesh.msh")
         gmsh.finalize()
 
-    import meshio
-
-    def create_mesh(mesh, cell_type, prune_z=False):
-        cells = mesh.get_cells_type(cell_type)
-        cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
-        points = mesh.points[:, :2] if prune_z else mesh.points
-        return meshio.Mesh(
-            points=points,
-            cells={cell_type: cells},
-            cell_data={"name_to_read": [cell_data]},
-        )
-
     if proc == 0:
         # Read in mesh
         msh = meshio.read("mesh.msh")
 
         # Create and save one file for the mesh, and one file for the facets
-        triangle_mesh = create_mesh(msh, "triangle", prune_z=True)
-        line_mesh = create_mesh(msh, "line", prune_z=True)
+        triangle_mesh = _create_mesh(msh, "triangle", prune_z=True)
+        line_mesh = _create_mesh(msh, "line", prune_z=True)
         meshio.write("mesh.xdmf", triangle_mesh)
         meshio.write("mt.xdmf", line_mesh)
 
@@ -483,10 +443,7 @@ def get_mesh_inclusion(h_init=1.25, order=2):  # noqa: PLR0915
         gmsh.model.mesh.recombine()
     gmsh.model.mesh.setOrder(order)
     idx, points, _ = gmsh.model.mesh.getNodes()
-    ls_points_2d = []
-    for i in range(len(points)):
-        if (i + 1) % 3 != 0:
-            ls_points_2d.append(points[i])
+    ls_points_2d = [point for i, point in enumerate(points) if (i + 1) % 3 != 0]
     ls_points_2d = np.array(ls_points_2d)
     points = ls_points_2d.reshape(-1, 2)
     idx -= 1
@@ -618,10 +575,7 @@ def get_mesh_inclusion_square(  # noqa: PLR0915
     order = 1
     gmsh.model.mesh.setOrder(order)
     idx, points, _ = gmsh.model.mesh.getNodes()
-    ls_points_2d = []
-    for i in range(len(points)):
-        if (i + 1) % 3 != 0:
-            ls_points_2d.append(points[i])
+    ls_points_2d = [point for i, point in enumerate(points) if (i + 1) % 3 != 0]
     ls_points_2d = np.array(ls_points_2d)
     points = ls_points_2d.reshape(-1, 2)
     idx -= 1
@@ -663,7 +617,7 @@ def get_mesh_inclusion_square(  # noqa: PLR0915
     return msh
 
 
-def get_mesh_bottom_data(h_init=1.25, eta=0.6):  # noqa: PLR0915
+def get_mesh_bottom_data(h_init=1.25, eta=0.6):
     # TODO: this function has too many statements. Try to reduce the complexity
     # on refactoring and remove the suppression of PLR0915.
     cell_type = CellType.triangle
@@ -726,10 +680,7 @@ def get_mesh_bottom_data(h_init=1.25, eta=0.6):  # noqa: PLR0915
     order = 1
     gmsh.model.mesh.setOrder(order)
     idx, points, _ = gmsh.model.mesh.getNodes()
-    ls_points_2d = []
-    for i in range(len(points)):
-        if (i + 1) % 3 != 0:
-            ls_points_2d.append(points[i])
+    ls_points_2d = [point for i, point in enumerate(points) if (i + 1) % 3 != 0]
     ls_points_2d = np.array(ls_points_2d)
     points = ls_points_2d.reshape(-1, 2)
     idx -= 1
@@ -769,7 +720,7 @@ def get_mesh_bottom_data(h_init=1.25, eta=0.6):  # noqa: PLR0915
     return msh
 
 
-def get_mesh_data_all_around(n_ref, init_h_scale=1.0):  # noqa: PLR0915
+def get_mesh_data_all_around(n_ref, init_h_scale=1.0):
     # TODO: this function has too many statements. Try to reduce the complexity
     # on refactoring and remove the suppression of PLR0915.
     gmsh.initialize()
@@ -818,25 +769,13 @@ def get_mesh_data_all_around(n_ref, init_h_scale=1.0):  # noqa: PLR0915
         gmsh.write("mesh.msh")
     gmsh.finalize()
 
-    import meshio
-
-    def create_mesh(mesh, cell_type, prune_z=False):
-        cells = mesh.get_cells_type(cell_type)
-        cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
-        points = mesh.points[:, :2] if prune_z else mesh.points
-        return meshio.Mesh(
-            points=points,
-            cells={cell_type: cells},
-            cell_data={"name_to_read": [cell_data]},
-        )
-
     if proc == 0:
         # Read in mesh
         msh = meshio.read("mesh.msh")
 
         # Create and save one file for the mesh, and one file for the facets
-        triangle_mesh = create_mesh(msh, "triangle", prune_z=True)
-        line_mesh = create_mesh(msh, "line", prune_z=True)
+        triangle_mesh = _create_mesh(msh, "triangle", prune_z=True)
+        line_mesh = _create_mesh(msh, "line", prune_z=True)
         meshio.write("mesh.xdmf", triangle_mesh)
         meshio.write("mt.xdmf", line_mesh)
 
