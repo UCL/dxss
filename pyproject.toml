@@ -159,10 +159,11 @@ conda_deps =
     #     libGLU.so.1: cannot open shared object file: No such file or directory
     # when libGLU not installed natively on system
     gmsh
+    pardiso: pypardiso
 conda_channels =
     conda-forge
 
-[testenv:test-py{39,310,311,312}-dolfinx{06,07}]
+[testenv:test-py{39,310,311,312}-dolfinx{06,07}-{petsc,pardiso}]
 commands =
     pytest -s --cov --cov-report=xml
 deps =
@@ -181,8 +182,8 @@ deps =
 
 [tox]
 envlist =
-    test-py{39,310}-dolfinx{06,07}
-    test-py{311,312}-dolfinx07
+    test-py{39,310}-dolfinx{06,07}-{petsc,pardiso}
+    test-py{311,312}-dolfinx07-{petsc,pardiso}
 isolated_build = true
 requires = tox-conda
 """
