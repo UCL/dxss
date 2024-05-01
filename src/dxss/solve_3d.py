@@ -15,6 +15,8 @@ from dxss.space_time import (
     OrderTime,
     ProblemParameters,
     SpaceTime,
+    SpaceTimePETScMatrixWrapper,
+    SpaceTimePETScPreconditionerWrapper,
     ValueAndDerivative,
     get_sparse_matrix,
 )
@@ -185,7 +187,6 @@ ST = SpaceTime(
 )
 ST.setup_spacetime_finite_elements()
 ST.prepare_precondition_gmres()
-A_space_time_linop = ST.get_spacetime_matrix_as_linear_operator()
 b_rhs = ST.get_spacetime_rhs()
 
 # Prepare the solvers for problems on the slabs
@@ -210,10 +211,10 @@ def solve_problem(measure_errors=False):
             PySolver(slab_matrix_first_slab_sparse, initial_slab_solver),
         )
 
-        u_sol, res = get_gmres_solution(
-            A_space_time_linop,
-            b_rhs,
-            pre=ST.pre_time_marching_improved,
+        u_sol, _ = get_gmres_solution(
+            A=SpaceTimePETScMatrixWrapper(ST),
+            b=b_rhs,
+            pre=SpaceTimePETScPreconditionerWrapper(ST),
             maxsteps=100000,
             tol=1e-7,
             printrates=True,
@@ -224,10 +225,10 @@ def solve_problem(measure_errors=False):
         ST.set_solver_first_slab(
             get_lu_solver(ST.msh, ST.get_slab_matrix_first_slab()),
         )  # first slab is special
-        u_sol, res = get_gmres_solution(
-            A_space_time_linop,
-            b_rhs,
-            pre=ST.pre_time_marching_improved,
+        u_sol, _ = get_gmres_solution(
+            A=SpaceTimePETScMatrixWrapper(ST),
+            b=b_rhs,
+            pre=SpaceTimePETScPreconditionerWrapper(ST),
             maxsteps=100000,
             tol=1e-7,
             printrates=True,
