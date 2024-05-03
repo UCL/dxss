@@ -1,4 +1,4 @@
-from dxss.solve_1d import solve_problem
+from dxss.solve_1d import get_solve_problem_default_kwargs, solve_problem
 
 
 def test_solve_1d_smoke():
@@ -6,4 +6,4 @@ def test_solve_1d_smoke():
 
     Will fail if any execptions are raised or any errors occur.
     """
-    solve_problem(measure_errors=True)
+    solve_problem(**get_solve_problem_default_kwargs(dimension=1), measure_errors=True)

@@ -1,22 +1,30 @@
 from __future__ import annotations
 
+import argparse
 import resource
 import sys
 import time
 import warnings
-from math import pi
+from math import pi, sqrt
 from typing import Literal, NamedTuple
 
 import numpy as np
 import ufl
-from dolfinx.mesh import create_unit_interval
+from dolfinx.mesh import (
+    CellType,
+    Mesh,
+    create_unit_cube,
+    create_unit_interval,
+    create_unit_square,
+)
 from mpi4py import MPI
 from petsc4py import PETSc
 
 from dxss.gmres import get_gmres_solution
+from dxss.meshes import get_mesh_data_all_around
 from dxss.space_time import (
     DataDomain,
-    DataDomainIndicatorFunction,
+    DataDomainIndicator,
     OrderSpace,
     OrderTime,
     SpaceTime,
@@ -62,7 +70,25 @@ class PySolver:
         )
 
 
-def omega_ind_convex(x):
+def get_mesh_1d(n_cells: int) -> Mesh:
+    return create_unit_interval(comm=MPI.COMM_WORLD, nx=n_cells)
+
+
+def get_mesh_2d(n_cells: int) -> Mesh:
+    return create_unit_square(comm=MPI.COMM_WORLD, nx=n_cells, ny=n_cells)
+
+
+def get_mesh_3d(n_cells: int) -> Mesh:
+    return create_unit_cube(
+        comm=MPI.COMM_WORLD,
+        nx=n_cells,
+        ny=n_cells,
+        nz=n_cells,
+        cell_type=CellType.hexahedron,
+    )
+
+
+def data_domain_indicator_function_1d_convex(x):
     values = np.zeros(x.shape[1], dtype=PETSc.ScalarType)
     omega_coords = np.logical_or((x[0] <= 0.2), (x[0] >= 0.8))
     rest_coords = np.invert(omega_coords)
@@ -71,7 +97,7 @@ def omega_ind_convex(x):
     return values
 
 
-def omega_ind_nogcc(x):
+def data_domain_indicator_function_1d_nogcc(x):
     values = np.zeros(x.shape[1], dtype=PETSc.ScalarType)
     omega_coords = x[0] <= 0.2
     rest_coords = np.invert(omega_coords)
@@ -80,12 +106,114 @@ def omega_ind_nogcc(x):
     return values
 
 
-def sample_sol(t, xu):
+def data_domain_indicator_function_2d_convex(x):
+    values = np.zeros(x.shape[1], dtype=PETSc.ScalarType)
+    omega_coords = np.logical_or(
+        (x[0] <= 0.2),
+        np.logical_or(
+            (x[0] >= 0.8),
+            np.logical_or((x[1] >= 0.8), (x[1] <= 0.2)),
+        ),
+    )
+    rest_coords = np.invert(omega_coords)
+    values[omega_coords] = np.full(sum(omega_coords), 1.0)
+    values[rest_coords] = np.full(sum(rest_coords), 0)
+    return values
+
+
+def data_domain_indicator_function_3d(x, data_size=0.25):
+    values = np.zeros(x.shape[1], dtype=PETSc.ScalarType)
+    omega_coords = np.logical_and(x[0] <= data_size, x[0] >= 0.0)
+    rest_coords = np.invert(omega_coords)
+    values[omega_coords] = np.full(sum(omega_coords), 1.0)
+    values[rest_coords] = np.full(sum(rest_coords), 0)
+    return values
+
+
+def data_domain_indicator_function_3d_gcc(x, data_size=0.25):
+    values = np.zeros(x.shape[1], dtype=PETSc.ScalarType)
+    omega_coords = np.logical_or(
+        (x[0] <= data_size),
+        np.logical_or(
+            (x[0] >= 1.0 - data_size),
+            np.logical_or(
+                (x[1] >= 1.0 - data_size),
+                np.logical_or(
+                    (x[1] <= data_size),
+                    np.logical_or(
+                        (x[2] <= data_size),
+                        (x[2] >= 1.0 - data_size),
+                    ),
+                ),
+            ),
+        ),
+    )
+    rest_coords = np.invert(omega_coords)
+    values[omega_coords] = np.full(sum(omega_coords), 1.0)
+    values[rest_coords] = np.full(sum(rest_coords), 0)
+    return values
+
+
+def get_data_domain_indicator_expression_3d(mesh, data_size=0.25):
+    x = ufl.SpatialCoordinate(mesh)
+    indicator_condition = ufl.And(x[0] <= data_size, x[0] >= 0.0)
+    return ufl.conditional(indicator_condition, 1, 0)
+
+
+def get_data_domain_indicator_expression_3d_gcc(mesh, data_size=0.25):
+    x = ufl.SpatialCoordinate(mesh)
+    indicator_condition = ufl.Not(
+        ufl.And(
+            ufl.And(x[0] >= data_size, x[0] <= 1.0 - data_size),
+            ufl.And(
+                ufl.And(x[1] >= data_size, x[1] <= 1.0 - data_size),
+                ufl.And(x[2] >= data_size, x[2] <= 1.0 - data_size),
+            ),
+        ),
+    )
+    return ufl.conditional(indicator_condition, 1, 0)
+
+
+def sample_solution_1d(t, xu):
     return ufl.cos(2 * pi * (t)) * ufl.sin(2 * pi * xu[0])
 
 
-def dt_sample_sol(t, xu):
+def sample_solution_time_derivative_1d(t, xu):
     return -2 * pi * ufl.sin(2 * pi * (t)) * ufl.sin(2 * pi * xu[0])
+
+
+def sample_solution_2d(t, xu):
+    return ufl.cos(sqrt(2) * pi * t) * ufl.sin(pi * xu[0]) * ufl.sin(pi * xu[1])
+
+
+def sample_solution_time_derivative_2d(t, xu):
+    return (
+        -sqrt(2)
+        * pi
+        * ufl.sin(sqrt(2) * pi * t)
+        * ufl.sin(pi * xu[0])
+        * ufl.sin(pi * xu[1])
+    )
+
+
+def sample_solution_3d(t, xu):
+    return (
+        ufl.cos(sqrt(3) * pi * t)
+        * ufl.sin(pi * xu[0])
+        * ufl.sin(pi * xu[1])
+        * ufl.sin(pi * xu[2])
+    )
+
+
+def sample_solution_time_derivative_3d(t, xu):
+    return (
+        -sqrt(3)
+        * pi
+        * ufl.sin(sqrt(3) * pi * t)
+        * ufl.sin(pi * xu[0])
+        * ufl.sin(pi * xu[1])
+        * ufl.sin(pi * xu[2])
+    )
 
 
 def _get_pypardiso_slab_solvers(space_time_solver):
@@ -123,34 +251,33 @@ class SolverType(NamedTuple):
 
 
 def solve_problem(
-    measure_errors: bool = False,
-    plot_errors: bool = True,
+    mesh: Mesh,
+    true_solution: ValueAndDerivative,
+    data_domain_indicator: DataDomainIndicator,
+    measure_errors: bool = True,
+    plot_errors: bool = False,
     n_time_steps: int = 32,
     time_interval: float = 1.0,
     order: int = 1,
-    n_cells: int | None = None,
-    data_domain_indicator_function: DataDomainIndicatorFunction = omega_ind_convex,
     solver_type: SolverType | None = None,
 ) -> None:
     if solver_type is None:
         solver_type = SolverType("gmres", "petsc" if pypardiso is None else "pypardiso")
-    n_cells = 5 * n_time_steps if n_cells is None else n_cells
-    mesh = create_unit_interval(MPI.COMM_WORLD, n_cells)
     space_time_solver = SpaceTime(
-        OrderTime(q=order, qstar=1 if order == 1 else 0),
-        OrderSpace(k=order, kstar=1),
+        OrderTime(q=order, qstar=order if order == 1 else 0),
+        OrderSpace(k=order, kstar=order),
         N=n_time_steps,
         T=time_interval,
         t=0.0,
         msh=mesh,
-        omega=DataDomain(indicator_function=data_domain_indicator_function),
+        omega=DataDomain(indicator_function=data_domain_indicator),
         stabilisation_terms={
             "data": 1e4,
             "dual": 1.0,
             "primal": 1e-3,
             "primal-jump": 1.0,
         },
-        solution=ValueAndDerivative(sample_sol, dt_sample_sol),
+        solution=true_solution,
     )
     space_time_solver.setup_spacetime_finite_elements()
     space_time_solver.prepare_precondition_gmres()
@@ -185,9 +312,108 @@ def solve_problem(
         space_time_solver.measured_errors(u_sol)
 
 
+def get_solve_problem_default_kwargs(
+    dimension: int = 1,
+    n_time_steps: int = -1,
+    order: int = -1,
+    time_interval: float = -1.0,
+    use_unit_square_mesh_2d: bool = False,
+    refinement_level: int = 3,
+) -> dict:
+    if dimension == 1:
+        n_time_steps = 32 if n_time_steps <= 0 else n_time_steps
+        return {
+            "n_time_steps": n_time_steps,
+            "order": 1 if order <= 0 else order,
+            "time_interval": 1.0 if time_interval < 0 else time_interval,
+            "mesh": get_mesh_1d(n_cells=5 * n_time_steps),
+            "true_solution": ValueAndDerivative(
+                sample_solution_1d,
+                sample_solution_time_derivative_1d,
+            ),
+            "data_domain_indicator": data_domain_indicator_function_1d_convex,
+        }
+    elif dimension == 2:
+        if use_unit_square_mesh_2d:
+            n_time_steps = 8 if n_time_steps <= 0 else n_time_steps
+            mesh = get_mesh_2d(n_cells=2 * n_time_steps)
+        else:
+            n_time_steps = 2**refinement_level if n_time_steps <= 0 else n_time_steps
+            mesh = get_mesh_data_all_around(refinement_level, init_h_scale=5.0)[
+                refinement_level
+            ]
+        return {
+            "n_time_steps": n_time_steps,
+            "order": 3 if args.order <= 0 else args.order,
+            "time_interval": 1.0 if time_interval < 0 else time_interval,
+            "mesh": mesh,
+            "true_solution": ValueAndDerivative(
+                sample_solution_2d,
+                sample_solution_time_derivative_2d,
+            ),
+            "data_domain_indicator": data_domain_indicator_function_2d_convex,
+        }
+    elif dimension == 3:
+        n_time_steps = 8 if n_time_steps <= 0 else n_time_steps
+        n_cells = 2 * n_time_steps
+        mesh = get_mesh_3d(n_cells=n_cells)
+        data_domain_indicator = (
+            data_domain_indicator_function_3d
+            if n_cells > 2
+            else get_data_domain_indicator_expression_3d(mesh)
+        )
+        return {
+            "n_time_steps": n_time_steps,
+            "order": 1 if order <= 0 else order,
+            "time_interval": 0.5 if time_interval < 0 else time_interval,
+            "mesh": mesh,
+            "true_solution": ValueAndDerivative(
+                sample_solution_3d,
+                sample_solution_time_derivative_3d,
+            ),
+            "data_domain_indicator": data_domain_indicator,
+        }
+    else:
+        msg = f"Unsupported dimension: {dimension}"
+        raise ValueError(msg)
+
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Solve space-time inverse problem",
+    )
+    parser.add_argument(
+        "--dimension",
+        "-d",
+        type=int,
+        default=1,
+        choices=(1, 2, 3),
+        help="Dimension of spatial domain.",
+    )
+    parser.add_argument(
+        "--n-time-steps",
+        "-n",
+        type=int,
+        default=-1,
+        help="Number of time steps. If negative, dimension specific default used.",
+    )
+    parser.add_argument(
+        "--order",
+        "-o",
+        type=int,
+        default=-1,
+        help="Polynomial order. If negative, dimension specific default used.",
+    )
+    parser.add_argument(
+        "--time-interval",
+        "-t",
+        type=float,
+        default=-1.0,
+        help="Size of time interval. If negative, dimension specific default used.",
+    )
+    args = parser.parse_args()
     start_time = time.time()
-    solve_problem(measure_errors=True, plot_errors=False)
+    solve_problem(**get_solve_problem_default_kwargs(**vars(args)))
     elapsed_time_seconds = time.time() - start_time
     memory_usage_bytes = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     print(f"Elapsed time  {elapsed_time_seconds} seconds")

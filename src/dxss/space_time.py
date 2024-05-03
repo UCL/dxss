@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from math import sqrt
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -48,11 +48,16 @@ class ValueAndDerivative:
 
 
 DataDomainIndicatorFunction = Callable[[ArrayLike], np.ndarray]
+DataDomainIndicator = Union[
+    DataDomainIndicatorFunction,
+    ufl.core.expr.Expr,
+    fem.Function,
+]
 
 
 @dataclasses.dataclass
 class DataDomain:
-    indicator_function: DataDomainIndicatorFunction | fem.Function | None = None
+    indicator_function: DataDomainIndicator
     fitted: bool = True
 
 
