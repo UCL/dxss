@@ -1,5 +1,6 @@
+import resource
 import sys
-import warnings
+import time
 from math import pi, sqrt
 
 import numpy as np
@@ -8,6 +9,8 @@ from dolfinx.mesh import CellType, GhostMode, create_box
 from mpi4py import MPI
 from petsc4py import PETSc
 
+import dxss._solver_backend
+from dxss._solvers import PySolver, get_lu_solver
 from dxss.gmres import get_gmres_solution
 from dxss.space_time import (
     DataDomain,
@@ -21,45 +24,8 @@ from dxss.space_time import (
     get_sparse_matrix,
 )
 
-try:
-    import pypardiso
-
-    SOLVER_TYPE = "pypardiso"
-except ImportError:
-    pypardiso = None
-    SOLVER_TYPE = "petsc-LU"
-
-import resource
-import time
-
 sys.setrecursionlimit(10**6)
 GCC = False
-
-
-def get_lu_solver(msh, mat):
-    solver = PETSc.KSP().create(msh.comm)
-    solver.setOperators(mat)
-    solver.setType(PETSc.KSP.Type.PREONLY)
-    solver.getPC().setType(PETSc.PC.Type.LU)
-    return solver
-
-
-class PySolver:
-    def __init__(self, Asp, psolver):  # noqa: N803
-        self.Asp = Asp
-        self.solver = psolver
-        if not pypardiso:
-            warnings.warn(
-                "Initialising a PySolver, but PyPardiso is not available.",
-                stacklevel=2,
-            )
-
-    def solve(self, b_inp, x_out):
-        self.solver._check_A(self.Asp)  # noqa: SLF001, TODO: fix this.
-        b = self.solver._check_b(self.Asp, b_inp.array)  # noqa: SLF001, TODO: fix this.
-        self.solver.set_phase(33)
-        x_out.array[:] = self.solver._call_pardiso(self.Asp, b)[:]  # noqa: SLF001, TODO: fix this.
-
 
 REF_LVL_TO_N = [1, 2, 4, 8, 16, 32]
 REF_LVL = 3
@@ -194,14 +160,14 @@ b_rhs = ST.get_spacetime_rhs()
 
 def solve_problem(measure_errors=False):
     start = time.time()
-    if SOLVER_TYPE == "pypardiso":
-        genreal_slab_solver = pypardiso.PyPardisoSolver()
+    if dxss._solver_backend.SOLVER_TYPE == "pypardiso":
+        genreal_slab_solver = dxss._solver_backend.pypardiso.PyPardisoSolver()
         slab_matrix_sparse = get_sparse_matrix(ST.get_slab_matrix())
 
         genreal_slab_solver.factorize(slab_matrix_sparse)
         ST.set_solver_slab(PySolver(slab_matrix_sparse, genreal_slab_solver))
 
-        initial_slab_solver = pypardiso.PyPardisoSolver()
+        initial_slab_solver = dxss._solver_backend.pypardiso.PyPardisoSolver()
         slab_matrix_first_slab_sparse = get_sparse_matrix(
             ST.get_slab_matrix_first_slab(),
         )
@@ -220,7 +186,7 @@ def solve_problem(measure_errors=False):
             printrates=True,
         )
 
-    elif SOLVER_TYPE == "petsc-LU":
+    elif dxss._solver_backend.SOLVER_TYPE == "petsc-LU":
         ST.set_solver_slab(get_lu_solver(ST.msh, ST.get_slab_matrix()))  # general slab
         ST.set_solver_first_slab(
             get_lu_solver(ST.msh, ST.get_slab_matrix_first_slab()),
