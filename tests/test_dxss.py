@@ -28,7 +28,8 @@ def test_pardiso():
 def test_mock_no_pypardiso_for_solve_1d(mocker):
     # mock no pypardiso installed (even on systems where it's installed)
     mocker.patch.dict(sys.modules, {"pypardiso": None})
-    importlib.reload(sys.modules["dxss.solve_1d"])
+    if "dxss.solve_1d" in sys.modules:
+        importlib.reload(sys.modules["dxss.solve_1d"])
 
     # check that trying to import raises an ImportError
     with pytest.raises(ImportError):
