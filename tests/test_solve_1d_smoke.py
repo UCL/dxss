@@ -1,7 +1,7 @@
-from dxss.solve_1d import get_solve_problem_default_kwargs, solve_problem
+from dxss.solve import get_solve_problem_default_kwargs, solve_problem
 
 
-def test_solve_1d_smoke():
+def test_solve_smoke():
     """Just execute the main function in solve_1d.py.
 
     Will fail if any execptions are raised or any errors occur.
