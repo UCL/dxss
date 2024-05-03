@@ -300,7 +300,7 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -313,6 +313,9 @@ document.write(`
 <span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">MaxNLocator</span>
 <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>
 <span class="kn">from</span> <span class="nn">ufl</span> <span class="kn">import</span> <span class="n">div</span><span class="p">,</span> <span class="n">dS</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">inner</span><span class="p">,</span> <span class="n">jump</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">petsc4py</span> <span class="kn">import</span> <span class="n">PETSc</span>
 
 <span class="kn">from</span> <span class="nn">dxss.precomp_time_int</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">QuadRule</span><span class="p">,</span>
@@ -1704,34 +1707,6 @@ document.write(`
             <span class="n">coupling_idx_qstar</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">otime</span><span class="o">.</span><span class="n">qstar</span> <span class="o">+</span> <span class="mi">1</span></div>
 
 
-<div class="viewcode-block" id="SpaceTime.get_spacetime_matrix_as_linear_operator">
-<a class="viewcode-back" href="../../dxss.html#dxss.space_time.SpaceTime.get_spacetime_matrix_as_linear_operator">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_spacetime_matrix_as_linear_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">SpaceTime</span><span class="o">.</span><span class="n">FMatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
-
-
-    <span class="c1"># TODO: why do we need this class? and why is it nested?</span>
-<div class="viewcode-block" id="SpaceTime.FMatrix">
-<a class="viewcode-back" href="../../dxss.html#dxss.space_time.SpaceTime.FMatrix">[docs]</a>
-    <span class="k">class</span> <span class="nc">FMatrix</span><span class="p">:</span>
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">st_instance</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">=</span> <span class="n">st_instance</span>
-
-<div class="viewcode-block" id="SpaceTime.FMatrix.mult">
-<a class="viewcode-back" href="../../dxss.html#dxss.space_time.SpaceTime.FMatrix.mult">[docs]</a>
-        <span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vec_in</span><span class="p">,</span> <span class="n">vec_out</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">apply_spacetime_matrix</span><span class="p">(</span><span class="n">vec_in</span><span class="p">,</span> <span class="n">vec_out</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="SpaceTime.FMatrix.create_vectors">
-<a class="viewcode-back" href="../../dxss.html#dxss.space_time.SpaceTime.FMatrix.create_vectors">[docs]</a>
-        <span class="k">def</span> <span class="nf">create_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="n">tmp1</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">petsc</span><span class="o">.</span><span class="n">create_vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">SpaceTimeLfi</span><span class="p">)</span>
-            <span class="n">tmp2</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">petsc</span><span class="o">.</span><span class="n">create_vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">SpaceTimeLfi</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">tmp1</span><span class="p">,</span> <span class="n">tmp2</span></div>
-</div>
-
-
 <div class="viewcode-block" id="SpaceTime.prepare_precondition_gmres">
 <a class="viewcode-back" href="../../dxss.html#dxss.space_time.SpaceTime.prepare_precondition_gmres">[docs]</a>
     <span class="k">def</span> <span class="nf">prepare_precondition_gmres</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2305,6 +2280,78 @@ document.write(`
         <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">XDMFFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msh</span><span class="o">.</span><span class="n">comm</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">-ut.xdmf&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">xdmf</span><span class="p">:</span>
             <span class="n">xdmf</span><span class="o">.</span><span class="n">write_mesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msh</span><span class="p">)</span>
             <span class="n">xdmf</span><span class="o">.</span><span class="n">write_function</span><span class="p">(</span><span class="n">ut_diff</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SpaceTimePETScPreconditionerWrapper">
+<a class="viewcode-back" href="../../dxss.html#dxss.space_time.SpaceTimePETScPreconditionerWrapper">[docs]</a>
+<span class="k">class</span> <span class="nc">SpaceTimePETScPreconditionerWrapper</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class wrapping space-time solver to provide interface for use as `PETSc.PC`.</span>
+
+<span class="sd">    Uses the space-time solvers improved time-marching preconditioner.</span>
+
+<span class="sd">    The required interface is documented at</span>
+<span class="sd">    https://petsc.org/main/petsc4py/petsc_python_types.html#petsc-python-preconditioner-type</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        space_time: Space time solver instance to wrap.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space_time</span><span class="p">:</span> <span class="n">SpaceTime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_space_time</span> <span class="o">=</span> <span class="n">space_time</span>
+
+<div class="viewcode-block" id="SpaceTimePETScPreconditionerWrapper.apply">
+<a class="viewcode-back" href="../../dxss.html#dxss.space_time.SpaceTimePETScPreconditionerWrapper.apply">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pc</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">PC</span><span class="p">,</span>  <span class="c1"># noqa: ARG002 | pc argument is required by PETSc</span>
+        <span class="n">vec_in</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span>
+        <span class="n">vec_out</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply preconditioner to vector `vec_in` writing out to `vec_out`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pc: PETSc preconditioner holding PETSc data structures. Unused.</span>
+<span class="sd">            vec_in: The vector to apply preconditioner to.</span>
+<span class="sd">            vec_out: The vector to write result of preconditioning `vec_in` to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_space_time</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">(</span><span class="n">vec_in</span><span class="p">,</span> <span class="n">vec_out</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SpaceTimePETScMatrixWrapper">
+<a class="viewcode-back" href="../../dxss.html#dxss.space_time.SpaceTimePETScMatrixWrapper">[docs]</a>
+<span class="k">class</span> <span class="nc">SpaceTimePETScMatrixWrapper</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class wrapping space-time solver to provide interface for use as `PETSc.Mat`.</span>
+
+<span class="sd">    The required interface is documented at</span>
+<span class="sd">    https://petsc.org/main/petsc4py/petsc_python_types.html#petsc-python-mat</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        space_time: Space time solver instance to wrap.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space_time</span><span class="p">:</span> <span class="n">SpaceTime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_space_time</span> <span class="o">=</span> <span class="n">space_time</span>
+
+<div class="viewcode-block" id="SpaceTimePETScMatrixWrapper.mult">
+<a class="viewcode-back" href="../../dxss.html#dxss.space_time.SpaceTimePETScMatrixWrapper.mult">[docs]</a>
+    <span class="k">def</span> <span class="nf">mult</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mat</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Mat</span><span class="p">,</span>  <span class="c1"># noqa: ARG002 | mat argument required by PETSc</span>
+        <span class="n">vec_in</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span>
+        <span class="n">vec_out</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Matrix vector multiplication `vec_out = mat @ vec_in`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mat: PETSc matrix holding PETSc data structures. Unused.</span>
+<span class="sd">            vec_in: The vector to perform matrix multiplication with.</span>
+<span class="sd">            vec_out: The vector to write result of multiplication to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_space_time</span><span class="o">.</span><span class="n">apply_spacetime_matrix</span><span class="p">(</span><span class="n">vec_in</span><span class="p">,</span> <span class="n">vec_out</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

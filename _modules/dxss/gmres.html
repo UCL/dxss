@@ -296,42 +296,9 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for dxss.gmres</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">petsc4py</span> <span class="kn">import</span> <span class="n">PETSc</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">dxss.space_time</span> <span class="kn">import</span> <span class="n">SpaceTime</span>
-
-
-<div class="viewcode-block" id="PreTimeMarchingImproved">
-<a class="viewcode-back" href="../../dxss.html#dxss.gmres.PreTimeMarchingImproved">[docs]</a>
-<span class="k">class</span> <span class="nc">PreTimeMarchingImproved</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that wraps our research-grade improved time marching precondition.</span>
-
-<span class="sd">    The class wrapper is needed to get it into the format needed by PETSc&#39;s KSP</span>
-<span class="sd">    interface.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        context: (dxss.SpaceTime) the sparse matrix context containing n, T, ...</span>
-
-<span class="sd">    Todo:</span>
-<span class="sd">        Ultimately we could move the code really into this class, and</span>
-<span class="sd">        potentially make some computational savings by splitting the function</span>
-<span class="sd">        SpaceTime.pre_time_marching_improved into this class&#39;s setup and apply.</span>
-<span class="sd">        Also TODO is to review this docstring.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="PreTimeMarchingImproved.setUp">
-<a class="viewcode-back" href="../../dxss.html#dxss.gmres.PreTimeMarchingImproved.setUp">[docs]</a>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
-        <span class="n">A_shell</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">getOperators</span><span class="p">()</span>  <span class="c1"># noqa: N806 | convention for matrix</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">A_shell</span><span class="o">.</span><span class="n">getPythonContext</span><span class="p">()</span>  <span class="c1"># retrieve &amp; set context</span></div>
-
-
-<div class="viewcode-block" id="PreTimeMarchingImproved.apply">
-<a class="viewcode-back" href="../../dxss.html#dxss.gmres.PreTimeMarchingImproved.apply">[docs]</a>
-    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>  <span class="c1"># noqa: ARG002 | &#39;pc&#39; argument is required by PETSc</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
-</div>
-
+<span class="kn">from</span> <span class="nn">petsc4py</span> <span class="kn">import</span> <span class="n">PETSc</span>
 
 
 <div class="viewcode-block" id="convergence_monitor">
@@ -354,51 +321,37 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="shellmult">
-<a class="viewcode-back" href="../../dxss.html#dxss.gmres.shellmult">[docs]</a>
-<span class="k">def</span> <span class="nf">shellmult</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">A</span><span class="p">:</span> <span class="n">SpaceTime</span><span class="o">.</span><span class="n">FMatrix</span><span class="p">,</span>  <span class="c1"># noqa: ARG001,N803</span>
-    <span class="n">vec_in</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span>
-    <span class="n">vec_out</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Shell matrix multiplication wrapper function.</span>
-
-<span class="sd">    Needed to monkey-patch an instance of dxss.SpaceTime to recover the desired</span>
-<span class="sd">    behavior.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        A: The shell representation of the LHS in our &#39;matrix-free&#39; scheme.</span>
-<span class="sd">        vec_in: The vector to multiply with A.</span>
-<span class="sd">        vec_out: The output vector to contain the multiplication result.</span>
-
-<span class="sd">    Todo:</span>
-<span class="sd">        Ultimately this should be integrated into the dxss.SpaceTime class</span>
-<span class="sd">        during a refactoring pass.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">apply_spacetime_matrix</span><span class="p">(</span><span class="n">vec_in</span><span class="p">,</span> <span class="n">vec_out</span><span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="get_gmres_solution">
 <a class="viewcode-back" href="../../dxss.html#dxss.gmres.get_gmres_solution">[docs]</a>
 <span class="k">def</span> <span class="nf">get_gmres_solution</span><span class="p">(</span>
     <span class="n">A</span><span class="p">,</span>  <span class="c1"># noqa: N803 | convention: Ax = b</span>
-    <span class="n">b</span><span class="p">,</span>
-    <span class="n">pre</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">maxsteps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">restart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">printrates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">reltol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span>
+    <span class="n">pre</span><span class="p">,</span>
+    <span class="n">maxsteps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">restart</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">printrates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">reltol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">,</span> <span class="n">PETSc</span><span class="o">.</span><span class="n">Vec</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve linear system `A @ x = b` with generalized minimal residual method (GMRes).</span>
+
+<span class="sd">    Uses PETSc GMRes implementation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        A: Object implementing PETSc `MatPythonProtocol` to use as matrix `A`.</span>
+<span class="sd">        b: PETSc vector object to use as right-hand side term `b`.</span>
+<span class="sd">        pre: Object implementing `PCPythonProtocol` to use as GMRes preconditioner.</span>
+<span class="sd">        maxsteps: Maximum number of GMRes iterations to use.</span>
+<span class="sd">        tol: Absolute convergence tolerance - absolute size of the (preconditioned)</span>
+<span class="sd">            residual norm.</span>
+<span class="sd">        restart: Number of iterations after which to restart.</span>
+<span class="sd">        printrates: Whether to show convergence statistics during solving.</span>
+<span class="sd">        reltol: Relative convergence tolerance, relative decrease in the</span>
+<span class="sd">            (preconditioned) residual norm.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># The &#39;A&#39; passed into this function serves as the PETSc &#39;context&#39; for the shell matrix.</span>
     <span class="c1"># Renaming for readability and consistency with PETSc docs. Potentially a minor inefficiency.</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">A</span>
-
-    <span class="c1"># Patch the &#39;mult&#39; method only for this &#39;context&#39; instance of SpaceTime.FMatrix to comply with PETSc&#39;s signature</span>
-    <span class="n">context</span><span class="o">.</span><span class="n">mult</span> <span class="o">=</span> <span class="n">shellmult</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">SpaceTime</span><span class="o">.</span><span class="n">FMatrix</span><span class="p">)</span>
 
     <span class="n">N</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">getSize</span><span class="p">()</span>  <span class="c1"># noqa: N806 | global vector size variables use uppercase in PETSc</span>
 
@@ -423,8 +376,6 @@ document.write(`
     <span class="n">ksp</span><span class="o">.</span><span class="n">setTolerances</span><span class="p">(</span><span class="n">rtol</span><span class="o">=</span><span class="n">reltol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="n">maxsteps</span><span class="p">)</span>
 
     <span class="c1"># Prepare shell preconditioner</span>
-    <span class="k">if</span> <span class="n">pre</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">pre</span> <span class="o">=</span> <span class="n">PreTimeMarchingImproved</span><span class="p">()</span>
     <span class="n">pc</span> <span class="o">=</span> <span class="n">ksp</span><span class="o">.</span><span class="n">pc</span>
     <span class="n">pc</span><span class="o">.</span><span class="n">setType</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">PYTHON</span><span class="p">)</span>
     <span class="n">pc</span><span class="o">.</span><span class="n">setPythonContext</span><span class="p">(</span><span class="n">pre</span><span class="p">)</span>
@@ -442,7 +393,6 @@ document.write(`
     <span class="n">ksp</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
     <span class="n">ksp</span><span class="o">.</span><span class="n">setConvergenceHistory</span><span class="p">()</span>
 
-    <span class="c1"># Overwrite the supplied placeholder solution vector (but retain the function argument for API comptabiility)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">A_shell</span><span class="o">.</span><span class="n">createVecRight</span><span class="p">()</span>  <span class="c1"># sol vec conforming to matrix partitioning</span>
 
     <span class="n">ksp</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>  <span class="c1"># attempt to iterate to convergence</span>

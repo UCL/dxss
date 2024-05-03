@@ -292,7 +292,7 @@ document.write(`
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dxss.html#dxss.gmres.PreTimeMarchingImproved.apply">apply() (dxss.gmres.PreTimeMarchingImproved method)</a>
+      <li><a href="dxss.html#dxss.space_time.SpaceTimePETScPreconditionerWrapper.apply">apply() (dxss.space_time.SpaceTimePETScPreconditionerWrapper method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -304,8 +304,6 @@ document.write(`
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dxss.html#dxss.gmres.PreTimeMarchingImproved.context">context (dxss.gmres.PreTimeMarchingImproved attribute)</a>
-</li>
       <li><a href="dxss.html#dxss.gmres.convergence_monitor">convergence_monitor() (in module dxss.gmres)</a>
 </li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.coupling_matrix_between_slices_multiply">coupling_matrix_between_slices_multiply() (dxss.space_time.SpaceTime method)</a>
@@ -313,8 +311,6 @@ document.write(`
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dxss.html#dxss.meshes.create_initial_mesh_convex">create_initial_mesh_convex() (in module dxss.meshes)</a>
-</li>
-      <li><a href="dxss.html#dxss.space_time.SpaceTime.FMatrix.create_vectors">create_vectors() (dxss.space_time.SpaceTime.FMatrix method)</a>
 </li>
       <li><a href="dxss.html#dxss.precomp_time_int.QuadRule.current_pts">current_pts() (dxss.precomp_time_int.QuadRule method)</a>
 </li>
@@ -456,8 +452,6 @@ document.write(`
 </li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.get_spacetime_matrix">get_spacetime_matrix() (dxss.space_time.SpaceTime method)</a>
 </li>
-      <li><a href="dxss.html#dxss.space_time.SpaceTime.get_spacetime_matrix_as_linear_operator">get_spacetime_matrix_as_linear_operator() (dxss.space_time.SpaceTime method)</a>
-</li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.get_spacetime_matrix_coarse">get_spacetime_matrix_coarse() (dxss.space_time.SpaceTime method)</a>
 </li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.get_spacetime_rhs">get_spacetime_rhs() (dxss.space_time.SpaceTime method)</a>
@@ -523,7 +517,7 @@ document.write(`
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dxss.html#dxss.space_time.SpaceTime.FMatrix.mult">mult() (dxss.space_time.SpaceTime.FMatrix method)</a>
+      <li><a href="dxss.html#dxss.space_time.SpaceTimePETScMatrixWrapper.mult">mult() (dxss.space_time.SpaceTimePETScMatrixWrapper method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -565,13 +559,11 @@ document.write(`
 </li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.pre_twolvl">pre_twolvl() (dxss.space_time.SpaceTime method)</a>
 </li>
-      <li><a href="dxss.html#dxss.space_time.SpaceTime.prepare_coarse_grid_correction">prepare_coarse_grid_correction() (dxss.space_time.SpaceTime method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dxss.html#dxss.space_time.SpaceTime.prepare_precondition_gmres">prepare_precondition_gmres() (dxss.space_time.SpaceTime method)</a>
+      <li><a href="dxss.html#dxss.space_time.SpaceTime.prepare_coarse_grid_correction">prepare_coarse_grid_correction() (dxss.space_time.SpaceTime method)</a>
 </li>
-      <li><a href="dxss.html#dxss.gmres.PreTimeMarchingImproved">PreTimeMarchingImproved (class in dxss.gmres)</a>
+      <li><a href="dxss.html#dxss.space_time.SpaceTime.prepare_precondition_gmres">prepare_precondition_gmres() (dxss.space_time.SpaceTime method)</a>
 </li>
       <li><a href="dxss.html#dxss.space_time.ProblemParameters">ProblemParameters (class in dxss.space_time)</a>
 </li>
@@ -629,8 +621,6 @@ document.write(`
 </li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.set_solver_slab">set_solver_slab() (dxss.space_time.SpaceTime method)</a>
 </li>
-      <li><a href="dxss.html#dxss.gmres.PreTimeMarchingImproved.setUp">setUp() (dxss.gmres.PreTimeMarchingImproved method)</a>
-</li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.setup_coupling_matrix_between_slices">setup_coupling_matrix_between_slices() (dxss.space_time.SpaceTime method)</a>
 </li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.setup_rhs">setup_rhs() (dxss.space_time.SpaceTime method)</a>
@@ -639,13 +629,11 @@ document.write(`
 </li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.setup_slab_matrix">setup_slab_matrix() (dxss.space_time.SpaceTime method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.setup_spacetime_finite_elements">setup_spacetime_finite_elements() (dxss.space_time.SpaceTime method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.setup_spacetime_matrix">setup_spacetime_matrix() (dxss.space_time.SpaceTime method)</a>
-</li>
-      <li><a href="dxss.html#dxss.gmres.shellmult">shellmult() (in module dxss.gmres)</a>
 </li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime.slab_matrix_no_dg_jumps_multiply">slab_matrix_no_dg_jumps_multiply() (dxss.space_time.SpaceTime method)</a>
 </li>
@@ -667,7 +655,9 @@ document.write(`
       </ul></li>
       <li><a href="dxss.html#dxss.space_time.SpaceTime">SpaceTime (class in dxss.space_time)</a>
 </li>
-      <li><a href="dxss.html#dxss.space_time.SpaceTime.FMatrix">SpaceTime.FMatrix (class in dxss.space_time)</a>
+      <li><a href="dxss.html#dxss.space_time.SpaceTimePETScMatrixWrapper">SpaceTimePETScMatrixWrapper (class in dxss.space_time)</a>
+</li>
+      <li><a href="dxss.html#dxss.space_time.SpaceTimePETScPreconditionerWrapper">SpaceTimePETScPreconditionerWrapper (class in dxss.space_time)</a>
 </li>
   </ul></td>
 </tr></table>

@@ -313,6 +313,8 @@ document.write(`
     <span class="n">OrderTime</span><span class="p">,</span>
     <span class="n">ProblemParameters</span><span class="p">,</span>
     <span class="n">SpaceTime</span><span class="p">,</span>
+    <span class="n">SpaceTimePETScMatrixWrapper</span><span class="p">,</span>
+    <span class="n">SpaceTimePETScPreconditionerWrapper</span><span class="p">,</span>
     <span class="n">ValueAndDerivative</span><span class="p">,</span>
     <span class="n">get_sparse_matrix</span><span class="p">,</span>
 <span class="p">)</span>
@@ -501,7 +503,6 @@ document.write(`
 <span class="p">)</span>
 <span class="n">ST</span><span class="o">.</span><span class="n">setup_spacetime_finite_elements</span><span class="p">()</span>
 <span class="n">ST</span><span class="o">.</span><span class="n">prepare_precondition_gmres</span><span class="p">()</span>
-<span class="n">A_space_time_linop</span> <span class="o">=</span> <span class="n">ST</span><span class="o">.</span><span class="n">get_spacetime_matrix_as_linear_operator</span><span class="p">()</span>
 <span class="n">b_rhs</span> <span class="o">=</span> <span class="n">ST</span><span class="o">.</span><span class="n">get_spacetime_rhs</span><span class="p">()</span>
 
 <span class="c1"># Prepare the solvers for problems on the slabs</span>
@@ -528,10 +529,10 @@ document.write(`
             <span class="n">PySolver</span><span class="p">(</span><span class="n">slab_matrix_first_slab_sparse</span><span class="p">,</span> <span class="n">initial_slab_solver</span><span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="n">u_sol</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">get_gmres_solution</span><span class="p">(</span>
-            <span class="n">A_space_time_linop</span><span class="p">,</span>
-            <span class="n">b_rhs</span><span class="p">,</span>
-            <span class="n">pre</span><span class="o">=</span><span class="n">ST</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">,</span>
+        <span class="n">u_sol</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_gmres_solution</span><span class="p">(</span>
+            <span class="n">A</span><span class="o">=</span><span class="n">SpaceTimePETScMatrixWrapper</span><span class="p">(</span><span class="n">ST</span><span class="p">),</span>
+            <span class="n">b</span><span class="o">=</span><span class="n">b_rhs</span><span class="p">,</span>
+            <span class="n">pre</span><span class="o">=</span><span class="n">SpaceTimePETScPreconditionerWrapper</span><span class="p">(</span><span class="n">ST</span><span class="p">),</span>
             <span class="n">maxsteps</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
             <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span>
             <span class="n">printrates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -542,10 +543,10 @@ document.write(`
         <span class="n">ST</span><span class="o">.</span><span class="n">set_solver_first_slab</span><span class="p">(</span>
             <span class="n">get_lu_solver</span><span class="p">(</span><span class="n">ST</span><span class="o">.</span><span class="n">msh</span><span class="p">,</span> <span class="n">ST</span><span class="o">.</span><span class="n">get_slab_matrix_first_slab</span><span class="p">()),</span>
         <span class="p">)</span>  <span class="c1"># first slab is special</span>
-        <span class="n">u_sol</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">get_gmres_solution</span><span class="p">(</span>
-            <span class="n">A_space_time_linop</span><span class="p">,</span>
-            <span class="n">b_rhs</span><span class="p">,</span>
-            <span class="n">pre</span><span class="o">=</span><span class="n">ST</span><span class="o">.</span><span class="n">pre_time_marching_improved</span><span class="p">,</span>
+        <span class="n">u_sol</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_gmres_solution</span><span class="p">(</span>
+            <span class="n">A</span><span class="o">=</span><span class="n">SpaceTimePETScMatrixWrapper</span><span class="p">(</span><span class="n">ST</span><span class="p">),</span>
+            <span class="n">b</span><span class="o">=</span><span class="n">b_rhs</span><span class="p">,</span>
+            <span class="n">pre</span><span class="o">=</span><span class="n">SpaceTimePETScPreconditionerWrapper</span><span class="p">(</span><span class="n">ST</span><span class="p">),</span>
             <span class="n">maxsteps</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
             <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span>
             <span class="n">printrates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
