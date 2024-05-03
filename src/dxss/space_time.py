@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from math import sqrt
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,6 +14,7 @@ from dxh import evaluate_function_at_points
 from matplotlib import colors
 from matplotlib.ticker import MaxNLocator
 from mpi4py import MPI
+from numpy.typing import ArrayLike
 from ufl import div, dS, ds, grad, inner, jump
 
 if TYPE_CHECKING:
@@ -46,9 +47,17 @@ class ValueAndDerivative:
     dvdt: np.ndarray
 
 
+DataDomainIndicatorFunction = Callable[[ArrayLike], np.ndarray]
+DataDomainIndicator = Union[
+    DataDomainIndicatorFunction,
+    ufl.core.expr.Expr,
+    fem.Function,
+]
+
+
 @dataclasses.dataclass
 class DataDomain:
-    indicator_function: Callable | fem.Function = None
+    indicator_function: DataDomainIndicator
     fitted: bool = True
 
 
