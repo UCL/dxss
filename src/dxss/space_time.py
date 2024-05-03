@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from math import sqrt
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,6 +15,9 @@ from matplotlib import colors
 from matplotlib.ticker import MaxNLocator
 from mpi4py import MPI
 from ufl import div, dS, ds, grad, inner, jump
+
+if TYPE_CHECKING:
+    from petsc4py import PETSc
 
 from dxss.precomp_time_int import (
     QuadRule,
@@ -1323,22 +1326,6 @@ class SpaceTime:
             int_idx_qstar += self.otime.qstar + 1
             coupling_idx_qstar += self.otime.qstar + 1
 
-    def get_spacetime_matrix_as_linear_operator(self):
-        return SpaceTime.FMatrix(self)
-
-    # TODO: why do we need this class? and why is it nested?
-    class FMatrix:
-        def __init__(self, st_instance):
-            self.st = st_instance
-
-        def mult(self, vec_in, vec_out):
-            self.st.apply_spacetime_matrix(vec_in, vec_out)
-
-        def create_vectors(self):
-            tmp1 = fem.petsc.create_vector(self.st.SpaceTimeLfi)
-            tmp2 = fem.petsc.create_vector(self.st.SpaceTimeLfi)
-            return tmp1, tmp2
-
     def prepare_precondition_gmres(self):
         if not self.slab_matrix:
             self.setup_slab_matrix(with_jumps=True)
@@ -1877,3 +1864,63 @@ class SpaceTime:
         with io.XDMFFile(self.msh.comm, f"{name}-ut.xdmf", "w") as xdmf:
             xdmf.write_mesh(self.msh)
             xdmf.write_function(ut_diff)
+
+
+class SpaceTimePETScPreconditionerWrapper:
+    """Class wrapping space-time solver to provide interface for use as `PETSc.PC`.
+
+    Uses the space-time solvers improved time-marching preconditioner.
+
+    The required interface is documented at
+    https://petsc.org/main/petsc4py/petsc_python_types.html#petsc-python-preconditioner-type
+
+    Args:
+        space_time: Space time solver instance to wrap.
+    """
+
+    def __init__(self, space_time: SpaceTime) -> None:
+        self._space_time = space_time
+
+    def apply(
+        self,
+        pc: PETSc.PC,  # noqa: ARG002 | pc argument is required by PETSc
+        vec_in: PETSc.Vec,
+        vec_out: PETSc.Vec,
+    ) -> None:
+        """Apply preconditioner to vector `vec_in` writing out to `vec_out`.
+
+        Args:
+            pc: PETSc preconditioner holding PETSc data structures. Unused.
+            vec_in: The vector to apply preconditioner to.
+            vec_out: The vector to write result of preconditioning `vec_in` to.
+        """
+        return self._space_time.pre_time_marching_improved(vec_in, vec_out)
+
+
+class SpaceTimePETScMatrixWrapper:
+    """Class wrapping space-time solver to provide interface for use as `PETSc.Mat`.
+
+    The required interface is documented at
+    https://petsc.org/main/petsc4py/petsc_python_types.html#petsc-python-mat
+
+    Args:
+        space_time: Space time solver instance to wrap.
+    """
+
+    def __init__(self, space_time: SpaceTime) -> None:
+        self._space_time = space_time
+
+    def mult(
+        self,
+        mat: PETSc.Mat,  # noqa: ARG002 | mat argument required by PETSc
+        vec_in: PETSc.Vec,
+        vec_out: PETSc.Vec,
+    ) -> None:
+        """Matrix vector multiplication `vec_out = mat @ vec_in`.
+
+        Args:
+            mat: PETSc matrix holding PETSc data structures. Unused.
+            vec_in: The vector to perform matrix multiplication with.
+            vec_out: The vector to write result of multiplication to.
+        """
+        self._space_time.apply_spacetime_matrix(vec_in, vec_out)

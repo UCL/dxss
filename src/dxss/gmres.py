@@ -1,30 +1,6 @@
+from __future__ import annotations
+
 from petsc4py import PETSc
-
-from dxss.space_time import SpaceTime
-
-
-class PreTimeMarchingImproved:
-    """Class that wraps our research-grade improved time marching precondition.
-
-    The class wrapper is needed to get it into the format needed by PETSc's KSP
-    interface.
-
-    Attributes:
-        context: (dxss.SpaceTime) the sparse matrix context containing n, T, ...
-
-    Todo:
-        Ultimately we could move the code really into this class, and
-        potentially make some computational savings by splitting the function
-        SpaceTime.pre_time_marching_improved into this class's setup and apply.
-        Also TODO is to review this docstring.
-    """
-
-    def setUp(self, pc):
-        A_shell, _ = pc.getOperators()  # noqa: N806 | convention for matrix
-        self.context = A_shell.getPythonContext()  # retrieve & set context
-
-    def apply(self, pc, x, y):  # noqa: ARG002 | 'pc' argument is required by PETSc
-        return self.context.st.pre_time_marching_improved(x, y)
 
 
 def convergence_monitor(ksp: PETSc.KSP, its: int, rnorm: float) -> None:  # noqa: ARG001
@@ -44,46 +20,35 @@ def convergence_monitor(ksp: PETSc.KSP, its: int, rnorm: float) -> None:  # noqa
     PETSc.Sys.Print(f"GMRes iteration {its:>3}, residual = {rnorm:4.2e}")
 
 
-def shellmult(
-    self,
-    A: SpaceTime.FMatrix,  # noqa: ARG001,N803
-    vec_in: PETSc.Vec,
-    vec_out: PETSc.Vec,
-) -> None:
-    """Shell matrix multiplication wrapper function.
-
-    Needed to monkey-patch an instance of dxss.SpaceTime to recover the desired
-    behavior.
-
-    Args:
-        A: The shell representation of the LHS in our 'matrix-free' scheme.
-        vec_in: The vector to multiply with A.
-        vec_out: The output vector to contain the multiplication result.
-
-    Todo:
-        Ultimately this should be integrated into the dxss.SpaceTime class
-        during a refactoring pass.
-    """
-    self.st.apply_spacetime_matrix(vec_in, vec_out)
-
-
 def get_gmres_solution(
     A,  # noqa: N803 | convention: Ax = b
-    b,
-    pre=None,
-    x=None,
-    maxsteps=100,
-    tol=None,
-    restart=None,
-    printrates=True,
-    reltol=None,
-):
+    b: PETSc.Vec,
+    pre,
+    maxsteps: int = 100,
+    tol: float | None = None,
+    restart: int | None = None,
+    printrates: bool = True,
+    reltol: float | None = None,
+) -> tuple[PETSc.Vec, PETSc.Vec]:
+    """Solve linear system `A @ x = b` with generalized minimal residual method (GMRes).
+
+    Uses PETSc GMRes implementation.
+
+    Args:
+        A: Object implementing PETSc `MatPythonProtocol` to use as matrix `A`.
+        b: PETSc vector object to use as right-hand side term `b`.
+        pre: Object implementing `PCPythonProtocol` to use as GMRes preconditioner.
+        maxsteps: Maximum number of GMRes iterations to use.
+        tol: Absolute convergence tolerance - absolute size of the (preconditioned)
+            residual norm.
+        restart: Number of iterations after which to restart.
+        printrates: Whether to show convergence statistics during solving.
+        reltol: Relative convergence tolerance, relative decrease in the
+            (preconditioned) residual norm.
+    """
     # The 'A' passed into this function serves as the PETSc 'context' for the shell matrix.
     # Renaming for readability and consistency with PETSc docs. Potentially a minor inefficiency.
     context = A
-
-    # Patch the 'mult' method only for this 'context' instance of SpaceTime.FMatrix to comply with PETSc's signature
-    context.mult = shellmult.__get__(context, SpaceTime.FMatrix)
 
     N = b.getSize()  # noqa: N806 | global vector size variables use uppercase in PETSc
 
@@ -108,8 +73,6 @@ def get_gmres_solution(
     ksp.setTolerances(rtol=reltol, atol=tol, max_it=maxsteps)
 
     # Prepare shell preconditioner
-    if pre is None:
-        pre = PreTimeMarchingImproved()
     pc = ksp.pc
     pc.setType(pc.Type.PYTHON)
     pc.setPythonContext(pre)
@@ -127,7 +90,6 @@ def get_gmres_solution(
     ksp.view()
     ksp.setConvergenceHistory()
 
-    # Overwrite the supplied placeholder solution vector (but retain the function argument for API comptabiility)
     x = A_shell.createVecRight()  # sol vec conforming to matrix partitioning
 
     ksp.solve(b, x)  # attempt to iterate to convergence
