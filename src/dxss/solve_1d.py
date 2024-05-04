@@ -176,7 +176,9 @@ def solve_problem(measure_errors=False):
     print("elapsed time  " + str(end - start) + " seconds")
 
     if measure_errors:
-        ST.measured_errors(u_sol)
+        return u_sol, ST.measured_errors(u_sol)
+
+    return u_sol
 
 
 if __name__ == "__main__":
