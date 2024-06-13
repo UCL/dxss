@@ -1,0 +1,54 @@
+name: Build and test dxss
+on: push
+jobs:
+  build_and_test_dxss:
+    runs-on: ubuntu-22.04
+    container: krishnakumarvt/dxss_fenicsx_testenv:openmpi-current
+    env:
+      PETSC_ARCH: linux-gnu-real64-64
+      OMPI_ALLOW_RUN_AS_ROOT: 1
+      OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
+      OMPI_MCA_rmaps_base_oversubscribe: 1
+      OMPI_MCA_plm: isolated
+      OMPI_MCA_btl_vader_single_copy_mechanism: none
+      OMPI_MCA_mpi_yield_when_idle: 1
+      OMPI_MCA_hwloc_base_binding_policy: none
+      dolfinx_commit_sha: d5778ef571aabde41b2a9942a3fedbb77ca5dac4
+      dolfinx_cpp_build_dir: dolfinx_cpp_build_dir
+      dolfinx_cpp_install_dir: dolfinx_cpp_install_dir
+      project_repo_name: dxss
+      dolfinx_source_dir: dolfinx
+    steps:
+      - name: Checkout 'fenics_dev' branch of UCL/${{ env.project_repo_name }} repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'UCL/${{ env.project_repo_name }}'
+          ref: 'fenics_dev'
+          path: '${{ env.project_repo_name }}'
+      - name: Checkout DOLFINx repo at commit ${{ env.dolfinx_commit_sha }}
+        uses: actions/checkout@v4
+        with:
+          repository: 'FEniCS/dolfinx'
+          ref: '${{ env.dolfinx_commit_sha }}'
+          path: '${{ env.dolfinx_source_dir }}'
+      - name: Create DOLFINx C++ install directory
+        run: mkdir ${{ env.dolfinx_cpp_install_dir }}
+      - name: Configure the C++ library component of DOLFINx (CMake)
+        run: cd ${{ env.dolfinx_source_dir }} && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../${{ env.dolfinx_cpp_install_dir }} -B ${{ env.dolfinx_cpp_build_dir }} -S cpp/
+      - name: Build and install DOLFINx C++ library at commit ${{ env.dolfinx_commit_sha }}
+        run: |
+          cd ${{ env.dolfinx_source_dir }} && cmake --build ${{ env.dolfinx_cpp_build_dir }}
+          cmake --install ${{ env.dolfinx_cpp_build_dir }}
+      - name: Build Python interface to DOLFINx at commit ${{ env.dolfinx_commit_sha }}
+        run: . ${{ env.dolfinx_cpp_install_dir }}/lib/dolfinx/dolfinx.conf && cd ${{ env.dolfinx_source_dir }} && CMAKE_BUILD_TYPE=Release python3 -m pip -v install python/
+      - name: Set default DOLFINx JIT options
+        run: |
+          mkdir -p "$HOME"/.config/dolfinx
+          echo '{ "cffi_extra_compile_args": ["-O2" ] }' >| "$HOME"/.config/dolfinx/dolfinx_jit_options.json
+          cat "$HOME"/.config/dolfinx/dolfinx_jit_options.json
+      - name: Install ${{ env.project_repo_name }}
+        run: cd ${{ env.project_repo_name }} && python3 -m pip install .[dev]
+      - name: Install pytest
+        run: python3 -m pip install pytest
+      - name: Test ${{ env.project_repo_name }}
+        run: cd ${{ env.project_repo_name }} && pytest
